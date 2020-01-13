@@ -97,6 +97,83 @@ namespace OnTopic.Data.Transfer {
     }
 
     /*==========================================================================================================================
+    | IMPORT
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Imports a <see cref="TopicData"/> data transfer object—and, potentially, its descendants—into an existing <see
+    ///   cref="Topic"/> entity.
+    /// </summary>
+    public static void Import(this Topic topic, TopicData topicData) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Detect mismatches
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (topic.GetUniqueKey() != topicData.UniqueKey) {
+        throw new ArgumentException(
+          $"A topic with the unique key of '{topicData.UniqueKey}' cannot be created under a topic with the unique key of " +
+          $"{topic.GetUniqueKey()}."
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Identify root topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var rootTopic = topic;
+
+      while (rootTopic.Parent != null) {
+        rootTopic = rootTopic.Parent;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set primary properties
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.ContentType         = topic.ContentType;
+
+      if (topicData.DerivedTopicKey?.Length > 0) {
+        topic.DerivedTopic      = rootTopic.FindByUniqueKey(topicData.DerivedTopicKey);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set attributes
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var attribute in topicData.Attributes) {
+        var matchedAttribute = topic.Attributes.FirstOrDefault(a => a.Key == attribute.Key);
+        if (attribute.Key?.Length > 0 && (matchedAttribute?.LastModified?? DateTime.MinValue) < attribute.LastModified) {
+          topic.Attributes.SetValue(
+            attribute.Key,
+            attribute.Value
+          );
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var relationship in topicData.Relationships) {
+        foreach (var relatedTopicKey in relationship.Relationships) {
+          var relatedTopic = rootTopic.FindByUniqueKey(relatedTopicKey);
+          if (relationship.Key != null && relatedTopic != null) {
+            topic.Relationships.SetTopic(relationship.Key, relatedTopic);
+          };
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Recurse over children
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var childTopicData in topicData.Children) {
+        if (childTopicData.Key?.Length > 0 && childTopicData.ContentType?.Length > 0) {
+          var childTopic = topic.Children.GetTopic(childTopicData.Key);
+          if (childTopic == null) {
+            childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
+          }
+          childTopic.Import(childTopicData);
+        }
+      }
+
+    }
+
+    /*==========================================================================================================================
     | FIND BY UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

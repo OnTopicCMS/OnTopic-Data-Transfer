@@ -43,7 +43,7 @@ namespace OnTopic.Data.Transfer {
     /// <summary>
     ///   Gets or sets the the last time the <see cref="AttributeData"/> instance was updated.
     /// </summary>
-    public DateTime? LastModified { get; set; } = DateTime.Now;
+    public DateTime LastModified { get; set; } = DateTime.MinValue;
 
   } //Class
 } //Namespace

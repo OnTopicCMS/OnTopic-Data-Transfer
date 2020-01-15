@@ -6,7 +6,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Data.Transfer {

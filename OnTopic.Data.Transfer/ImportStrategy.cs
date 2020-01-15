@@ -12,7 +12,8 @@ namespace OnTopic.Data.Transfer {
   | ENUM: IMPORT STRATEGY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Enum that specifies the import strategy to use with e.g., <see cref="TopicExtensions.Import(Topic, TopicData)"/>.
+  ///   Enum that specifies the import strategy to use with e.g., <see cref="TopicExtensions.Import(Topic, TopicData,
+  ///   TopicImportOptions)"/>.
   /// </summary>
   public enum ImportStrategy {
 

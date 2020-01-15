@@ -4,7 +4,10 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using OnTopic.Attributes;
+using OnTopic.Internal.Diagnostics;
 
 namespace OnTopic.Data.Transfer {
 
@@ -45,6 +48,11 @@ namespace OnTopic.Data.Transfer {
     ///   object.
     /// </summary>
     public static TopicData Export(this Topic topic) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, nameof(topic));
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set primary properties
@@ -103,7 +111,22 @@ namespace OnTopic.Data.Transfer {
     ///   Imports a <see cref="TopicData"/> data transfer object—and, potentially, its descendants—into an existing <see
     ///   cref="Topic"/> entity.
     /// </summary>
-    public static void Import(this Topic topic, TopicData topicData) {
+    public static void Import(this Topic topic, TopicData topicData, [NotNull]TopicImportOptions? options = null) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Validate topic
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      Contract.Requires(topic, nameof(topic));
+      Contract.Requires(topicData, nameof(topicData));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish default options
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (options == null) {
+        options                 = new TopicImportOptions() {
+          Strategy              = ImportStrategy.Add
+        };
+      }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Detect mismatches
@@ -127,28 +150,46 @@ namespace OnTopic.Data.Transfer {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set primary properties
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.ContentType         = topic.ContentType;
+      if (options.OverwriteContentType) {
+        topic.ContentType       = topicData.ContentType;
+      }
 
       if (topicData.DerivedTopicKey?.Length > 0) {
-        topic.DerivedTopic      = rootTopic.FindByUniqueKey(topicData.DerivedTopicKey);
+        topic.DerivedTopic      = rootTopic.FindByUniqueKey(topicData.DerivedTopicKey)?? topic.DerivedTopic;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
+
+      //First delete any unmatched records, if appropriate
+      if (options.DeleteUnmatchedAttributes) {
+        foreach(var attribute in topic.Attributes.Where(a1 => !topicData.Attributes.Any(a2 => a1.Key == a2.Key)).ToArray()) {
+          topic.Attributes.Remove(attribute);
+        };
+      }
+
+      //Update records based on the source collection
       foreach (var attribute in topicData.Attributes) {
         var matchedAttribute = topic.Attributes.FirstOrDefault(a => a.Key == attribute.Key);
-        if (attribute.Key?.Length > 0 && (matchedAttribute?.LastModified?? DateTime.MinValue) < attribute.LastModified) {
-          topic.Attributes.SetValue(
-            attribute.Key,
-            attribute.Value
-          );
-        }
+        if (matchedAttribute != null && isStrategy(ImportStrategy.Add)) continue;
+        if (matchedAttribute?.LastModified >= attribute.LastModified && isStrategy(ImportStrategy.Merge)) continue;
+        topic.Attributes.SetValue(
+          attribute.Key,
+          attribute.Value
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
+
+      //First delete any unmatched records, if appropriate
+      if (options.DeleteUnmatchedRelationships) {
+        topic.Relationships.Clear();
+      }
+
+      //Update records based on the source collection
       foreach (var relationship in topicData.Relationships) {
         foreach (var relatedTopicKey in relationship.Relationships) {
           var relatedTopic = rootTopic.FindByUniqueKey(relatedTopicKey);
@@ -161,15 +202,38 @@ namespace OnTopic.Data.Transfer {
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse over children
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var childTopicData in topicData.Children) {
-        if (childTopicData.Key?.Length > 0 && childTopicData.ContentType?.Length > 0) {
-          var childTopic = topic.Children.GetTopic(childTopicData.Key);
-          if (childTopic == null) {
-            childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
+
+      //First delete any unmatched records, if appropriate
+      if (options.DeleteUnmatchedChildren || options.DeleteUnmatchedNestedTopics) {
+        foreach (var child in topic.Children.Where(t1 => !topicData.Children.Any(t2 => t1.Key == t2.Key)).ToArray()) {
+          if (
+            child.ContentType == "List" && options.DeleteUnmatchedNestedTopics ||
+            child.ContentType != "List" && options.DeleteUnmatchedChildren
+          ) {
+            topic.Children.Remove(child);
           }
-          childTopic.Import(childTopicData);
-        }
+        };
       }
+
+      if (options.DeleteUnmatchedNestedTopics) {
+        foreach (var child in topic.Children.Where(t => t.ContentType == "List")) {
+          topic.Children.Remove(child);
+        };
+      }
+
+      //Update records based on the source collection
+      foreach (var childTopicData in topicData.Children) {
+        var childTopic = topic?.Children.GetTopic(childTopicData.Key);
+        if (childTopic == null) {
+          childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
+        }
+        childTopic.Import(childTopicData);
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Is strategy?
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      bool isStrategy(params ImportStrategy[] strategies) => strategies.Contains<ImportStrategy>(options!.Strategy);
 
     }
 
@@ -180,12 +244,13 @@ namespace OnTopic.Data.Transfer {
     ///   Given a root <see cref="Topic"/>, finds the <see cref="Topic"/> with the supplied .
     /// </summary>
     private static Topic? FindByUniqueKey(this Topic topic, string uniqueKey) {
-      if (String.IsNullOrEmpty(uniqueKey)) {
+
+      if (uniqueKey == null || uniqueKey.Length == 0) {
         return topic;
       }
 
           uniqueKey             = uniqueKey.Replace("Root:", "");
-      var firstColon            = uniqueKey.IndexOf(":");
+      var firstColon            = uniqueKey.IndexOf(":", StringComparison.InvariantCultureIgnoreCase);
       var firstKey              = uniqueKey.Substring(0, firstColon > 0? firstColon : uniqueKey.Length);
       var subsequentKey         = firstColon > 0? uniqueKey.Substring(firstColon+1) : "";
 

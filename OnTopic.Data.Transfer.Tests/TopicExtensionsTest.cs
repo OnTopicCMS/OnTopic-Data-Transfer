@@ -13,7 +13,7 @@ namespace OnTopic.Data.Transfer.Tests {
   | CLASS: TOPIC EXTENSIONS TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="Topic"/> class.
+  ///   Provides unit tests for the <see cref="TopicExtensions"/> class using the default <see cref="TopicImportOptions"/>.
   /// </summary>
   [TestClass]
   public class TopicExtensionsTest {
@@ -129,6 +129,30 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IMPORT: MISMATCHED CONTENT TYPE: MAINTAINS ORIGINAL VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with a different <see cref="TopicData.ContentType"/> than on the target <see
+    ///   cref="Topic.ContentType"/>, and assures that it is not overwritten when using the default <see
+    ///   cref="ImportStrategy"/>.
+    /// </summary>
+    [TestMethod]
+    public void Import_MismatchedContentType_MaintainsOriginalValue() {
+
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = "Page"
+      };
+
+      topic.Import(topicData);
+
+      Assert.AreNotEqual<string>(topicData.ContentType, topic.ContentType);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IMPORT: DERIVED TOPIC KEY: MAPS DERIVED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -158,14 +182,46 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: IMPORT: TOPIC DATA WITH ATTRIBUTES: SETS ATTRIBUTES
+    | TEST: IMPORT: INVALID DERIVED TOPIC KEY: MAINTAINS EXISTING VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.DerivedTopicKey"/> that is invalid and ensures that the
+    ///   <see cref="Topic.DerivedTopic"/> is not updated.
+    /// </summary>
+    [TestMethod]
+    public void Import_InvalidDerivedTopicKey_MaintainsExistingValue() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var derivedTopic          = TopicFactory.Create("Derived", "Container", 5, rootTopic);
+
+      topic.DerivedTopic        = derivedTopic;
+
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType,
+        DerivedTopicKey         = "Root:InvalidKey"
+      };
+
+      topic.Import(topicData);
+
+      Assert.IsNotNull(topic.DerivedTopic);
+      Assert.AreEqual<string>("5", topic.Attributes.GetValue("TopicID"));
+      Assert.AreEqual(derivedTopic, topic.DerivedTopic);
+
+    }
+
+
+    /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH ATTRIBUTES: SETS MISSING ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="TopicData"/> with <see cref="TopicData.Attributes"/> and ensures that the <see
     ///   cref="Topic.Attributes"/> collection is set correctly.
     /// </summary>
     [TestMethod]
-    public void Import_TopicDataWithAttributes_SetsAttributes() {
+    public void Import_TopicDataWithAttributes_SetsMissingAttributes() {
 
       var topic                 = TopicFactory.Create("Test", "Container");
       var topicData             = new TopicData() {
@@ -184,6 +240,39 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Import(topicData);
 
       Assert.AreEqual<string>("Attribute Value", topic.Attributes.GetValue("Attribute"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH ATTRIBUTES: SKIPS NEWER ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with <see cref="TopicData.Attributes"/> and ensures that the <see
+    ///   cref="Topic.Attributes"/> collection is set correctly.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithAttributes_SkipsNewerAttributes() {
+
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+
+      topic.Attributes.SetValue("Attribute", "Original Value");
+
+      topicData.Attributes.Add(
+        new AttributeData() {
+          Key                   = "Attribute",
+          Value                 = "New Value",
+          LastModified          = DateTime.Now.AddSeconds(5)
+        }
+      );
+
+      topic.Import(topicData);
+
+      Assert.AreEqual<string>("Original Value", topic.Attributes.GetValue("Attribute"));
 
     }
 
@@ -252,6 +341,41 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH RELATIONSHIPS: MAINTAINS EXISTING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with <see cref="Topic.Relationships"/> and ensures that the <see
+    ///   cref="Topic.Attributes"/> collection is set correctly.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithRelationships_MaintainsExisting() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var relatedTopic1         = TopicFactory.Create("Related1", "Container", rootTopic);
+      var relatedTopic2         = TopicFactory.Create("Related2", "Container", rootTopic);
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+      var relationshipData      = new RelationshipData() {
+        Key                   = "Related"
+      };
+
+      topic.Relationships.SetTopic("Related", relatedTopic1);
+
+      topicData.Relationships.Add(relationshipData);
+      relationshipData.Relationships.Add(relatedTopic2.GetUniqueKey());
+
+      topic.Import(topicData);
+
+      Assert.AreEqual(relatedTopic1, topic.Relationships.GetTopics("Related")?.FirstOrDefault());
+      Assert.AreEqual(relatedTopic2, topic.Relationships.GetTopics("Related")?.LastOrDefault());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IMPORT: TOPIC DATA WITH CHILD: MAPS NEW TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -314,6 +438,42 @@ namespace OnTopic.Data.Transfer.Tests {
 
       Assert.IsNotNull(topic.Children.FirstOrDefault());
       Assert.AreEqual(topicData.Children.FirstOrDefault().ContentType, childTopic.ContentType);
+
+    }
+
+
+    /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH CHILD: SKIPS ORPHANED CHILD
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with <see cref="TopicData.Children"/>, maps it to a <see cref="Topic"/> with
+    ///   existing <see cref="Topic.Children"/>, and ensures that those existing children are maintained.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithChild_SkipsOrphanedChild() {
+
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var child1                = TopicFactory.Create("Child1", "Container", topic);
+      _                         = TopicFactory.Create("Child2", "Container");
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+
+      topicData.Children.Add(
+        new TopicData() {
+          Key                     = "Child2",
+          UniqueKey               = topic.GetUniqueKey() + ":Child2",
+          ContentType             = topic.ContentType
+        }
+      );
+
+      topic.Import(topicData);
+
+      Assert.AreEqual<int>(2, topic.Children.Count);
+      Assert.AreEqual(child1, topic.Children.FirstOrDefault());
+      Assert.AreEqual(topicData.Children.FirstOrDefault().UniqueKey, topic.Children.LastOrDefault().GetUniqueKey());
 
     }
 

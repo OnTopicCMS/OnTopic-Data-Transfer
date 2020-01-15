@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Data.Transfer {
 
@@ -30,6 +31,7 @@ namespace OnTopic.Data.Transfer {
     /// <summary>
     ///   Gets or sets the topic's <see cref="Key"/> attribute, the primary text identifier for the topic.
     /// </summary>
+    [NotNull, DisallowNull]
     public string? Key { get; set; }
 
     /*==========================================================================================================================
@@ -42,6 +44,7 @@ namespace OnTopic.Data.Transfer {
     ///   The value for the UniqueKey property is a collated, colon-delimited representation of the topic and its parent(s).
     ///   Example: "Root:Configuration:ContentTypes:Page".
     /// </remarks>
+    [NotNull, DisallowNull]
     public string? UniqueKey { get; set; }
 
     /*==========================================================================================================================
@@ -50,6 +53,7 @@ namespace OnTopic.Data.Transfer {
     /// <summary>
     ///   Gets the key name of the content type that the associated <see cref="Topic"/> represents.
     /// </summary>
+    [NotNull, DisallowNull]
     public string? ContentType { get; set; }
 
     /*==========================================================================================================================

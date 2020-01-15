@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Data.Transfer {
 
@@ -27,6 +28,7 @@ namespace OnTopic.Data.Transfer {
     /// <summary>
     ///   Gets or sets the key of the attribute.
     /// </summary>
+    [NotNull, DisallowNull]
     public string? Key { get; set; }
 
     /*==========================================================================================================================
@@ -43,7 +45,7 @@ namespace OnTopic.Data.Transfer {
     /// <summary>
     ///   Gets or sets the the last time the <see cref="AttributeData"/> instance was updated.
     /// </summary>
-    public DateTime? LastModified { get; set; } = DateTime.Now;
+    public DateTime LastModified { get; set; } = DateTime.MinValue;
 
   } //Class
 } //Namespace

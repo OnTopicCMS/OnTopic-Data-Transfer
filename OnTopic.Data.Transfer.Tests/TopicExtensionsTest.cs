@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Data.Transfer.Interchange;
 
 namespace OnTopic.Data.Transfer.Tests {
 
@@ -13,7 +14,7 @@ namespace OnTopic.Data.Transfer.Tests {
   | CLASS: TOPIC EXTENSIONS TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides unit tests for the <see cref="TopicExtensions"/> class using the default <see cref="TopicImportOptions"/>.
+  ///   Provides unit tests for the <see cref="TopicExtensions"/> class using the default <see cref="ImportOptions"/>.
   /// </summary>
   [TestClass]
   public class TopicExtensionsTest {

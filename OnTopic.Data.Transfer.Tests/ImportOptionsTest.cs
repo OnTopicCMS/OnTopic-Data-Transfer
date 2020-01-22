@@ -6,18 +6,19 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Data.Transfer.Interchange;
 
 namespace OnTopic.Data.Transfer.Tests {
 
   /*============================================================================================================================
-  | CLASS: TOPIC EXTENSIONS TEST
+  | CLASS: EXTENSIONS TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides unit tests for the <see cref="TopicExtensions"/> class using customizations of the <see
-  ///   cref="TopicImportOptions"/>.
+  ///   cref="ImportOptions"/>.
   /// </summary>
   [TestClass]
-  public class TopicImportOptionsTest {
+  public class ImportOptionsTest {
 
     /*==========================================================================================================================
     | TEST: IMPORT: MISMATCHED CONTENT TYPE: OVERWRITES WHEN PERMITTED
@@ -38,7 +39,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new TopicImportOptions() {
+        new ImportOptions() {
           OverwriteContentType  = true
         }
       );
@@ -76,7 +77,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new TopicImportOptions() {
+        new ImportOptions() {
           Strategy              = ImportStrategy.Merge
         }
       );
@@ -114,7 +115,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new TopicImportOptions() {
+        new ImportOptions() {
           Strategy              = ImportStrategy.Merge
         }
       );
@@ -152,7 +153,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new TopicImportOptions() {
+        new ImportOptions() {
           Strategy              = ImportStrategy.Overwrite
         }
       );
@@ -194,7 +195,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new TopicImportOptions() {
+        new ImportOptions() {
           Strategy              = ImportStrategy.Replace
         }
       );
@@ -234,7 +235,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new TopicImportOptions() {
+        new ImportOptions() {
           Strategy              = ImportStrategy.Replace
         }
       );

@@ -6,14 +6,14 @@
 using OnTopic.Attributes;
 using OnTopic.Metadata;
 
-namespace OnTopic.Data.Transfer {
+namespace OnTopic.Data.Transfer.Interchange {
 
   /*============================================================================================================================
   | ENUM: IMPORT STRATEGY
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Enum that specifies the import strategy to use with e.g., <see cref="TopicExtensions.Import(Topic, TopicData,
-  ///   TopicImportOptions)"/>.
+  ///   ImportOptions)"/>.
   /// </summary>
   public enum ImportStrategy {
 

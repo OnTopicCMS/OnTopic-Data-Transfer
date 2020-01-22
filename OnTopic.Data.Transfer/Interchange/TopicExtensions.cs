@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using OnTopic.Internal.Diagnostics;
 
-namespace OnTopic.Data.Transfer {
+namespace OnTopic.Data.Transfer.Interchange {
 
   /*============================================================================================================================
   | CLASS: TOPIC EXTENSIONS
@@ -110,7 +110,7 @@ namespace OnTopic.Data.Transfer {
     ///   Imports a <see cref="TopicData"/> data transfer object—and, potentially, its descendants—into an existing <see
     ///   cref="Topic"/> entity.
     /// </summary>
-    public static void Import(this Topic topic, TopicData topicData, [NotNull]TopicImportOptions? options = null) {
+    public static void Import(this Topic topic, TopicData topicData, [NotNull]ImportOptions? options = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate topic
@@ -122,7 +122,7 @@ namespace OnTopic.Data.Transfer {
       | Establish default options
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (options == null) {
-        options                 = new TopicImportOptions() {
+        options                 = new ImportOptions() {
           Strategy              = ImportStrategy.Add
         };
       }

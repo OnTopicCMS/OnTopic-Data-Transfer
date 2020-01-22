@@ -7,6 +7,22 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <AssemblyTitle>OnTopic Data Transfer Library</AssemblyTitle>
+    <Company>Ignia</Company>
+    <Product>OnTopic</Product>
+    <Description>Libraries for supporting the import and export of OnTopic entities.</Description>
+    <Copyright>©2020 Ignia, LLC</Copyright>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <Authors>Ignia</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/Ignia/Topics-Data-Transfer</PackageProjectUrl>
+    <PackageTags>C# .NET CMS DTO</PackageTags>
+    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;CA2227</NoWarn>
   </PropertyGroup>

@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Data.Transfer.Interchange;
 
 namespace OnTopic.Data.Transfer.Tests {
 

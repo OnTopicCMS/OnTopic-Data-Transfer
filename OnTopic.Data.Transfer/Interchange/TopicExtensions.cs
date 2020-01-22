@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using OnTopic.Internal.Diagnostics;
 
-namespace OnTopic.Data.Transfer {
+namespace OnTopic.Data.Transfer.Interchange {
 
   /*============================================================================================================================
   | CLASS: TOPIC EXTENSIONS

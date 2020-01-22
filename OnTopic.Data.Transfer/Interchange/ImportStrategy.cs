@@ -6,7 +6,7 @@
 using OnTopic.Attributes;
 using OnTopic.Metadata;
 
-namespace OnTopic.Data.Transfer {
+namespace OnTopic.Data.Transfer.Interchange {
 
   /*============================================================================================================================
   | ENUM: IMPORT STRATEGY

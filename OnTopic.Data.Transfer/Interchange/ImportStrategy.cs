@@ -13,7 +13,7 @@ namespace OnTopic.Data.Transfer.Interchange {
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Enum that specifies the import strategy to use with e.g., <see cref="TopicExtensions.Import(Topic, TopicData,
-  ///   TopicImportOptions)"/>.
+  ///   ImportOptions)"/>.
   /// </summary>
   public enum ImportStrategy {
 

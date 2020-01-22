@@ -8,7 +8,7 @@ using OnTopic.Metadata;
 namespace OnTopic.Data.Transfer.Interchange {
 
   /*============================================================================================================================
-  | CLASS: TOPIC IMPORT OPTIONS
+  | CLASS: IMPORT OPTIONS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides options for configuring the <see cref="TopicExtensions.Import(Topic, TopicData)"/> method.
@@ -18,9 +18,9 @@ namespace OnTopic.Data.Transfer.Interchange {
   ///   conflicts that can happen, such as existing children, topics, or relationships. By default, the import method will take
   ///   the safest approach; it will add new child topics, attribute values, and relationships, but won't overwrite, update, or
   ///   delete existing ones. Additionally, it will throw an error if it is unable to locate a relationship target. The <see
-  ///   cref="TopicImportOptions"/> class allows that behavior to be overridden, allowing more invasive imports to be performed.
+  ///   cref="ImportOptions"/> class allows that behavior to be overridden, allowing more invasive imports to be performed.
   /// </remarks>
-  public class TopicImportOptions {
+  public class ImportOptions {
 
     /*==========================================================================================================================
     | PRIVATE VARIABLES

@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnTopic.Data.Transfer", "OnTopic.Data.Transfer\OnTopic.Data.Transfer.csproj", "{4F221895-703A-4C49-9E33-7C7394743DDE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnTopic.Data.Transfer.Tests", "OnTopic.Data.Transfer.Tests\OnTopic.Data.Transfer.Tests.csproj", "{61BA473C-A6E6-4F6A-A3C2-2715EDA6EA83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnTopic.Data.Transfer.Tests", "OnTopic.Data.Transfer.Tests\OnTopic.Data.Transfer.Tests.csproj", "{61BA473C-A6E6-4F6A-A3C2-2715EDA6EA83}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E838A1C2-B10E-4B70-8939-E1DC47EAFC5B}"
+	ProjectSection(SolutionItems) = preProject
+		GitVersion.yml = GitVersion.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

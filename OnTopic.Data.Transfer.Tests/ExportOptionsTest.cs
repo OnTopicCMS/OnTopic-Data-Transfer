@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Data.Transfer.Interchange;
@@ -69,6 +68,30 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual(nestedTopicList.GetUniqueKey(), topicData.Children.FirstOrDefault().UniqueKey);
       Assert.AreEqual<int?>(1, topicData.Children.FirstOrDefault()?.Children.Count);
       Assert.AreEqual(nestedTopic.GetUniqueKey(), topicData.Children.FirstOrDefault()?.Children.FirstOrDefault()?.UniqueKey);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: EXPORT: TOPIC WITH RELATIONSHIPS: EXCLUDES EXTERNAL REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with several <see cref="Topic.Relationships"/> and ensures that the <see
+    ///   cref="TopicData.Relationships"/> collection does <i>not</i> include external references—i.e., relationships that point
+    ///   to <see cref="Topic"/>s outside of the current export scope.
+    /// </summary>
+    [TestMethod]
+    public void Export_TopicWithRelationships_ExcludesExternalReferences() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var relatedTopic          = TopicFactory.Create("Related", "Container", rootTopic);
+
+      topic.Relationships.SetTopic("Related", relatedTopic);
+
+      var topicData             = topic.Export();
+
+      Assert.IsNotNull(topicData);
+      Assert.AreEqual<int>(0, topicData.Relationships.Count);
 
     }
 

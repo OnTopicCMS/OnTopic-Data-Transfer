@@ -59,6 +59,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       if (options == null) {
         options                 = new ExportOptions();
       }
+      options.ExportScope       ??= topic.GetUniqueKey();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set primary properties
@@ -90,8 +91,17 @@ namespace OnTopic.Data.Transfer.Interchange {
         var relationshipData    = new RelationshipData() {
           Key                   = relationship.Name,
         };
-        relationshipData.Relationships.AddRange(relationship.Select(r => r.GetUniqueKey()).ToList());
-        topicData.Relationships.Add(relationshipData);
+        foreach (var relatedTopic in relationship) {
+          if (
+            options.IncludeExternalReferences ||
+            relatedTopic.GetUniqueKey().StartsWith(options.ExportScope, StringComparison.InvariantCultureIgnoreCase)
+          ) {
+            relationshipData.Relationships.Add(relatedTopic.GetUniqueKey());
+          }
+        }
+        if (relationshipData.Relationships.Count > 0) {
+          topicData.Relationships.Add(relationshipData);
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -1,6 +1,9 @@
 # OnTopic Data Transfer Library
 The `OnTopic.Data.Transfer` assembly defines a data transfer object to act as an intermediary between the `Topic` class and serialization targets (such as JSON) used for web services.
 
+[![OnTopic.Data.Transfer package in Internal feed in Azure Artifacts](https://igniasoftware.feeds.visualstudio.com/_apis/public/Packaging/Feeds/46d5f49c-5e1e-47bb-8b14-43be6c719ba8/Packages/b26b3967-7a48-44e8-8bc4-de7624cde801/Badge)](https://igniasoftware.visualstudio.com/OnTopic/_packaging?_a=package&feed=46d5f49c-5e1e-47bb-8b14-43be6c719ba8&package=b26b3967-7a48-44e8-8bc4-de7624cde801&preferRelease=true)
+[![Build Status](https://igniasoftware.visualstudio.com/OnTopic/_apis/build/status/OnTopic-Data-Transfer-CI-V3?branchName=master)](https://igniasoftware.visualstudio.com/OnTopic/_build/latest?definitionId=13&branchName=master)
+
 ## Contents
 - [Motivation](#motivation)
 - [Data Model](#data-model)
@@ -36,7 +39,7 @@ Optionally, the `Topic.Export()` extension method will accept an [`ExportOptions
 
 - `IncludeExternalReferences`: Enables relationships to be exported, even if the topics they point to fall outside the scope of the current export.
 - `IncludeNestedTopics`: Includes nested topic as part of the export.
-- `IncludeChildTopics`: Recursively includes _all_ child topicsï¿½including nested topicsï¿½as part of the export. Implies `IncludeNestedTopics`.
+- `IncludeChildTopics`: Recursively includes _all_ child topics—including nested topics—as part of the export. Implies `IncludeNestedTopics`.
 
 ### Import Options
 Optionally, the `Topic.Import()` extension method will accept an [`ImportOptions`](OnTopic.Data.Transfer/Interchange/ImportOptions.cs) object as argument in order to fine-tune the business logic for the import. Most notably, this includes a `Strategy` property for setting the [`ImportStrategy`](OnTopic.Data.Transfer/Interchange/ImportStrategy.cs) enum, which includes the following options:

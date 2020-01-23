@@ -107,6 +107,27 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: EXPORT: TOPIC WITH CHILDREN: EXCLUDES CHILDREN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with <see cref="Topic.Children"/> and ensures that the resulting <see cref="TopicData"/>
+    ///   does <i>not</i> include them, since they should <i>not</i> be mapped by default.
+    /// </summary>
+    [TestMethod]
+    public void ExportWithNestedTopic_TopicWithNestedTopics_IncludesNestedTopics() {
+
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var nestedTopicList       = TopicFactory.Create("NestedTopics", "List", topic);
+      _                         = TopicFactory.Create("NestedTopic1", "Page", nestedTopicList);
+      _                         = TopicFactory.Create("Child1", "Container", topic);
+
+      var topicData             = topic.Export();
+
+      Assert.AreEqual<int>(0, topicData.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IMPORT: BASIC TOPIC DATA: MAPS PROPERTIES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

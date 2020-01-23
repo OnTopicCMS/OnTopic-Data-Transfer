@@ -46,12 +46,20 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   Exports a <see cref="Topic"/> entity—and, potentially, its descendants—into a <see cref="TopicData"/> data transfer
     ///   object.
     /// </summary>
-    public static TopicData Export(this Topic topic) {
+    public static TopicData Export(this Topic topic, [NotNull]ExportOptions? options = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topic, nameof(topic));
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish default options
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (options == null) {
+        options                 = new ExportOptions();
+      }
+      options.ExportScope       ??= topic.GetUniqueKey();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set primary properties
@@ -80,20 +88,36 @@ namespace OnTopic.Data.Transfer.Interchange {
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var relationship in topic.Relationships) {
-        var relationshipData = new RelationshipData() {
-          Key                 = relationship.Name,
+        var relationshipData    = new RelationshipData() {
+          Key                   = relationship.Name,
         };
-        relationshipData.Relationships.AddRange(relationship.Select(r => r.GetUniqueKey()).ToList());
-        topicData.Relationships.Add(relationshipData);
+        foreach (var relatedTopic in relationship) {
+          if (
+            options.IncludeExternalReferences ||
+            relatedTopic.GetUniqueKey().StartsWith(options.ExportScope, StringComparison.InvariantCultureIgnoreCase)
+          ) {
+            relationshipData.Relationships.Add(relatedTopic.GetUniqueKey());
+          }
+        }
+        if (relationshipData.Relationships.Count > 0) {
+          topicData.Relationships.Add(relationshipData);
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse over children
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var childTopic in topic.Children) {
-        topicData.Children.Add(
-          childTopic.Export()
-        );
+        if (
+          options.IncludeChildTopics ||
+          topic.ContentType == "List" ||
+          options.IncludeNestedTopics &&
+          childTopic.ContentType == "List"
+        ) {
+          topicData.Children.Add(
+            childTopic.Export(options)
+          );
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -125,7 +149,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         options                 = new ImportOptions() {
           Strategy              = ImportStrategy.Add
         };
-      }
+      };
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Detect mismatches

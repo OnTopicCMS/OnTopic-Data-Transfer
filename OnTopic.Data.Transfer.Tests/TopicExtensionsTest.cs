@@ -98,11 +98,69 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Relationships.SetTopic("Related", relatedTopic);
 
-      var topicData             = topic.Export();
+      var topicData             = rootTopic.Export(
+        new ExportOptions() {
+          IncludeChildTopics    = true
+        }
+      );
+
+      var childTopicData        = topicData.Children.FirstOrDefault()?? new TopicData();
+
+      Assert.IsNotNull(topicData);
+      Assert.IsNotNull(childTopicData);
+      Assert.AreEqual<int>(1, childTopicData.Relationships.Count);
+      Assert.AreEqual<string>("Root:Related", childTopicData.Relationships.FirstOrDefault().Relationships.FirstOrDefault());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: EXPORT WITH EXTERNAL REFERENCES: TOPIC WITH RELATIONSHIPS: INCLUDE EXTERNAL REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with several <see cref="Topic.Relationships"/> and ensures that the <see
+    ///   cref="TopicData.Relationships"/> collection <i>does</i> include external references—i.e., relationships that point
+    ///   to <see cref="Topic"/>s outside of the current export scope—when permitted with the <see
+    ///   cref="ExportOptions.IncludeExternalReferences"/> option.
+    /// </summary>
+    [TestMethod]
+    public void ExportWithExternalReferences_TopicWithRelationships_ExcludesExternalReferences() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var relatedTopic          = TopicFactory.Create("Related", "Container", rootTopic);
+
+      topic.Relationships.SetTopic("Related", relatedTopic);
+
+      var topicData             = topic.Export(
+        new ExportOptions() {
+          IncludeExternalReferences = true
+        }
+      );
 
       Assert.IsNotNull(topicData);
       Assert.AreEqual<int>(1, topicData.Relationships.Count);
       Assert.AreEqual<string>("Root:Related", topicData.Relationships.FirstOrDefault().Relationships.FirstOrDefault());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: EXPORT: TOPIC WITH CHILDREN: EXCLUDES CHILDREN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with <see cref="Topic.Children"/> and ensures that the resulting <see cref="TopicData"/>
+    ///   does <i>not</i> include them, since they should <i>not</i> be mapped by default.
+    /// </summary>
+    [TestMethod]
+    public void ExportWithNestedTopic_TopicWithNestedTopics_IncludesNestedTopics() {
+
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var nestedTopicList       = TopicFactory.Create("NestedTopics", "List", topic);
+      _                         = TopicFactory.Create("NestedTopic1", "Page", nestedTopicList);
+      _                         = TopicFactory.Create("Child1", "Container", topic);
+
+      var topicData             = topic.Export();
+
+      Assert.AreEqual<int>(0, topicData.Children.Count);
 
     }
 

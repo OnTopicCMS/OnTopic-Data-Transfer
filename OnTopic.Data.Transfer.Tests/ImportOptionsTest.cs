@@ -11,7 +11,7 @@ using OnTopic.Data.Transfer.Interchange;
 namespace OnTopic.Data.Transfer.Tests {
 
   /*============================================================================================================================
-  | CLASS: EXTENSIONS TEST
+  | CLASS: EXPORT OPTIONS TEST
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
   ///   Provides unit tests for the <see cref="TopicExtensions"/> class using customizations of the <see

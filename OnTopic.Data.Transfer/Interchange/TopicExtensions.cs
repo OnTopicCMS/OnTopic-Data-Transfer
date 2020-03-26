@@ -206,6 +206,28 @@ namespace OnTopic.Data.Transfer.Interchange {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Determine changes
+      \-----------------------------------------------------------------------------------------------------------------------*/
+
+      //Defermine if any attributes have changed
+      var isDirty               = topic.Attributes.Any(a => a.IsDirty);
+
+      //If not, determine if the relationship counts are different
+      if (!isDirty) {
+        isDirty                 = topicData.Relationships.Sum(r => r.Relationships.Count) != topic.Relationships.Sum(r => r.Count);
+      }
+
+      //If not, determine if any of the relationships are mismatched
+      if (!isDirty) {
+        foreach (var source in topicData.Relationships) {
+          if (topic.Relationships.GetTopics(source.Key!).Any(t => !source.Relationships.Contains(t.GetUniqueKey()))) {
+            isDirty             = true;
+            break;
+          }
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Handle special rules for LastModified(By) attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
       switch (options.LastModifiedStrategy) {

@@ -22,15 +22,9 @@ namespace OnTopic.Data.Transfer.Tests {
   public class LastModifiedImportStrategyTest {
 
     /*==========================================================================================================================
-    | TEST: IMPORT AS INHERIT: TOPIC DATA WITH LAST MODIFIED BY: SKIPS EXISTING VALUE
+    | HELPER: GET TOPIC WITH NEWER TOPIC DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="TopicData"/> with a newer <c>LastModifiedBy</c> value and ensures that the existing
-    ///   <c>LastModifiedBy</c> attribute value is retained when using <see cref="LastModifiedImportStrategy.Inherit"/>. In this
-    ///   case, it will be defaulting to <see cref="ImportStrategy.Add"/>.
-    /// </summary>
-    [TestMethod]
-    public void ImportAsInherit_TopicDataWithLastModifiedBy_SkipsExistingValue() {
+    private Tuple<Topic, TopicData> GetTopicWithNewerTopicData() {
 
       var topic                 = TopicFactory.Create("Test", "Container");
       var topicData             = new TopicData() {
@@ -48,6 +42,23 @@ namespace OnTopic.Data.Transfer.Tests {
           LastModified          = DateTime.Now.AddDays(1)
         }
       );
+
+      return new Tuple<Topic, TopicData>(topic, topicData);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IMPORT AS INHERIT: TOPIC DATA WITH LAST MODIFIED BY: SKIPS EXISTING VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with a newer <c>LastModifiedBy</c> value and ensures that the existing
+    ///   <c>LastModifiedBy</c> attribute value is retained when using <see cref="LastModifiedImportStrategy.Inherit"/>. In this
+    ///   case, it will be defaulting to <see cref="ImportStrategy.Add"/>.
+    /// </summary>
+    [TestMethod]
+    public void ImportAsInherit_TopicDataWithLastModifiedBy_SkipsExistingValue() {
+
+      var (topic, topicData)    = GetTopicWithNewerTopicData();
 
       topic.Import(topicData);
 
@@ -65,22 +76,7 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void ImportAsCurrent_TopicDataWithLastModifiedBy_ReplacesNewerValue() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var topicData             = new TopicData() {
-        Key                     = topic.Key,
-        UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = "Page"
-      };
-
-      topic.Attributes.SetValue("LastModifiedBy", "Old Value");
-
-      topicData.Attributes.Add(
-        new AttributeData() {
-          Key                   = "LastModifiedBy",
-          Value                 = "New Value",
-          LastModified          = DateTime.Now.AddDays(1)
-        }
-      );
+      var (topic, topicData)    = GetTopicWithNewerTopicData();
 
       topic.Import(
         topicData,
@@ -104,22 +100,7 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void ImportAsSystem_TopicDataWithLastModifiedBy_ReplacesNewerValue() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var topicData             = new TopicData() {
-        Key                     = topic.Key,
-        UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = "Page"
-      };
-
-      topic.Attributes.SetValue("LastModifiedBy", "Old Value");
-
-      topicData.Attributes.Add(
-        new AttributeData() {
-          Key                   = "LastModifiedBy",
-          Value                 = "New Value",
-          LastModified          = DateTime.Now.AddDays(1)
-        }
-      );
+      var (topic, topicData)    = GetTopicWithNewerTopicData();
 
       topic.Import(
         topicData,
@@ -143,22 +124,7 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void ImportAsTargetValue_TopicDataWithLastModifiedBy_SkipsExistingValue() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var topicData             = new TopicData() {
-        Key                     = topic.Key,
-        UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = "Page"
-      };
-
-      topic.Attributes.SetValue("LastModifiedBy", "Old Value");
-
-      topicData.Attributes.Add(
-        new AttributeData() {
-          Key                   = "LastModifiedBy",
-          Value                 = "New Value",
-          LastModified          = DateTime.Now.AddDays(1)
-        }
-      );
+      var (topic, topicData)    = GetTopicWithNewerTopicData();
 
       topic.Import(
         topicData,

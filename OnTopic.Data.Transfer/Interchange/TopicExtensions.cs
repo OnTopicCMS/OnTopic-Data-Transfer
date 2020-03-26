@@ -230,48 +230,56 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle special rules for LastModified(By) attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      switch (options.LastModifiedStrategy) {
-        case LastModifiedImportStrategy.Current:
-          topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
-          break;
-        case LastModifiedImportStrategy.System:
-          topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
-          break;
-      }
+      if (isDirty) {
 
-      switch (options.LastModifiedByStrategy) {
-        case LastModifiedImportStrategy.Current:
+        switch (options.LastModifiedStrategy) {
+          case LastModifiedImportStrategy.Current:
+            topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
+            break;
+          case LastModifiedImportStrategy.System:
+            topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
+            break;
+        }
+
+        switch (options.LastModifiedByStrategy) {
+          case LastModifiedImportStrategy.Current:
+            topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
+            break;
+          case LastModifiedImportStrategy.System:
+            topic.Attributes.SetValue("LastModifiedBy", "System");
+            break;
+        }
+
+        if (topic.Attributes.GetValue("LastModifiedBy", null) == null) {
           topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
-          break;
-        case LastModifiedImportStrategy.System:
-          topic.Attributes.SetValue("LastModifiedBy", "System");
-          break;
-      }
+        }
 
-      if (topic.Attributes.GetValue("LastModifiedBy", null) == null) {
-        topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
-      }
+        if (topic.Attributes.GetValue("LastModified", null) == null) {
+          topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
+        }
 
-      if (topic.Attributes.GetValue("LastModified", null) == null) {
-        topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      //First delete any unmatched records, if appropriate
-      if (options.DeleteUnmatchedRelationships) {
-        topic.Relationships.Clear();
-      }
+      if (isDirty) {
 
-      //Update records based on the source collection
-      foreach (var relationship in topicData.Relationships) {
-        foreach (var relatedTopicKey in relationship.Relationships) {
-          var relatedTopic = rootTopic.FindByUniqueKey(relatedTopicKey);
-          if (relationship.Key != null && relatedTopic != null) {
-            topic.Relationships.SetTopic(relationship.Key, relatedTopic);
-          };
+        //First delete any unmatched records, if appropriate
+        if (options.DeleteUnmatchedRelationships) {
+          topic.Relationships.Clear();
         }
+
+        //Update records based on the source collection
+        foreach (var relationship in topicData.Relationships) {
+          foreach (var relatedTopicKey in relationship.Relationships) {
+            var relatedTopic = rootTopic.FindByUniqueKey(relatedTopicKey);
+            if (relationship.Key != null && relatedTopic != null) {
+              topic.Relationships.SetTopic(relationship.Key, relatedTopic);
+            };
+          }
+        }
+
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

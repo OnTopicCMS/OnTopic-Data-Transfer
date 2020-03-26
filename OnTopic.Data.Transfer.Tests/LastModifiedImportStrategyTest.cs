@@ -324,5 +324,104 @@ namespace OnTopic.Data.Transfer.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: IMPORT AS SYSTEM: TOPIC DATA WITH CHANGES: REPLACES NEWER VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with a newer <c>LastModified</c> value and ensures that the existing
+    ///   <c>LastModified</c> attribute value is overwritten when using <see cref="LastModifiedImportStrategy.System"/> and
+    ///   other values have changed.
+    /// </summary>
+    [TestMethod]
+    public void ImportAsSystem_TopicDataWithChanges_ReplacesNewerValue() {
+
+      var topic                 = TopicFactory.Create("Test", "Container", 1);
+      var relatedTopic          = TopicFactory.Create("Related", "Container");
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+      var tomorrow              = DateTime.Now.AddDays(1);
+      var nextWeek              = DateTime.Now.AddDays(7);
+      var relationshipData      = new RelationshipData() {
+        Key                   = "Related"
+      };
+
+      topic.Relationships.SetTopic("Related", relatedTopic);
+      topic.Attributes.SetValue("LastModified", tomorrow.ToString(), false);
+
+      topicData.Attributes.Add(
+        new AttributeData() {
+          Key                   = "LastModified",
+          Value                 = nextWeek.ToString(),
+          LastModified          = nextWeek
+        }
+      );
+
+      topicData.Relationships.Add(relationshipData);
+      relationshipData.Relationships.Add(relatedTopic.GetUniqueKey() + ":New");
+
+      topic.Import(
+        topicData,
+        new ImportOptions() {
+          LastModifiedStrategy  = LastModifiedImportStrategy.System
+        }
+      );
+
+      Assert.IsTrue(topic.Attributes.GetDateTime("LastModified", nextWeek) <= DateTime.Now);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IMPORT AS SYSTEM: TOPIC DATA WITHOUT CHANGES: SKIPS EXISTING VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with a newer <c>LastModified</c> value and ensures that the existing
+    ///   <c>LastModified</c> attribute value is retained when using <see cref="LastModifiedImportStrategy.System"/> and no
+    ///   values have changed.
+    /// </summary>
+    [TestMethod]
+    public void ImportAsSystem_TopicDataWithoutChanges_SkipsExistingValue() {
+
+
+      var topic                 = TopicFactory.Create("Test", "Container", 1);
+      var relatedTopic          = TopicFactory.Create("Related", "Container");
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+      var tomorrow              = DateTime.Now.AddDays(1);
+      var nextWeek              = DateTime.Now.AddDays(7);
+      var relationshipData      = new RelationshipData() {
+        Key                   = "Related"
+      };
+
+      topic.Relationships.SetTopic("Related", relatedTopic);
+      topic.Attributes.SetValue("LastModified", tomorrow.ToString(), false);
+
+      topicData.Attributes.Add(
+        new AttributeData() {
+          Key                   = "LastModified",
+          Value                 = nextWeek.ToString(),
+          LastModified          = nextWeek
+        }
+      );
+
+      topicData.Relationships.Add(relationshipData);
+      relationshipData.Relationships.Add(relatedTopic.GetUniqueKey());
+
+      topic.Import(
+        topicData,
+        new ImportOptions() {
+          LastModifiedStrategy  = LastModifiedImportStrategy.System
+        }
+      );
+
+      Assert.AreEqual(tomorrow.ToString(), topic.Attributes.GetValue("LastModified"));
+
+    }
+
   } //Class
 } //Namespace

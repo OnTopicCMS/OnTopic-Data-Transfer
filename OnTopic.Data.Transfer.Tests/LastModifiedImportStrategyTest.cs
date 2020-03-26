@@ -24,7 +24,7 @@ namespace OnTopic.Data.Transfer.Tests {
     /*==========================================================================================================================
     | HELPER: GET TOPIC WITH NEWER TOPIC DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private Tuple<Topic, TopicData> GetTopicWithNewerTopicData() {
+    private Tuple<Topic, TopicData> GetTopicWithNewerTopicData(DateTime? targetDate = null, DateTime? sourceDate = null) {
 
       var topic                 = TopicFactory.Create("Test", "Container");
       var topicData             = new TopicData() {
@@ -32,14 +32,25 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = "Page"
       };
+      targetDate                ??= DateTime.Now.AddDays(1);
+      sourceDate                ??= DateTime.Now.AddHours(1);
 
       topic.Attributes.SetValue("LastModifiedBy", "Old Value");
+      topic.Attributes.SetValue("LastModified", targetDate.ToString());
 
       topicData.Attributes.Add(
         new AttributeData() {
           Key                   = "LastModifiedBy",
           Value                 = "New Value",
           LastModified          = DateTime.Now.AddDays(1)
+        }
+      );
+
+      topicData.Attributes.Add(
+        new AttributeData() {
+          Key                   = "LastModified",
+          Value                 = sourceDate.ToString(),
+          LastModified          = sourceDate?? DateTime.Now.AddHours(1)
         }
       );
 
@@ -148,27 +159,12 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void ImportAsInherit_TopicDataWithLastModified_SkipsExistingValue() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var topicData             = new TopicData() {
-        Key                     = topic.Key,
-        UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = "Page"
-      };
-      var oldTime               = DateTime.Now.AddDays(-2).ToString();
-
-      topic.Attributes.SetValue("LastModified", oldTime);
-
-      topicData.Attributes.Add(
-        new AttributeData() {
-          Key                   = "LastModified",
-          Value                 = DateTime.Now.AddDays(1).ToString(),
-          LastModified          = DateTime.Now.AddDays(1)
-        }
-      );
+      var oldTime               = DateTime.Now.AddDays(-2);
+      var (topic, topicData)    = GetTopicWithNewerTopicData(oldTime);
 
       topic.Import(topicData);
 
-      Assert.AreEqual(oldTime, topic.Attributes.GetValue("LastModified"));
+      Assert.AreEqual(oldTime.ToString(), topic.Attributes.GetValue("LastModified"));
 
     }
 
@@ -182,23 +178,8 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void ImportAsCurrent_TopicDataWithLastModified_ReplacesNewerValue() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var topicData             = new TopicData() {
-        Key                     = topic.Key,
-        UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = "Page"
-      };
       var tomorrow              = DateTime.Now.AddDays(1);
-
-      topic.Attributes.SetValue("LastModified", tomorrow.ToString());
-
-      topicData.Attributes.Add(
-        new AttributeData() {
-          Key                   = "LastModified",
-          Value                 = tomorrow.ToString(),
-          LastModified          = tomorrow
-        }
-      );
+      var (topic, topicData)    = GetTopicWithNewerTopicData(tomorrow, tomorrow);
 
       topic.Import(
         topicData,
@@ -221,23 +202,8 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void ImportAsSystem_TopicDataWithLastModified_ReplacesNewerValue() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var topicData             = new TopicData() {
-        Key                     = topic.Key,
-        UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = "Page"
-      };
       var tomorrow              = DateTime.Now.AddDays(1);
-
-      topic.Attributes.SetValue("LastModified", tomorrow.ToString());
-
-      topicData.Attributes.Add(
-        new AttributeData() {
-          Key                   = "LastModified",
-          Value                 = tomorrow.ToString(),
-          LastModified          = tomorrow
-        }
-      );
+      var (topic, topicData)    = GetTopicWithNewerTopicData(tomorrow, tomorrow);
 
       topic.Import(
         topicData,
@@ -260,24 +226,8 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void ImportAsTargetValue_TopicDataWithLastModified_SkipsExistingValue() {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
-      var topicData             = new TopicData() {
-        Key                     = topic.Key,
-        UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = "Page"
-      };
       var yesterday             = DateTime.Now.AddDays(-1);
-      var tomorrow              = DateTime.Now.AddDays(1);
-
-      topic.Attributes.SetValue("LastModified", yesterday.ToString());
-
-      topicData.Attributes.Add(
-        new AttributeData() {
-          Key                   = "LastModified",
-          Value                 = tomorrow.ToString(),
-          LastModified          = tomorrow
-        }
-      );
+      var (topic, topicData)    = GetTopicWithNewerTopicData(yesterday);
 
       topic.Import(
         topicData,

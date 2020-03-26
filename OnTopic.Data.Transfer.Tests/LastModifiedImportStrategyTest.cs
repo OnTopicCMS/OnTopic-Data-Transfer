@@ -24,19 +24,31 @@ namespace OnTopic.Data.Transfer.Tests {
     /*==========================================================================================================================
     | HELPER: GET TOPIC WITH NEWER TOPIC DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private Tuple<Topic, TopicData> GetTopicWithNewerTopicData(DateTime? targetDate = null, DateTime? sourceDate = null) {
+    private Tuple<Topic, TopicData> GetTopicWithNewerTopicData(
+      DateTime?                 targetDate                      = null,
+      DateTime?                 sourceDate                      = null,
+      string                    sourceRelationshipKey           = null,
+      bool                      isDirty                         = true
+    ) {
 
-      var topic                 = TopicFactory.Create("Test", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", 1);
+      var relatedTopic          = TopicFactory.Create("Related", "Container");
       var topicData             = new TopicData() {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = "Page"
       };
+      var relationshipData      = new RelationshipData() {
+        Key                     = "Related"
+      };
+
       targetDate                ??= DateTime.Now.AddDays(1);
       sourceDate                ??= DateTime.Now.AddHours(1);
+      sourceRelationshipKey     ??= relatedTopic.GetUniqueKey();
 
-      topic.Attributes.SetValue("LastModifiedBy", "Old Value");
-      topic.Attributes.SetValue("LastModified", targetDate.ToString());
+      topic.Attributes.SetValue("LastModifiedBy", "Old Value", isDirty);
+      topic.Attributes.SetValue("LastModified", targetDate.ToString(), isDirty);
+      topic.Relationships.SetTopic("Related", relatedTopic);
 
       topicData.Attributes.Add(
         new AttributeData() {
@@ -53,6 +65,9 @@ namespace OnTopic.Data.Transfer.Tests {
           LastModified          = sourceDate?? DateTime.Now.AddHours(1)
         }
       );
+
+      topicData.Relationships.Add(relationshipData);
+      relationshipData.Relationships.Add(sourceRelationshipKey);
 
       return new Tuple<Topic, TopicData>(topic, topicData);
 
@@ -251,32 +266,9 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void ImportAsSystem_TopicDataWithChanges_ReplacesNewerValue() {
 
-      var topic                 = TopicFactory.Create("Test", "Container", 1);
-      var relatedTopic          = TopicFactory.Create("Related", "Container");
-      var topicData             = new TopicData() {
-        Key                     = topic.Key,
-        UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = topic.ContentType
-      };
       var tomorrow              = DateTime.Now.AddDays(1);
       var nextWeek              = DateTime.Now.AddDays(7);
-      var relationshipData      = new RelationshipData() {
-        Key                   = "Related"
-      };
-
-      topic.Relationships.SetTopic("Related", relatedTopic);
-      topic.Attributes.SetValue("LastModified", tomorrow.ToString(), false);
-
-      topicData.Attributes.Add(
-        new AttributeData() {
-          Key                   = "LastModified",
-          Value                 = nextWeek.ToString(),
-          LastModified          = nextWeek
-        }
-      );
-
-      topicData.Relationships.Add(relationshipData);
-      relationshipData.Relationships.Add(relatedTopic.GetUniqueKey() + ":New");
+      var (topic, topicData)    = GetTopicWithNewerTopicData(tomorrow, nextWeek, "NewRelationship", false);
 
       topic.Import(
         topicData,
@@ -300,33 +292,9 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void ImportAsSystem_TopicDataWithoutChanges_SkipsExistingValue() {
 
-
-      var topic                 = TopicFactory.Create("Test", "Container", 1);
-      var relatedTopic          = TopicFactory.Create("Related", "Container");
-      var topicData             = new TopicData() {
-        Key                     = topic.Key,
-        UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = topic.ContentType
-      };
-      var tomorrow              = DateTime.Now.AddDays(1);
       var nextWeek              = DateTime.Now.AddDays(7);
-      var relationshipData      = new RelationshipData() {
-        Key                   = "Related"
-      };
-
-      topic.Relationships.SetTopic("Related", relatedTopic);
-      topic.Attributes.SetValue("LastModified", tomorrow.ToString(), false);
-
-      topicData.Attributes.Add(
-        new AttributeData() {
-          Key                   = "LastModified",
-          Value                 = nextWeek.ToString(),
-          LastModified          = nextWeek
-        }
-      );
-
-      topicData.Relationships.Add(relationshipData);
-      relationshipData.Relationships.Add(relatedTopic.GetUniqueKey());
+      var tomorrow              = DateTime.Now.AddDays(1);
+      var (topic, topicData)    = GetTopicWithNewerTopicData(tomorrow, nextWeek, null, false);
 
       topic.Import(
         topicData,

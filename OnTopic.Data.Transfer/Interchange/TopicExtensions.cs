@@ -290,8 +290,8 @@ namespace OnTopic.Data.Transfer.Interchange {
       if (options.DeleteUnmatchedChildren || options.DeleteUnmatchedNestedTopics) {
         foreach (var child in topic.Children.Where(t1 => !topicData.Children.Any(t2 => t1.Key == t2.Key)).ToArray()) {
           if (
-            child.ContentType == "List" && options.DeleteUnmatchedNestedTopics ||
-            child.ContentType != "List" && options.DeleteUnmatchedChildren
+            topic.ContentType == "List" && options.DeleteUnmatchedNestedTopics ||
+            topic.ContentType != "List" && options.DeleteUnmatchedChildren
           ) {
             topic.Children.Remove(child);
           }

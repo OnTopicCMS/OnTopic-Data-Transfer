@@ -188,7 +188,11 @@ namespace OnTopic.Data.Transfer.Interchange {
 
       //First delete any unmatched records, if appropriate
       if (options.DeleteUnmatchedAttributes) {
-        foreach (var attribute in topic.Attributes.Where(a1 => !topicData.Attributes.Any(a2 => a1.Key == a2.Key)).ToArray()) {
+        var unmatchedAttributes = topic.Attributes.Where(a1 =>
+          !ReservedAttributeKeys.Contains(a1.Key) &&
+          !topicData.Attributes.Any(a2 => a1.Key == a2.Key)
+        );
+        foreach (var attribute in unmatchedAttributes.ToArray()) {
           topic.Attributes.Remove(attribute);
         };
       }
@@ -290,17 +294,11 @@ namespace OnTopic.Data.Transfer.Interchange {
       if (options.DeleteUnmatchedChildren || options.DeleteUnmatchedNestedTopics) {
         foreach (var child in topic.Children.Where(t1 => !topicData.Children.Any(t2 => t1.Key == t2.Key)).ToArray()) {
           if (
-            child.ContentType == "List" && options.DeleteUnmatchedNestedTopics ||
-            child.ContentType != "List" && options.DeleteUnmatchedChildren
+            topic.ContentType == "List" && options.DeleteUnmatchedNestedTopics ||
+            topic.ContentType != "List" && options.DeleteUnmatchedChildren
           ) {
             topic.Children.Remove(child);
           }
-        };
-      }
-
-      if (options.DeleteUnmatchedNestedTopics) {
-        foreach (var child in topic.Children.Where(t => t.ContentType == "List")) {
-          topic.Children.Remove(child);
         };
       }
 
@@ -310,7 +308,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         if (childTopic == null) {
           childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
         }
-        childTopic.Import(childTopicData);
+        childTopic.Import(childTopicData, options);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

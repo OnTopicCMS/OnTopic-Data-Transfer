@@ -242,6 +242,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       Assert.AreEqual<int>(1, topic.Children.Count);
       Assert.AreEqual(topicData.Children.FirstOrDefault().UniqueKey, topic.Children.FirstOrDefault().GetUniqueKey());
+      Assert.AreEqual(topicData.Children.FirstOrDefault().ContentType, topic.Children.FirstOrDefault().ContentType);
 
     }
 

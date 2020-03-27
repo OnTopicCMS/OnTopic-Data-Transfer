@@ -304,7 +304,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         if (childTopic == null) {
           childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
         }
-        childTopic.Import(childTopicData);
+        childTopic.Import(childTopicData, options);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

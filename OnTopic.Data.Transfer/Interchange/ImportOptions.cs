@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using OnTopic.Metadata;
 
 namespace OnTopic.Data.Transfer.Interchange {
@@ -35,7 +36,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     | IMPORT STRATEGY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Determines the default <see cref="ImportStrategy"/>, which controls the default valuesfor many of the subsequent
+    ///   Determines the default <see cref="ImportStrategy"/>, which controls the default values for many of the subsequent
     ///   import configuration settings.
     /// </summary>
     /// <remarks>
@@ -125,6 +126,48 @@ namespace OnTopic.Data.Transfer.Interchange {
       get => _overwriteContentType?? Strategy.Equals(ImportStrategy.Overwrite) || Strategy.Equals(ImportStrategy.Replace);
       set => _overwriteContentType = value;
     }
+
+    /*==========================================================================================================================
+    | CURRENT USER
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Optionally provides the current user to be used for the <c>LastModifiedBy</c> attribute, when appropriate.
+    /// </summary>
+    /// <remarks>
+    ///   If supplied, the <see cref="CurrentUser"/> will be used when either the <see cref="LastModifiedByStrategy"/> is set to
+    ///   <see cref="LastModifiedImportStrategy.Current"/>, or there is no <c>LastModifiedBy</c> value. Any exception to the
+    ///   latter rule is if the <see cref="LastModifiedByStrategy"/> is set to <see cref="LastModifiedImportStrategy.Current"/>;
+    ///   in that case, the <c>LastModifiedBy</c> attribute will be set to <c>System</c>.
+    /// </remarks>
+    public string CurrentUser { get; set; } = "System";
+
+    /*==========================================================================================================================
+    | LAST MODIFIED STRATEGY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines the <see cref="LastModifiedImportStrategy"/>, allowing the <c>LastModified</c> value to be handled
+    ///   independent of other values.
+    /// </summary>
+    /// <remarks>
+    ///   When importing values from an external topic graph, it may be preferrable to maintain the existing value for the
+    ///   <c>LastModified</c> date, overwrite it with the current time, or maintain the standard <see cref="Strategy"/> used for
+    ///   other attributes. The <see cref="LastModifiedStrategy"/> offers that flexibility.
+    /// </remarks>
+    public LastModifiedImportStrategy LastModifiedStrategy { get; set; } = LastModifiedImportStrategy.Inherit;
+
+    /*==========================================================================================================================
+    | LAST MODIFIED BY STRATEGY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines the <see cref="LastModifiedImportStrategy"/>, allowing the <c>LastModifiedBy</c> value to be handled
+    ///   independent of other values.
+    /// </summary>
+    /// <remarks>
+    ///   When importing values from an external topic graph, it may be preferrable to maintain the existing value for the
+    ///   <c>LastModifiedBy</c> user, overwrite it with the current user, or credit the change to the <c>System</c>. The
+    ///   <see cref="LastModifiedByStrategy"/> offers that flexibility.
+    /// </remarks>
+    public LastModifiedImportStrategy LastModifiedByStrategy { get; set; } = LastModifiedImportStrategy.Inherit;
 
   } //Class
 } //Namespace

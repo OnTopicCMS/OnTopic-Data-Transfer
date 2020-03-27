@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using OnTopic.Internal.Diagnostics;
 
@@ -187,13 +188,18 @@ namespace OnTopic.Data.Transfer.Interchange {
 
       //First delete any unmatched records, if appropriate
       if (options.DeleteUnmatchedAttributes) {
-        foreach(var attribute in topic.Attributes.Where(a1 => !topicData.Attributes.Any(a2 => a1.Key == a2.Key)).ToArray()) {
+        var unmatchedAttributes = topic.Attributes.Where(a1 =>
+          !ReservedAttributeKeys.Contains(a1.Key) &&
+          !topicData.Attributes.Any(a2 => a1.Key == a2.Key)
+        );
+        foreach (var attribute in unmatchedAttributes.ToArray()) {
           topic.Attributes.Remove(attribute);
         };
       }
 
       //Update records based on the source collection
       foreach (var attribute in topicData.Attributes) {
+        if (useCustomMergeRules(attribute)) continue;
         var matchedAttribute = topic.Attributes.FirstOrDefault(a => a.Key == attribute.Key);
         if (matchedAttribute != null && isStrategy(ImportStrategy.Add)) continue;
         if (matchedAttribute?.LastModified >= attribute.LastModified && isStrategy(ImportStrategy.Merge)) continue;
@@ -204,22 +210,80 @@ namespace OnTopic.Data.Transfer.Interchange {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Set relationships
+      | Determine changes
       \-----------------------------------------------------------------------------------------------------------------------*/
 
-      //First delete any unmatched records, if appropriate
-      if (options.DeleteUnmatchedRelationships) {
-        topic.Relationships.Clear();
+      //Defermine if any attributes have changed
+      var isDirty               = topic.Attributes.Any(a => a.IsDirty);
+
+      //If not, determine if the relationship counts are different
+      if (!isDirty) {
+        isDirty                 = topicData.Relationships.Sum(r => r.Relationships.Count) != topic.Relationships.Sum(r => r.Count);
       }
 
-      //Update records based on the source collection
-      foreach (var relationship in topicData.Relationships) {
-        foreach (var relatedTopicKey in relationship.Relationships) {
-          var relatedTopic = rootTopic.FindByUniqueKey(relatedTopicKey);
-          if (relationship.Key != null && relatedTopic != null) {
-            topic.Relationships.SetTopic(relationship.Key, relatedTopic);
-          };
+      //If not, determine if any of the relationships are mismatched
+      if (!isDirty) {
+        foreach (var source in topicData.Relationships) {
+          if (topic.Relationships.GetTopics(source.Key!).Any(t => !source.Relationships.Contains(t.GetUniqueKey()))) {
+            isDirty             = true;
+            break;
+          }
         }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle special rules for LastModified(By) attribute
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (isDirty) {
+
+        switch (options.LastModifiedStrategy) {
+          case LastModifiedImportStrategy.Current:
+            topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
+            break;
+          case LastModifiedImportStrategy.System:
+            topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
+            break;
+        }
+
+        switch (options.LastModifiedByStrategy) {
+          case LastModifiedImportStrategy.Current:
+            topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
+            break;
+          case LastModifiedImportStrategy.System:
+            topic.Attributes.SetValue("LastModifiedBy", "System");
+            break;
+        }
+
+        if (topic.Attributes.GetValue("LastModifiedBy", null) == null) {
+          topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
+        }
+
+        if (topic.Attributes.GetValue("LastModified", null) == null) {
+          topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
+        }
+
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (isDirty) {
+
+        //First delete any unmatched records, if appropriate
+        if (options.DeleteUnmatchedRelationships) {
+          topic.Relationships.Clear();
+        }
+
+        //Update records based on the source collection
+        foreach (var relationship in topicData.Relationships) {
+          foreach (var relatedTopicKey in relationship.Relationships) {
+            var relatedTopic = rootTopic.FindByUniqueKey(relatedTopicKey);
+            if (relationship.Key != null && relatedTopic != null) {
+              topic.Relationships.SetTopic(relationship.Key, relatedTopic);
+            };
+          }
+        }
+
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -230,17 +294,11 @@ namespace OnTopic.Data.Transfer.Interchange {
       if (options.DeleteUnmatchedChildren || options.DeleteUnmatchedNestedTopics) {
         foreach (var child in topic.Children.Where(t1 => !topicData.Children.Any(t2 => t1.Key == t2.Key)).ToArray()) {
           if (
-            child.ContentType == "List" && options.DeleteUnmatchedNestedTopics ||
-            child.ContentType != "List" && options.DeleteUnmatchedChildren
+            topic.ContentType == "List" && options.DeleteUnmatchedNestedTopics ||
+            topic.ContentType != "List" && options.DeleteUnmatchedChildren
           ) {
             topic.Children.Remove(child);
           }
-        };
-      }
-
-      if (options.DeleteUnmatchedNestedTopics) {
-        foreach (var child in topic.Children.Where(t => t.ContentType == "List")) {
-          topic.Children.Remove(child);
         };
       }
 
@@ -250,13 +308,20 @@ namespace OnTopic.Data.Transfer.Interchange {
         if (childTopic == null) {
           childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
         }
-        childTopic.Import(childTopicData);
+        childTopic.Import(childTopicData, options);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Is strategy?
       \-----------------------------------------------------------------------------------------------------------------------*/
       bool isStrategy(params ImportStrategy[] strategies) => strategies.Contains<ImportStrategy>(options!.Strategy);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Is custom merge rules?
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      bool useCustomMergeRules(AttributeData attribute) =>
+        (attribute.Key == "LastModified" && !options!.LastModifiedStrategy.Equals(LastModifiedImportStrategy.Inherit)) ||
+        (attribute.Key == "LastModifiedBy" && !options!.LastModifiedByStrategy.Equals(LastModifiedImportStrategy.Inherit));
 
     }
 

@@ -242,6 +242,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       Assert.AreEqual<int>(1, topic.Children.Count);
       Assert.AreEqual(topicData.Children.FirstOrDefault().UniqueKey, topic.Children.FirstOrDefault().GetUniqueKey());
+      Assert.AreEqual(topicData.Children.FirstOrDefault().ContentType, topic.Children.FirstOrDefault().ContentType);
 
     }
 
@@ -263,19 +264,86 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = "Page"
       };
+      var childTopicData        = new TopicData() {
+        Key                     = "Child",
+        UniqueKey               = topic.GetUniqueKey() + ":Child",
+        ContentType             = topic.ContentType
+      };
 
-      topicData.Children.Add(
-        new TopicData() {
-          Key                     = "Child",
-          UniqueKey               = topic.GetUniqueKey() + ":Child",
-          ContentType             = topic.ContentType
+      childTopic.Attributes.SetValue("Description", "Old Value");
+
+      childTopicData.Attributes.Add(
+        new AttributeData() {
+          Key                   = "Description",
+          Value                 = "New Value",
+          LastModified          = DateTime.Now.AddDays(1)
         }
       );
 
-      topic.Import(topicData);
+      topicData.Children.Add(childTopicData);
 
-      Assert.IsNotNull(topic.Children.FirstOrDefault());
-      Assert.AreEqual(topicData.Children.FirstOrDefault().ContentType, childTopic.ContentType);
+      topic.Import(
+        topicData,
+        new ImportOptions() {
+          Strategy              = ImportStrategy.Merge
+        }
+      );
+
+      var mappedChild           = topic.Children.FirstOrDefault();
+
+      Assert.IsNotNull(mappedChild);
+      Assert.AreEqual(mappedChild.ContentType, childTopic.ContentType);
+      Assert.AreEqual("New Value", mappedChild.Attributes.GetValue("Description"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IMPORT AS REPLACE: TOPIC DATA WITH NESTED TOPIC: DELETES ORPHANED CHILDREN
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with nested topics, and ensures that a new <see cref="Topic"/> is created under the
+    ///   target <see cref="Topic"/> corresponding to the child <see cref="TopicData"/> object.
+    /// </summary>
+    [TestMethod]
+    public void ImportAsReplace_TopicDataWithNestedTopic_DeletedOrphanedChildren() {
+
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var nestedTopics          = TopicFactory.Create("Nested", "List", topic);
+      var nestedTopic1          = TopicFactory.Create("Nested1", "Page", 1, nestedTopics);
+      var nestedTopic2          = TopicFactory.Create("Nested2", "Page", 2, nestedTopics);
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+      var nestedTopicsData      = new TopicData() {
+        Key                     = nestedTopics.Key,
+        UniqueKey               = nestedTopics.GetUniqueKey(),
+        ContentType             = nestedTopics.ContentType
+      };
+
+      topicData.Children.Add(nestedTopicsData);
+
+      nestedTopicsData.Children.Add(
+        new TopicData() {
+          Key                     = "Nested2",
+          UniqueKey               = nestedTopic2.GetUniqueKey(),
+          ContentType             = nestedTopic2.ContentType
+        }
+      );
+
+      topic.Import(
+        topicData,
+        new ImportOptions() {
+          Strategy              = ImportStrategy.Replace
+        }
+      );
+
+      var mappedNestedTopic     = nestedTopics.Children.FirstOrDefault();
+
+      Assert.IsNotNull(mappedNestedTopic);
+      Assert.AreEqual<int>(1, nestedTopics.Children.Count);
+      Assert.AreEqual(mappedNestedTopic, nestedTopic2);
 
     }
 

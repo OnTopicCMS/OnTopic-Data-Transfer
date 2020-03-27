@@ -188,7 +188,11 @@ namespace OnTopic.Data.Transfer.Interchange {
 
       //First delete any unmatched records, if appropriate
       if (options.DeleteUnmatchedAttributes) {
-        foreach (var attribute in topic.Attributes.Where(a1 => !topicData.Attributes.Any(a2 => a1.Key == a2.Key)).ToArray()) {
+        var unmatchedAttributes = topic.Attributes.Where(a1 =>
+          !ReservedAttributeKeys.Contains(a1.Key) &&
+          !topicData.Attributes.Any(a2 => a1.Key == a2.Key)
+        );
+        foreach (var attribute in unmatchedAttributes.ToArray()) {
           topic.Attributes.Remove(attribute);
         };
       }

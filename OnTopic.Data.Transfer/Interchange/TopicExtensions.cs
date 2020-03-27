@@ -298,12 +298,6 @@ namespace OnTopic.Data.Transfer.Interchange {
         };
       }
 
-      if (options.DeleteUnmatchedNestedTopics) {
-        foreach (var child in topic.Children.Where(t => t.ContentType == "List")) {
-          topic.Children.Remove(child);
-        };
-      }
-
       //Update records based on the source collection
       foreach (var childTopicData in topicData.Children) {
         var childTopic = topic?.Children.GetTopic(childTopicData.Key);

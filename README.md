@@ -57,6 +57,17 @@ In addition to the `Strategy` property, the `ImportOptions` also allows the beha
 - `DeleteUnmatchedNestedTopics`: Determines if unmatched nested topics should be deleted. Defaults to `false` unless `ImportStrategy.Replace` is set.
 - `OverwriteContentType`: Determines if the `ContentType` on an existing `Topic` should be updated if the `TopicData` value is different. Defaults to `false` unless `ImportStrategy` is set to `Ovewrite` or `Replace`.
 
+Finally, an import strategy can be defined for how to handle the `LastModified` and `LastModifiedBy` attributes during import by using the [`LastModifiedImportStrategy`](OnTopic.Data.Transfer/Interchange/LastModifiedImportStrategy.cs) enum. This supports:
+- `Inherit`: Uses the `ImportStrategy`.
+- `TargetValue`: Always uses the value from the target `Topic`, assuming the one exists.
+- `Current`: Uses the current date for `LastModified` and current user for `LastModifiedBy`.
+- `System`: Uses the current data for `LastModified` and the value "System" for `LastModifiedBy`.
+
+When using a `LastModifiedImportStrategy`, there are three properties that should be defined on the `ImportOptions` object:
+- `LastModifiedStrategy`
+- `LastModifiedByStrategy`
+- `CurrentUser` (defaults to "System")
+
 ## Serialization and Deserialization
 Serializing `TopicData` graphs to JSON and deserializing JSON back to a `TopicData` graph operates exactly like it would for any other C# objects.
 

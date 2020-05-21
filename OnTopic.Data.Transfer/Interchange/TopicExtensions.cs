@@ -35,9 +35,9 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </summary>
     private static string[] ReservedAttributeKeys { get; } = new string[] {
       "Key",
-      "ParentId",
+      "ParentID",
       "ContentType",
-      "TopicId"
+      "TopicID"
     };
 
     /*==========================================================================================================================

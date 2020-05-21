@@ -35,9 +35,9 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </summary>
     private static string[] ReservedAttributeKeys { get; } = new string[] {
       "Key",
-      "ParentId",
+      "ParentID",
       "ContentType",
-      "TopicId"
+      "TopicID"
     };
 
     /*==========================================================================================================================
@@ -75,7 +75,13 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in topic.Attributes.Where(a => !ReservedAttributeKeys.Any(r => r == a.Key))) {
+      var attributes            = topic.Attributes.Where(a =>
+        !ReservedAttributeKeys.Any(r =>
+          r.Equals(a.Key, StringComparison.InvariantCultureIgnoreCase)
+        )
+      );
+
+      foreach (var attribute in attributes) {
         topicData.Attributes.Add(
           new AttributeData() {
             Key                 = attribute.Key,

@@ -144,14 +144,14 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT: TOPIC WITH CHILDREN: EXCLUDES CHILDREN
+    | TEST: EXPORT: TOPIC WITH NESTED TOPICS: EXCLUDES NESTED TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with <see cref="Topic.Children"/> and ensures that the resulting <see cref="TopicData"/>
-    ///   does <i>not</i> include them, since they should <i>not</i> be mapped by default.
+    ///   Creates a <see cref="Topic"/> with <see cref="Topic.Children"/> and ensures that any nested topics are not included by
+    ///   default.
     /// </summary>
     [TestMethod]
-    public void ExportWithNestedTopic_TopicWithNestedTopics_IncludesNestedTopics() {
+    public void Export_TopicWithNestedTopics_ExcludeNestedTopics() {
 
       var topic                 = TopicFactory.Create("Test", "Container");
       var nestedTopicList       = TopicFactory.Create("NestedTopics", "List", topic);
@@ -161,6 +161,29 @@ namespace OnTopic.Data.Transfer.Tests {
       var topicData             = topic.Export();
 
       Assert.AreEqual<int>(0, topicData.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: EXPORT: EXCLUDES RESERVED ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with reserved attributes—such as <c>ParentID</c> and <c>TopicID</c>—and ensures that
+    ///   they are not exported as attributes.
+    /// </summary>
+    [TestMethod]
+    public void Export_ExcludesReservedAttributes() {
+
+      var topic                 = TopicFactory.Create("Topic", "Container");
+
+      //Manually setting using non-standard casing to evaluate case insensitivity
+      topic.Attributes.SetValue("parentId", "5");
+      topic.Attributes.SetValue("topicId", "6");
+      topic.Attributes.SetValue("anotherId", "7");
+
+      var topicData             = topic.Export();
+
+      Assert.AreEqual<int>(1, topicData.Attributes.Count);
 
     }
 

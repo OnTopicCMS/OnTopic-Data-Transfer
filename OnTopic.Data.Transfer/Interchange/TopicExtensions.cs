@@ -208,16 +208,9 @@ namespace OnTopic.Data.Transfer.Interchange {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Determine changes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-
-      //Defermine if any attributes have changed
-      var isDirty               = topic.Attributes.Any(a => a.IsDirty);
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Handle special rules for LastModified(By) attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isDirty) {
+      if (topic.Attributes.IsDirty()) {
 
         switch (options.LastModifiedStrategy) {
           case LastModifiedImportStrategy.Current:
@@ -237,12 +230,12 @@ namespace OnTopic.Data.Transfer.Interchange {
             break;
         }
 
-        if (topic.Attributes.GetValue("LastModifiedBy", null) == null) {
-          topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
-        }
-
         if (topic.Attributes.GetValue("LastModified", null) == null) {
           topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
+        }
+
+        if (topic.Attributes.GetValue("LastModifiedBy", null) == null) {
+          topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
         }
 
       }

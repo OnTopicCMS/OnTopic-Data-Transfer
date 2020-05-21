@@ -165,6 +165,29 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: EXPORT: EXCLUDES RESERVED ATTRIBUTES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with reserved attributes—such as <c>ParentID</c> and <c>TopicID</c>—and ensures that
+    ///   they are not exported as attributes.
+    /// </summary>
+    [TestMethod]
+    public void Export_ExcludesReservedAttributes() {
+
+      var topic                 = TopicFactory.Create("Topic", "Container");
+
+      //Manually setting using non-standard casing to evaluate case insensitivity
+      topic.Attributes.SetValue("parentId", "5");
+      topic.Attributes.SetValue("topicId", "6");
+      topic.Attributes.SetValue("anotherId", "7");
+
+      var topicData             = topic.Export();
+
+      Assert.AreEqual<int>(1, topicData.Attributes.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IMPORT: BASIC TOPIC DATA: MAPS PROPERTIES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

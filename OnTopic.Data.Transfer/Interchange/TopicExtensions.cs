@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Querying;
 
 namespace OnTopic.Data.Transfer.Interchange {
 
@@ -169,15 +170,6 @@ namespace OnTopic.Data.Transfer.Interchange {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Identify root topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var rootTopic = topic;
-
-      while (rootTopic.Parent != null) {
-        rootTopic = rootTopic.Parent;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Set primary properties
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (options.OverwriteContentType) {
@@ -185,7 +177,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       }
 
       if (topicData.DerivedTopicKey?.Length > 0) {
-        topic.DerivedTopic      = rootTopic.FindByUniqueKey(topicData.DerivedTopicKey)?? topic.DerivedTopic;
+        topic.DerivedTopic      = topic.GetByUniqueKey(topicData.DerivedTopicKey)?? topic.DerivedTopic;
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -216,31 +208,9 @@ namespace OnTopic.Data.Transfer.Interchange {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Determine changes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-
-      //Defermine if any attributes have changed
-      var isDirty               = topic.Attributes.Any(a => a.IsDirty);
-
-      //If not, determine if the relationship counts are different
-      if (!isDirty) {
-        isDirty                 = topicData.Relationships.Sum(r => r.Relationships.Count) != topic.Relationships.Sum(r => r.Count);
-      }
-
-      //If not, determine if any of the relationships are mismatched
-      if (!isDirty) {
-        foreach (var source in topicData.Relationships) {
-          if (topic.Relationships.GetTopics(source.Key!).Any(t => !source.Relationships.Contains(t.GetUniqueKey()))) {
-            isDirty             = true;
-            break;
-          }
-        }
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Handle special rules for LastModified(By) attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isDirty) {
+      if (topic.Attributes.IsDirty()) {
 
         switch (options.LastModifiedStrategy) {
           case LastModifiedImportStrategy.Current:
@@ -260,12 +230,12 @@ namespace OnTopic.Data.Transfer.Interchange {
             break;
         }
 
-        if (topic.Attributes.GetValue("LastModifiedBy", null) == null) {
-          topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
-        }
-
         if (topic.Attributes.GetValue("LastModified", null) == null) {
           topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
+        }
+
+        if (topic.Attributes.GetValue("LastModifiedBy", null) == null) {
+          topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
         }
 
       }
@@ -273,23 +243,20 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isDirty) {
 
-        //First delete any unmatched records, if appropriate
-        if (options.DeleteUnmatchedRelationships) {
-          topic.Relationships.Clear();
+      //First delete any unmatched records, if appropriate
+      if (options.DeleteUnmatchedRelationships) {
+        topic.Relationships.Clear();
+      }
+
+      //Update records based on the source collection
+      foreach (var relationship in topicData.Relationships) {
+        foreach (var relatedTopicKey in relationship.Relationships) {
+          var relatedTopic = topic.GetByUniqueKey(relatedTopicKey);
+          if (relationship.Key != null && relatedTopic != null) {
+            topic.Relationships.SetTopic(relationship.Key, relatedTopic);
+          };
         }
-
-        //Update records based on the source collection
-        foreach (var relationship in topicData.Relationships) {
-          foreach (var relatedTopicKey in relationship.Relationships) {
-            var relatedTopic = rootTopic.FindByUniqueKey(relatedTopicKey);
-            if (relationship.Key != null && relatedTopic != null) {
-              topic.Relationships.SetTopic(relationship.Key, relatedTopic);
-            };
-          }
-        }
-
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -328,27 +295,6 @@ namespace OnTopic.Data.Transfer.Interchange {
       bool useCustomMergeRules(AttributeData attribute) =>
         (attribute.Key == "LastModified" && !options!.LastModifiedStrategy.Equals(LastModifiedImportStrategy.Inherit)) ||
         (attribute.Key == "LastModifiedBy" && !options!.LastModifiedByStrategy.Equals(LastModifiedImportStrategy.Inherit));
-
-    }
-
-    /*==========================================================================================================================
-    | FIND BY UNIQUE KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a root <see cref="Topic"/>, finds the <see cref="Topic"/> with the supplied .
-    /// </summary>
-    private static Topic? FindByUniqueKey(this Topic topic, string uniqueKey) {
-
-      if (uniqueKey == null || uniqueKey.Length == 0) {
-        return topic;
-      }
-
-          uniqueKey             = uniqueKey.Replace("Root:", "");
-      var firstColon            = uniqueKey.IndexOf(":", StringComparison.InvariantCultureIgnoreCase);
-      var firstKey              = uniqueKey.Substring(0, firstColon > 0? firstColon : uniqueKey.Length);
-      var subsequentKey         = firstColon > 0? uniqueKey.Substring(firstColon+1) : "";
-
-      return topic.Children.GetTopic(firstKey)?.FindByUniqueKey(subsequentKey);
 
     }
 

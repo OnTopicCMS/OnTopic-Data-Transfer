@@ -27,7 +27,6 @@ namespace OnTopic.Data.Transfer.Tests {
     private Tuple<Topic, TopicData> GetTopicWithNewerTopicData(
       DateTime?                 targetDate                      = null,
       DateTime?                 sourceDate                      = null,
-      string                    sourceRelationshipKey           = null,
       bool                      isDirty                         = true
     ) {
 
@@ -38,17 +37,12 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = "Page"
       };
-      var relationshipData      = new RelationshipData() {
-        Key                     = "Related"
-      };
 
       targetDate                ??= DateTime.Now.AddDays(1);
       sourceDate                ??= DateTime.Now.AddHours(1);
-      sourceRelationshipKey     ??= relatedTopic.GetUniqueKey();
 
       topic.Attributes.SetValue("LastModifiedBy", "Old Value", isDirty);
       topic.Attributes.SetValue("LastModified", targetDate.ToString(), isDirty);
-      topic.Relationships.SetTopic("Related", relatedTopic);
 
       topicData.Attributes.Add(
         new AttributeData() {
@@ -65,9 +59,6 @@ namespace OnTopic.Data.Transfer.Tests {
           LastModified          = sourceDate?? DateTime.Now.AddHours(1)
         }
       );
-
-      topicData.Relationships.Add(relationshipData);
-      relationshipData.Relationships.Add(sourceRelationshipKey);
 
       return new Tuple<Topic, TopicData>(topic, topicData);
 
@@ -256,32 +247,6 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: IMPORT AS SYSTEM: TOPIC DATA WITH CHANGES: REPLACES NEWER VALUE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="TopicData"/> with a newer <c>LastModified</c> value and ensures that the existing
-    ///   <c>LastModified</c> attribute value is overwritten when using <see cref="LastModifiedImportStrategy.System"/> and
-    ///   other values have changed.
-    /// </summary>
-    [TestMethod]
-    public void ImportAsSystem_TopicDataWithChanges_ReplacesNewerValue() {
-
-      var tomorrow              = DateTime.Now.AddDays(1);
-      var nextWeek              = DateTime.Now.AddDays(7);
-      var (topic, topicData)    = GetTopicWithNewerTopicData(tomorrow, nextWeek, "NewRelationship", false);
-
-      topic.Import(
-        topicData,
-        new ImportOptions() {
-          LastModifiedStrategy  = LastModifiedImportStrategy.System
-        }
-      );
-
-      Assert.IsTrue(topic.Attributes.GetDateTime("LastModified", nextWeek) <= DateTime.Now);
-
-    }
-
-    /*==========================================================================================================================
     | TEST: IMPORT AS SYSTEM: TOPIC DATA WITHOUT CHANGES: SKIPS EXISTING VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -294,7 +259,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var nextWeek              = DateTime.Now.AddDays(7);
       var tomorrow              = DateTime.Now.AddDays(1);
-      var (topic, topicData)    = GetTopicWithNewerTopicData(tomorrow, nextWeek, null, false);
+      var (topic, topicData)    = GetTopicWithNewerTopicData(tomorrow, nextWeek, false);
 
       topic.Import(
         topicData,

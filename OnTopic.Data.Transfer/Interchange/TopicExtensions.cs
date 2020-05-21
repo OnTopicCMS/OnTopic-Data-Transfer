@@ -214,21 +214,6 @@ namespace OnTopic.Data.Transfer.Interchange {
       //Defermine if any attributes have changed
       var isDirty               = topic.Attributes.Any(a => a.IsDirty);
 
-      //If not, determine if the relationship counts are different
-      if (!isDirty) {
-        isDirty                 = topicData.Relationships.Sum(r => r.Relationships.Count) != topic.Relationships.Sum(r => r.Count);
-      }
-
-      //If not, determine if any of the relationships are mismatched
-      if (!isDirty) {
-        foreach (var source in topicData.Relationships) {
-          if (topic.Relationships.GetTopics(source.Key!).Any(t => !source.Relationships.Contains(t.GetUniqueKey()))) {
-            isDirty             = true;
-            break;
-          }
-        }
-      }
-
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle special rules for LastModified(By) attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
@@ -265,23 +250,20 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isDirty) {
 
-        //First delete any unmatched records, if appropriate
-        if (options.DeleteUnmatchedRelationships) {
-          topic.Relationships.Clear();
+      //First delete any unmatched records, if appropriate
+      if (options.DeleteUnmatchedRelationships) {
+        topic.Relationships.Clear();
+      }
+
+      //Update records based on the source collection
+      foreach (var relationship in topicData.Relationships) {
+        foreach (var relatedTopicKey in relationship.Relationships) {
+          var relatedTopic = topic.GetByUniqueKey(relatedTopicKey);
+          if (relationship.Key != null && relatedTopic != null) {
+            topic.Relationships.SetTopic(relationship.Key, relatedTopic);
+          };
         }
-
-        //Update records based on the source collection
-        foreach (var relationship in topicData.Relationships) {
-          foreach (var relatedTopicKey in relationship.Relationships) {
-            var relatedTopic = topic.GetByUniqueKey(relatedTopicKey);
-            if (relationship.Key != null && relatedTopic != null) {
-              topic.Relationships.SetTopic(relationship.Key, relatedTopic);
-            };
-          }
-        }
-
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

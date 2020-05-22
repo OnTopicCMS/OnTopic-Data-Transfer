@@ -212,7 +212,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         if (matchedAttribute?.LastModified >= attribute.LastModified && isStrategy(ImportStrategy.Merge)) continue;
         topic.Attributes.SetValue(
           attribute.Key,
-          attribute.Value
+          getAttributeValue(attribute)
         );
       }
 
@@ -305,6 +305,16 @@ namespace OnTopic.Data.Transfer.Interchange {
         (attribute.Key == "LastModified" && !options!.LastModifiedStrategy.Equals(LastModifiedImportStrategy.Inherit)) ||
         (attribute.Key == "LastModifiedBy" && !options!.LastModifiedByStrategy.Equals(LastModifiedImportStrategy.Inherit));
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get attribute value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      string? getAttributeValue(AttributeData attribute) =>
+        attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase)?
+          GetTopicId(topic, attribute.Value) :
+          attribute.Value;
+
+    }
+
     /*==========================================================================================================================
     | GET UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
@@ -322,6 +332,20 @@ namespace OnTopic.Data.Transfer.Interchange {
       return uniqueKey;
     }
 
+    /*==========================================================================================================================
+    | GET TOPIC ID
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <c>UniqueKey</c>, lookup the topic in the topic graph and return the <c>TopicID</c>. If no value can be
+    ///   found, the original <c>UniqueKey</c> is returned.
+    /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="uniqueKey">The <see cref="Topic.GetUniqueKey"/> to retrieve the <see cref="Topic.Id"/> for.</param>
+    private static string? GetTopicId(Topic topic, string? uniqueKey) {
+      if (!String.IsNullOrEmpty(uniqueKey) && uniqueKey!.StartsWith("Root", StringComparison.InvariantCultureIgnoreCase)) {
+        return topic.GetByUniqueKey(uniqueKey)?.Id.ToString(CultureInfo.CurrentCulture)?? uniqueKey;
+      }
+      return uniqueKey;
     }
 
   } //Class

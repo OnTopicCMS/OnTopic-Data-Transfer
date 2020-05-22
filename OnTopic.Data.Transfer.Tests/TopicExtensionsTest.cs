@@ -583,5 +583,46 @@ namespace OnTopic.Data.Transfer.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH TOPIC POINTER: MAPS TOPIC ID
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that points to another topic. Confirms
+    ///   that it is converted to a <c>TopicID</c> if valid, and otherwise left as is.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithTopicPointer_MapsTopicID() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Topic", "Container", rootTopic);
+      var siblingTopic          = TopicFactory.Create("SiblingTopic", "Container", 5, rootTopic);
+
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+
+      topicData.Attributes.Add(
+        new AttributeData() {
+          Key                   = "SomeId",
+          Value                 = siblingTopic.GetUniqueKey()
+        }
+      );
+
+      topicData.Attributes.Add(
+        new AttributeData() {
+          Key                   = "InitialBid",
+          Value                 = "6"
+        }
+      );
+
+      topic.Import(topicData);
+
+      Assert.AreEqual<string>("5", topic.Attributes.GetValue("SomeId"));
+      Assert.AreEqual<string>("6", topic.Attributes.GetValue("InitialBid"));
+
+    }
+
   } //Class
 } //Namespace

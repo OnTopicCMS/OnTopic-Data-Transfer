@@ -584,6 +584,61 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
+      topic.Import(topicData);
+
+      Assert.AreEqual<string>("5", topic.Attributes.GetValue("SomeId"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH MISSING TOPIC POINTER: SKIPS ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that points to a missing topic.
+    ///   Confirms that the attribute is skipped.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithMissingTopicPointer_SkipsAttribute() {
+
+      var topic                 = TopicFactory.Create("Topic", "Container");
+
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+
+      topicData.Attributes.Add(
+        new AttributeData() {
+          Key                   = "SomeId",
+          Value                 = "Root:Missing:Topic:Pointer"
+        }
+      );
+
+      topic.Import(topicData);
+
+      Assert.IsNull(topic.Attributes.GetValue("SomeId", null));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH INVALID TOPIC POINTER: IMPORTS ORIGINAL VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that does not reference a topic key
+    ///   (i.e., it doesn't start with <c>Root</c>). Confirms that the original attribute value is imported.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithInvalidTopicPointer_ImportsOriginalValue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Container");
+
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+
       topicData.Attributes.Add(
         new AttributeData() {
           Key                   = "InitialBid",
@@ -593,10 +648,10 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.AreEqual<string>("5", topic.Attributes.GetValue("SomeId"));
       Assert.AreEqual<string>("6", topic.Attributes.GetValue("InitialBid"));
 
     }
+
 
   } //Class
 } //Namespace

@@ -372,8 +372,14 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
     /// <param name="uniqueKey">The <see cref="Topic.GetUniqueKey"/> to retrieve the <see cref="Topic.Id"/> for.</param>
     private static string? GetTopicId(Topic topic, string? uniqueKey) {
-      if (!String.IsNullOrEmpty(uniqueKey) && uniqueKey!.StartsWith("Root", StringComparison.InvariantCultureIgnoreCase)) {
-        return topic.GetByUniqueKey(uniqueKey)?.Id.ToString(CultureInfo.CurrentCulture)?? uniqueKey;
+      if (uniqueKey!.StartsWith("Root", StringComparison.InvariantCultureIgnoreCase)) {
+        var target = topic.GetByUniqueKey(uniqueKey);
+        if (target != null && target.Id >= 0) {
+          return target.Id.ToString(CultureInfo.CurrentCulture);
+        }
+        else {
+          return null;
+        }
       }
       return uniqueKey;
     }

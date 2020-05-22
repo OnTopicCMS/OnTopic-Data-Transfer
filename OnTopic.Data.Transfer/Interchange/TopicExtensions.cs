@@ -86,10 +86,14 @@ namespace OnTopic.Data.Transfer.Interchange {
       );
 
       foreach (var attribute in attributes) {
+        var attributeValue      = getAttributeValue(attribute);
+        if (String.IsNullOrEmpty(attributeValue)) {
+          continue;
+        }
         topicData.Attributes.Add(
           new AttributeData() {
             Key                 = attribute.Key,
-            Value               = getAttributeValue(attribute),
+            Value               = attributeValue,
             LastModified        = attribute.LastModified
           }
         );

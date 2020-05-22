@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
 
@@ -86,7 +87,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         topicData.Attributes.Add(
           new AttributeData() {
             Key                 = attribute.Key,
-            Value               = attribute.Value,
+            Value               = getAttributeValue(attribute),
             LastModified        = attribute.LastModified
           }
         );
@@ -132,6 +133,14 @@ namespace OnTopic.Data.Transfer.Interchange {
       | Return topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       return topicData;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get attribute value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      string? getAttributeValue(AttributeValue attribute) =>
+        attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase)?
+          GetUniqueKey(topic, attribute.Value) :
+          attribute.Value;
 
     }
 
@@ -295,6 +304,23 @@ namespace OnTopic.Data.Transfer.Interchange {
       bool useCustomMergeRules(AttributeData attribute) =>
         (attribute.Key == "LastModified" && !options!.LastModifiedStrategy.Equals(LastModifiedImportStrategy.Inherit)) ||
         (attribute.Key == "LastModifiedBy" && !options!.LastModifiedByStrategy.Equals(LastModifiedImportStrategy.Inherit));
+
+    /*==========================================================================================================================
+    | GET UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <c>TopicID</c>, lookup the topic in the topic graph and return the fully-qualified value. If no value can be
+    ///   found, the original <c>TopicID</c> is returned.
+    /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="topicId">The <see cref="Topic.Id"/> to retrieve the <see cref="Topic.GetUniqueKey"/> for.</param>
+    private static string? GetUniqueKey(Topic topic, string? topicId) {
+      var uniqueKey = topicId;
+      if (!String.IsNullOrEmpty(topicId) && Int32.TryParse(topicId, out var id)) {
+        uniqueKey = topic.GetRootTopic().FindFirst(t => t.Id == id)?.GetUniqueKey()?? uniqueKey;
+      }
+      return uniqueKey;
+    }
 
     }
 

@@ -188,6 +188,32 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: EXPORT: TOPIC WITH TOPIC POINTER: EXPORTS UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that points to another topic. Confirms
+    ///   that it is converted to a <c>UniqueKey</c> if valid, and otherwise left as is.
+    /// </summary>
+    [TestMethod]
+    public void Export_TopicWithTopicPointer_ExportsUniqueKey() {
+
+      var parentTopic           = TopicFactory.Create("Parent", "Container", 5);
+      var topic                 = TopicFactory.Create("Topic", "Container", parentTopic);
+
+      topic.Attributes.SetValue("SomeId", "5");
+      topic.Attributes.SetValue("InitialBid", "6");
+
+      var topicData             = topic.Export();
+
+      topicData.Attributes.TryGetValue("SomeId", out var someAttribute);
+      topicData.Attributes.TryGetValue("InitialBid", out var initialBidAttribute);
+
+      Assert.AreEqual<string>("Parent", someAttribute.Value);
+      Assert.AreEqual<string>("6", initialBidAttribute.Value);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IMPORT: BASIC TOPIC DATA: MAPS PROPERTIES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -293,7 +319,6 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual(derivedTopic, topic.DerivedTopic);
 
     }
-
 
     /*==========================================================================================================================
     | TEST: IMPORT: TOPIC DATA WITH ATTRIBUTES: SETS MISSING ATTRIBUTES
@@ -522,7 +547,6 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual(topicData.Children.FirstOrDefault().ContentType, childTopic.ContentType);
 
     }
-
 
     /*==========================================================================================================================
     | TEST: IMPORT: TOPIC DATA WITH CHILD: SKIPS ORPHANED CHILD

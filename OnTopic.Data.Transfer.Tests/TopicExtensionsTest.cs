@@ -174,42 +174,85 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void Export_ExcludesReservedAttributes() {
 
-      var topic                 = TopicFactory.Create("Topic", "Container");
+      var topic                 = TopicFactory.Create("Topic", "Container", 5);
+      _                         = TopicFactory.Create("ChildA", "Container", 6, topic);
+      _                         = TopicFactory.Create("ChildB", "Container", 7, topic);
 
       //Manually setting using non-standard casing to evaluate case insensitivity
       topic.Attributes.SetValue("parentId", "5");
       topic.Attributes.SetValue("topicId", "6");
-      topic.Attributes.SetValue("anotherId", "7");
+      topic.Attributes.SetValue("anotherId", "8");
 
       var topicData             = topic.Export();
 
-      Assert.AreEqual<int>(1, topicData.Attributes.Count);
+      Assert.AreEqual<int>(0, topicData.Attributes.Count);
 
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT: TOPIC WITH TOPIC POINTER: EXPORTS UNIQUE KEY
+    | TEST: EXPORT WITH TOPIC POINTERS: OUT OF SCOPE: SKIPS ATTRIBUTE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that points to another topic. Confirms
-    ///   that it is converted to a <c>UniqueKey</c> if valid, and otherwise left as is.
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that points to a topic outside of the
+    ///   <see cref="ExportOptions.ExportScope"/>. Confirms that it is ignored.
     /// </summary>
     [TestMethod]
-    public void Export_TopicWithTopicPointer_ExportsUniqueKey() {
+    public void ExportWithTopicPointers_OutOfScope_SkipsAttribute() {
 
-      var parentTopic           = TopicFactory.Create("Parent", "Container", 5);
+      var parentTopic           = TopicFactory.Create("Root", "Container", 5);
       var topic                 = TopicFactory.Create("Topic", "Container", parentTopic);
 
       topic.Attributes.SetValue("SomeId", "5");
-      topic.Attributes.SetValue("InitialBid", "6");
 
       var topicData             = topic.Export();
 
       topicData.Attributes.TryGetValue("SomeId", out var someAttribute);
+
+      Assert.IsNull(someAttribute);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: EXPORT WITH TOPIC POINTERS: MISSING TOPIC POINTER: SKIPS ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that points to a missing <see
+    ///   cref="Topic.Id"/>. Confirms that the attribute is skipped.
+    /// </summary>
+    [TestMethod]
+    public void ExportWithTopicPointers_MissingTopicPointer_SkipsAttribute() {
+
+      var topic                 = TopicFactory.Create("Topic", "Container");
+
+      topic.Attributes.SetValue("InitialBid", "6");
+
+      var topicData             = topic.Export();
+
       topicData.Attributes.TryGetValue("InitialBid", out var initialBidAttribute);
 
-      Assert.AreEqual<string>("Parent", someAttribute.Value);
-      Assert.AreEqual<string>("6", initialBidAttribute.Value);
+      Assert.IsNull(initialBidAttribute);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: EXPORT WITH TOPIC POINTERS: INVALID TOPIC POINTER: EXPORTS ORIGINAL VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that that contains a non-numeric (i.e.,
+    ///   invalid) topic pointers. Confirms that the original value is exported.
+    /// </summary>
+    [TestMethod]
+    public void ExportWithTopicPointers_InvalidTopicPointer_ExportsOriginalValue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Container");
+
+      topic.Attributes.SetValue("Rigid", "True");
+
+      var topicData             = topic.Export();
+
+      topicData.Attributes.TryGetValue("Rigid", out var rigidAttribute);
+
+      Assert.AreEqual<string>("True", rigidAttribute.Value);
 
     }
 
@@ -610,6 +653,61 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
+      topic.Import(topicData);
+
+      Assert.AreEqual<string>("5", topic.Attributes.GetValue("SomeId"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH MISSING TOPIC POINTER: SKIPS ATTRIBUTE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that points to a missing topic.
+    ///   Confirms that the attribute is skipped.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithMissingTopicPointer_SkipsAttribute() {
+
+      var topic                 = TopicFactory.Create("Topic", "Container");
+
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+
+      topicData.Attributes.Add(
+        new AttributeData() {
+          Key                   = "SomeId",
+          Value                 = "Root:Missing:Topic:Pointer"
+        }
+      );
+
+      topic.Import(topicData);
+
+      Assert.IsNull(topic.Attributes.GetValue("SomeId", null));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH INVALID TOPIC POINTER: IMPORTS ORIGINAL VALUE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that does not reference a topic key
+    ///   (i.e., it doesn't start with <c>Root</c>). Confirms that the original attribute value is imported.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithInvalidTopicPointer_ImportsOriginalValue() {
+
+      var topic                 = TopicFactory.Create("Topic", "Container");
+
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+
       topicData.Attributes.Add(
         new AttributeData() {
           Key                   = "InitialBid",
@@ -619,10 +717,10 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.AreEqual<string>("5", topic.Attributes.GetValue("SomeId"));
       Assert.AreEqual<string>("6", topic.Attributes.GetValue("InitialBid"));
 
     }
+
 
   } //Class
 } //Namespace

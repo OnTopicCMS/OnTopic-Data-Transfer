@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
 using OnTopic.Querying;
 
@@ -48,6 +49,8 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   Exports a <see cref="Topic"/> entity—and, potentially, its descendants—into a <see cref="TopicData"/> data transfer
     ///   object.
     /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="options">An optional <see cref="ExportOptions"/> object to specify export settings.</param>
     public static TopicData Export(this Topic topic, [NotNull]ExportOptions? options = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -86,7 +89,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         topicData.Attributes.Add(
           new AttributeData() {
             Key                 = attribute.Key,
-            Value               = attribute.Value,
+            Value               = getAttributeValue(attribute),
             LastModified        = attribute.LastModified
           }
         );
@@ -133,6 +136,14 @@ namespace OnTopic.Data.Transfer.Interchange {
       \-----------------------------------------------------------------------------------------------------------------------*/
       return topicData;
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get attribute value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      string? getAttributeValue(AttributeValue attribute) =>
+        attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase)?
+          GetUniqueKey(topic, attribute.Value) :
+          attribute.Value;
+
     }
 
     /*==========================================================================================================================
@@ -142,6 +153,8 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   Imports a <see cref="TopicData"/> data transfer object—and, potentially, its descendants—into an existing <see
     ///   cref="Topic"/> entity.
     /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="options">An optional <see cref="ImportOptions"/> object to specify import settings.</param>
     public static void Import(this Topic topic, TopicData topicData, [NotNull]ImportOptions? options = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -203,7 +216,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         if (matchedAttribute?.LastModified >= attribute.LastModified && isStrategy(ImportStrategy.Merge)) continue;
         topic.Attributes.SetValue(
           attribute.Key,
-          attribute.Value
+          getAttributeValue(attribute)
         );
       }
 
@@ -296,6 +309,47 @@ namespace OnTopic.Data.Transfer.Interchange {
         (attribute.Key == "LastModified" && !options!.LastModifiedStrategy.Equals(LastModifiedImportStrategy.Inherit)) ||
         (attribute.Key == "LastModifiedBy" && !options!.LastModifiedByStrategy.Equals(LastModifiedImportStrategy.Inherit));
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get attribute value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      string? getAttributeValue(AttributeData attribute) =>
+        attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase)?
+          GetTopicId(topic, attribute.Value) :
+          attribute.Value;
+
+    }
+
+    /*==========================================================================================================================
+    | GET UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <c>TopicID</c>, lookup the topic in the topic graph and return the fully-qualified value. If no value can be
+    ///   found, the original <c>TopicID</c> is returned.
+    /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="topicId">The <see cref="Topic.Id"/> to retrieve the <see cref="Topic.GetUniqueKey"/> for.</param>
+    private static string? GetUniqueKey(Topic topic, string? topicId) {
+      var uniqueKey = topicId;
+      if (!String.IsNullOrEmpty(topicId) && Int32.TryParse(topicId, out var id)) {
+        uniqueKey = topic.GetRootTopic().FindFirst(t => t.Id == id)?.GetUniqueKey()?? uniqueKey;
+      }
+      return uniqueKey;
+    }
+
+    /*==========================================================================================================================
+    | GET TOPIC ID
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <c>UniqueKey</c>, lookup the topic in the topic graph and return the <c>TopicID</c>. If no value can be
+    ///   found, the original <c>UniqueKey</c> is returned.
+    /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="uniqueKey">The <see cref="Topic.GetUniqueKey"/> to retrieve the <see cref="Topic.Id"/> for.</param>
+    private static string? GetTopicId(Topic topic, string? uniqueKey) {
+      if (!String.IsNullOrEmpty(uniqueKey) && uniqueKey!.StartsWith("Root", StringComparison.InvariantCultureIgnoreCase)) {
+        return topic.GetByUniqueKey(uniqueKey)?.Id.ToString(CultureInfo.CurrentCulture)?? uniqueKey;
+      }
+      return uniqueKey;
     }
 
   } //Class

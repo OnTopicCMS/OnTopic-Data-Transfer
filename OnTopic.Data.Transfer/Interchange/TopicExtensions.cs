@@ -49,6 +49,8 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   Exports a <see cref="Topic"/> entity—and, potentially, its descendants—into a <see cref="TopicData"/> data transfer
     ///   object.
     /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="options">An optional <see cref="ExportOptions"/> object to specify export settings.</param>
     public static TopicData Export(this Topic topic, [NotNull]ExportOptions? options = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -151,6 +153,8 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   Imports a <see cref="TopicData"/> data transfer object—and, potentially, its descendants—into an existing <see
     ///   cref="Topic"/> entity.
     /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="options">An optional <see cref="ImportOptions"/> object to specify import settings.</param>
     public static void Import(this Topic topic, TopicData topicData, [NotNull]ImportOptions? options = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------

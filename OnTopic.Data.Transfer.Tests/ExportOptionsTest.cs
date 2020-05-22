@@ -112,7 +112,6 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var topicData             = topic.Export(
         new ExportOptions() {
-          TranslateTopicPointers = true,
           IncludeExternalReferences = true
         }
       );
@@ -120,85 +119,6 @@ namespace OnTopic.Data.Transfer.Tests {
       topicData.Attributes.TryGetValue("SomeId", out var someAttribute);
 
       Assert.AreEqual<string>("Root", someAttribute.Value);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: EXPORT WITH TOPIC POINTERS: OUT OF SCOPE: SKIPS ATTRIBUTE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that points to a topic outside of the
-    ///   <see cref="ExportOptions.ExportScope"/>. Confirms that it is ignored.
-    /// </summary>
-    [TestMethod]
-    public void ExportWithTopicPointers_OutOfScope_SkipsAttribute() {
-
-      var parentTopic           = TopicFactory.Create("Root", "Container", 5);
-      var topic                 = TopicFactory.Create("Topic", "Container", parentTopic);
-
-      topic.Attributes.SetValue("SomeId", "5");
-
-      var topicData             = topic.Export(
-        new ExportOptions() {
-          TranslateTopicPointers = true
-        }
-      );
-
-      topicData.Attributes.TryGetValue("SomeId", out var someAttribute);
-
-      Assert.IsNull(someAttribute);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: EXPORT WITH TOPIC POINTERS: MISSING TOPIC POINTER: SKIPS ATTRIBUTE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that points to a missing <see
-    ///   cref="Topic.Id"/>. Confirms that the attribute is skipped.
-    /// </summary>
-    [TestMethod]
-    public void ExportWithTopicPointers_MissingTopicPointer_SkipsAttribute() {
-
-      var topic                 = TopicFactory.Create("Topic", "Container");
-
-      topic.Attributes.SetValue("InitialBid", "6");
-
-      var topicData             = topic.Export(
-        new ExportOptions() {
-          TranslateTopicPointers = true
-        }
-      );
-
-      topicData.Attributes.TryGetValue("InitialBid", out var initialBidAttribute);
-
-      Assert.IsNull(initialBidAttribute);
-
-    }
-
-    /*==========================================================================================================================
-    | TEST: EXPORT WITH TOPIC POINTERS: INVALID TOPIC POINTER: EXPORTS ORIGINAL VALUE
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that that contains a non-numeric (i.e.,
-    ///   invalid) topic pointers. Confirms that the original value is exported.
-    /// </summary>
-    [TestMethod]
-    public void ExportWithTopicPointers_InvalidTopicPointer_ExportsOriginalValue() {
-
-      var topic                 = TopicFactory.Create("Topic", "Container");
-
-      topic.Attributes.SetValue("Rigid", "True");
-
-      var topicData             = topic.Export(
-        new ExportOptions() {
-          TranslateTopicPointers = true
-        }
-      );
-
-      topicData.Attributes.TryGetValue("Rigid", out var rigidAttribute);
-
-      Assert.AreEqual<string>("True", rigidAttribute.Value);
 
     }
 

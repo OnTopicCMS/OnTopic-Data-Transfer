@@ -118,11 +118,11 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   <para>
     ///     It is important to note that this can introduce false positives. For example, if a database includes an attribute
     ///     referring to an external identifier, and whose name ends with <c>Id</c>, that value will be interpreted as a topic
-    ///     reference assuming the value maps to an existing <see cref="Topic.Id"/>. As such, this option should be used with
-    ///     care based on an understanding of the attributes within scope.
+    ///     reference assuming the value maps to an existing <see cref="Topic.Id"/>. As such, it may be desirable to disable
+    ///     this option in some circumstances if it's known that there are false positives.
     ///   </para>
     /// </remarks>
-    public bool TranslateTopicPointers { get; set; } = false;
+    public bool TranslateTopicPointers { get; set; } = true;
 
 
   } //Class

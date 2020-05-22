@@ -140,8 +140,8 @@ namespace OnTopic.Data.Transfer.Interchange {
       | Get attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
       string? getAttributeValue(AttributeValue attribute) =>
-        attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase)?
-          GetUniqueKey(topic, attribute.Value) :
+        options.TranslateTopicPointers && attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase)?
+          GetUniqueKey(topic, attribute.Value, options) :
           attribute.Value;
 
     }
@@ -328,12 +328,34 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </summary>
     /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
     /// <param name="topicId">The <see cref="Topic.Id"/> to retrieve the <see cref="Topic.GetUniqueKey"/> for.</param>
-    private static string? GetUniqueKey(Topic topic, string? topicId) {
-      var uniqueKey = topicId;
-      if (!String.IsNullOrEmpty(topicId) && Int32.TryParse(topicId, out var id)) {
-        uniqueKey = topic.GetRootTopic().FindFirst(t => t.Id == id)?.GetUniqueKey()?? uniqueKey;
+    /// <param name="options">An optional <see cref="ExportOptions"/> object to specify export settings.</param>
+    private static string? GetUniqueKey(Topic topic, string? topicId, ExportOptions options) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ignore empty or non-numeric values
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(topicId) || !Int32.TryParse(topicId, out var id)) {
+        return topicId;
       }
-      return uniqueKey;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish scope
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var uniqueKey             = topic.GetRootTopic().FindFirst(t => t.Id == id)?.GetUniqueKey();
+      var exportScope           = options.IncludeExternalReferences? "Root" : options.ExportScope;
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return in-scope values
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (uniqueKey?.StartsWith(exportScope, StringComparison.InvariantCultureIgnoreCase)?? false) {
+        return uniqueKey;
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Default to null
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return null;
+
     }
 
     /*==========================================================================================================================

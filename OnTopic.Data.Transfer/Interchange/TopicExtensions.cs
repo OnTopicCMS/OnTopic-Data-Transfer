@@ -4,11 +4,13 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Mapping.Annotations;
 using OnTopic.Querying;
 
 namespace OnTopic.Data.Transfer.Interchange {
@@ -162,6 +164,72 @@ namespace OnTopic.Data.Transfer.Interchange {
     public static void Import(this Topic topic, TopicData topicData, [NotNull]ImportOptions? options = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Establish cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var unresolvedRelationships = new List<Tuple<Topic, string, string>>();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle first pass
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.Import(topicData, options, unresolvedRelationships);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to resolve outstanding relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var relationship in unresolvedRelationships) {
+
+        //Attempt to find the target relationship
+        var source              = relationship.Item1;
+        var target              = topic.GetByUniqueKey(relationship.Item3);
+        var key                 = relationship.Item2;
+
+        //If the relationship STILL can't be resolved, skip it
+        if (target == null) {
+          continue;
+        }
+
+        //Wire up derived topics
+        if (key.Equals("DerivedTopic")) {
+          source.DerivedTopic = target;
+        }
+
+        //Wire up relationships
+        else {
+          source.Relationships.SetTopic(key, target);
+        }
+
+      }
+
+    }
+
+    /// <summary>
+    ///   Imports a <see cref="TopicData"/> data transfer object—and, potentially, its descendants—into an existing <see
+    ///   cref="Topic"/> entity. Track unmatched relationships.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     While traversing a topic graph with many new topics, scenarios emerge where the topic graph cannot be fully
+    ///     reconstructed since the relationships and derived topics may refer to new topics that haven't yet been imported. To
+    ///     mitigate that, this overload accepts and populates a cache of such relationships, so that they can be recreated
+    ///     afterwards.
+    ///   </para>
+    ///   <para>
+    ///     This does <i>not</i> address the scenario where implicit topic pointers (i.e., attributes ending in <c>Id</c>)
+    ///     cannot be resolved because the target topics haven't yet been saved—and, therefore, the <see
+    ///     cref="Topic.GetUniqueKey"/> cannot be translated to a <see cref="Topic.Id"/>. There isn't any obvious way to address
+    ///     this via <see cref="Import"/> directly.
+    ///   </para>
+    /// </remarks>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="options">An optional <see cref="ImportOptions"/> object to specify import settings.</param>
+    private static void Import(
+      this Topic topic,
+      TopicData topicData,
+      [NotNull]ImportOptions? options,
+      List<Tuple<Topic, string, string>> unresolvedRelationships
+    ) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Validate topic
       \-----------------------------------------------------------------------------------------------------------------------*/
       Contract.Requires(topic, nameof(topic));
@@ -194,7 +262,13 @@ namespace OnTopic.Data.Transfer.Interchange {
       }
 
       if (topicData.DerivedTopicKey?.Length > 0) {
-        topic.DerivedTopic      = topic.GetByUniqueKey(topicData.DerivedTopicKey)?? topic.DerivedTopic;
+        var target = topic.GetByUniqueKey(topicData.DerivedTopicKey);
+        if (target != null) {
+          topic.DerivedTopic = target;
+        }
+        else {
+          unresolvedRelationships.Add(new Tuple<Topic, string, string>(topic, "DerivedTopic", topicData.DerivedTopicKey));
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -272,7 +346,10 @@ namespace OnTopic.Data.Transfer.Interchange {
           var relatedTopic = topic.GetByUniqueKey(relatedTopicKey);
           if (relationship.Key != null && relatedTopic != null) {
             topic.Relationships.SetTopic(relationship.Key, relatedTopic);
-          };
+          }
+          else {
+            unresolvedRelationships.Add(new Tuple<Topic, string, string>(topic, relationship.Key!, relatedTopicKey));
+          }
         }
       }
 

@@ -333,6 +333,41 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IMPORT: DERIVED TOPIC KEY: MAPS NEWLY DERIVED TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.DerivedTopicKey"/> that points to a newly imported
+    ///   topic that is later in the tree traversal, and ensures that the <see cref="Topic.DerivedTopic"/> is set correctly.
+    /// </summary>
+    [TestMethod]
+    public void Import_DerivedTopicKey_MapsNewlyDerivedTopic() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType,
+        DerivedTopicKey         = "Root:Test:Child"
+      };
+
+      var childTopicData        = new TopicData() {
+        Key                     = "Child",
+        UniqueKey               = $"{topicData.UniqueKey}:Child",
+        ContentType             = "Container"
+      };
+
+      topicData.Children.Add(childTopicData);
+
+      topic.Import(topicData);
+
+      Assert.IsNotNull(topic.DerivedTopic);
+      Assert.AreEqual<string>(childTopicData.Key, topic.DerivedTopic?.Key);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IMPORT: INVALID DERIVED TOPIC KEY: MAINTAINS EXISTING VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

@@ -348,22 +348,31 @@ namespace OnTopic.Data.Transfer.Tests {
       var topicData             = new TopicData() {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = topic.ContentType,
-        DerivedTopicKey         = "Root:Test:Child"
+        ContentType             = topic.ContentType
       };
 
       var childTopicData        = new TopicData() {
         Key                     = "Child",
         UniqueKey               = $"{topicData.UniqueKey}:Child",
+        ContentType             = "Container",
+        DerivedTopicKey         = "Root:Test:Related"
+      };
+
+      var relatedTopicData      = new TopicData() {
+        Key                     = "Related",
+        UniqueKey               = $"{topicData.UniqueKey}:Related",
         ContentType             = "Container"
       };
 
       topicData.Children.Add(childTopicData);
+      topicData.Children.Add(relatedTopicData);
 
       topic.Import(topicData);
 
-      Assert.IsNotNull(topic.DerivedTopic);
-      Assert.AreEqual<string>(childTopicData.Key, topic.DerivedTopic?.Key);
+      var childTopic            = topic.Children.FirstOrDefault();
+
+      Assert.IsNotNull(childTopic.DerivedTopic);
+      Assert.AreEqual<string>(relatedTopicData.Key, childTopic.DerivedTopic?.Key);
 
     }
 

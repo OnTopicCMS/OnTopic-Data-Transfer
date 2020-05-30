@@ -10,7 +10,6 @@ using System.Globalization;
 using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Mapping.Annotations;
 using OnTopic.Querying;
 
 namespace OnTopic.Data.Transfer.Interchange {
@@ -189,7 +188,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         }
 
         //Wire up derived topics
-        if (key.Equals("DerivedTopic")) {
+        if (key.Equals("DerivedTopic", StringComparison.CurrentCultureIgnoreCase)) {
           source.DerivedTopic = target;
         }
 
@@ -451,7 +450,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     private static string? GetTopicId(Topic topic, string? uniqueKey) {
       if (uniqueKey!.StartsWith("Root", StringComparison.InvariantCultureIgnoreCase)) {
         var target = topic.GetByUniqueKey(uniqueKey);
-        if (target != null && target.Id >= 0) {
+        if (target != null && !target.IsNew) {
           return target.Id.ToString(CultureInfo.CurrentCulture);
         }
         else {

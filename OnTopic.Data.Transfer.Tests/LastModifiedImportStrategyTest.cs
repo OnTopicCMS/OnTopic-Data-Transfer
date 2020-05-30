@@ -31,7 +31,6 @@ namespace OnTopic.Data.Transfer.Tests {
     ) {
 
       var topic                 = TopicFactory.Create("Test", "Container", 1);
-      var relatedTopic          = TopicFactory.Create("Related", "Container");
       var topicData             = new TopicData() {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),

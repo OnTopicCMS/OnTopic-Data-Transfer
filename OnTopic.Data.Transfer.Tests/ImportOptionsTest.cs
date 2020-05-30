@@ -309,7 +309,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var topic                 = TopicFactory.Create("Test", "Container");
       var nestedTopics          = TopicFactory.Create("Nested", "List", topic);
-      var nestedTopic1          = TopicFactory.Create("Nested1", "Page", 1, nestedTopics);
+      _                         = TopicFactory.Create("Nested1", "Page", 1, nestedTopics);
       var nestedTopic2          = TopicFactory.Create("Nested2", "Page", 2, nestedTopics);
       var topicData             = new TopicData() {
         Key                     = topic.Key,

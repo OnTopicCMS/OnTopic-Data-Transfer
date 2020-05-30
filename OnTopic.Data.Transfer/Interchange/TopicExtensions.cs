@@ -10,7 +10,6 @@ using System.Globalization;
 using System.Linq;
 using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
-using OnTopic.Mapping.Annotations;
 using OnTopic.Querying;
 
 namespace OnTopic.Data.Transfer.Interchange {

@@ -189,7 +189,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         }
 
         //Wire up derived topics
-        if (key.Equals("DerivedTopic")) {
+        if (key.Equals("DerivedTopic", StringComparison.CurrentCultureIgnoreCase)) {
           source.DerivedTopic = target;
         }
 

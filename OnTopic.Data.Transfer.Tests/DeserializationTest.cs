@@ -100,7 +100,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var json = $"{{" +
         $"\"Key\":\"{sourceData.Key}\"," +
         $"\"Value\":null," +
-        $"\"LastModified\":\"{sourceData.LastModified.ToString("o")}\"" +
+        $"\"LastModified\":\"{sourceData.LastModified:o}\"" +
         $"}}";
 
 
@@ -153,7 +153,7 @@ namespace OnTopic.Data.Transfer.Tests {
           $"{{" +
             $"\"Key\":\"{sourceAttributeData.Key}\"," +
             $"\"Value\":null," +
-            $"\"LastModified\":\"{sourceAttributeData.LastModified.ToString("o")}\"" +
+            $"\"LastModified\":\"{sourceAttributeData.LastModified:o}\"" +
           $"}}"+
         $"]," +
         $"\"Relationships\":[" +

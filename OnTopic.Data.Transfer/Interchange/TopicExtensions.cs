@@ -4,10 +4,13 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using OnTopic.Attributes;
 using OnTopic.Internal.Diagnostics;
+using OnTopic.Querying;
 
 namespace OnTopic.Data.Transfer.Interchange {
 
@@ -35,9 +38,9 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </summary>
     private static string[] ReservedAttributeKeys { get; } = new string[] {
       "Key",
-      "ParentId",
+      "ParentID",
       "ContentType",
-      "TopicId"
+      "TopicID"
     };
 
     /*==========================================================================================================================
@@ -47,6 +50,8 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   Exports a <see cref="Topic"/> entity—and, potentially, its descendants—into a <see cref="TopicData"/> data transfer
     ///   object.
     /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="options">An optional <see cref="ExportOptions"/> object to specify export settings.</param>
     public static TopicData Export(this Topic topic, [NotNull]ExportOptions? options = null) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -75,11 +80,21 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var attribute in topic.Attributes.Where(a => !ReservedAttributeKeys.Any(r => r == a.Key))) {
+      var attributes            = topic.Attributes.Where(a =>
+        !ReservedAttributeKeys.Any(r =>
+          r.Equals(a.Key, StringComparison.InvariantCultureIgnoreCase)
+        )
+      );
+
+      foreach (var attribute in attributes) {
+        var attributeValue      = getAttributeValue(attribute);
+        if (String.IsNullOrEmpty(attributeValue)) {
+          continue;
+        }
         topicData.Attributes.Add(
           new AttributeData() {
             Key                 = attribute.Key,
-            Value               = attribute.Value,
+            Value               = attributeValue,
             LastModified        = attribute.LastModified
           }
         );
@@ -126,6 +141,14 @@ namespace OnTopic.Data.Transfer.Interchange {
       \-----------------------------------------------------------------------------------------------------------------------*/
       return topicData;
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get attribute value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      string? getAttributeValue(AttributeValue attribute) =>
+        options.TranslateTopicPointers && attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase)?
+          GetUniqueKey(topic, attribute.Value, options) :
+          attribute.Value;
+
     }
 
     /*==========================================================================================================================
@@ -135,7 +158,75 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   Imports a <see cref="TopicData"/> data transfer object—and, potentially, its descendants—into an existing <see
     ///   cref="Topic"/> entity.
     /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="options">An optional <see cref="ImportOptions"/> object to specify import settings.</param>
     public static void Import(this Topic topic, TopicData topicData, [NotNull]ImportOptions? options = null) {
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish cache
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var unresolvedRelationships = new List<Tuple<Topic, string, string>>();
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Handle first pass
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      topic.Import(topicData, options, unresolvedRelationships);
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Attempt to resolve outstanding relationships
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var relationship in unresolvedRelationships) {
+
+        //Attempt to find the target relationship
+        var source              = relationship.Item1;
+        var target              = topic.GetByUniqueKey(relationship.Item3);
+        var key                 = relationship.Item2;
+
+        //If the relationship STILL can't be resolved, skip it
+        if (target == null) {
+          continue;
+        }
+
+        //Wire up derived topics
+        if (key.Equals("DerivedTopic", StringComparison.CurrentCultureIgnoreCase)) {
+          source.DerivedTopic = target;
+        }
+
+        //Wire up relationships
+        else {
+          source.Relationships.SetTopic(key, target);
+        }
+
+      }
+
+    }
+
+    /// <summary>
+    ///   Imports a <see cref="TopicData"/> data transfer object—and, potentially, its descendants—into an existing <see
+    ///   cref="Topic"/> entity. Track unmatched relationships.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     While traversing a topic graph with many new topics, scenarios emerge where the topic graph cannot be fully
+    ///     reconstructed since the relationships and derived topics may refer to new topics that haven't yet been imported. To
+    ///     mitigate that, this overload accepts and populates a cache of such relationships, so that they can be recreated
+    ///     afterwards.
+    ///   </para>
+    ///   <para>
+    ///     This does <i>not</i> address the scenario where implicit topic pointers (i.e., attributes ending in <c>Id</c>)
+    ///     cannot be resolved because the target topics haven't yet been saved—and, therefore, the <see
+    ///     cref="Topic.GetUniqueKey"/> cannot be translated to a <see cref="Topic.Id"/>. There isn't any obvious way to address
+    ///     this via <see cref="Import"/> directly.
+    ///   </para>
+    /// </remarks>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="options">An optional <see cref="ImportOptions"/> object to specify import settings.</param>
+    private static void Import(
+      this Topic topic,
+      TopicData topicData,
+      [NotNull]ImportOptions? options,
+      List<Tuple<Topic, string, string>> unresolvedRelationships
+    ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate topic
@@ -163,15 +254,6 @@ namespace OnTopic.Data.Transfer.Interchange {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Identify root topic
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      var rootTopic = topic;
-
-      while (rootTopic.Parent != null) {
-        rootTopic = rootTopic.Parent;
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
       | Set primary properties
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (options.OverwriteContentType) {
@@ -179,7 +261,13 @@ namespace OnTopic.Data.Transfer.Interchange {
       }
 
       if (topicData.DerivedTopicKey?.Length > 0) {
-        topic.DerivedTopic      = rootTopic.FindByUniqueKey(topicData.DerivedTopicKey)?? topic.DerivedTopic;
+        var target = topic.GetByUniqueKey(topicData.DerivedTopicKey);
+        if (target != null) {
+          topic.DerivedTopic = target;
+        }
+        else {
+          unresolvedRelationships.Add(new Tuple<Topic, string, string>(topic, "DerivedTopic", topicData.DerivedTopicKey));
+        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -205,36 +293,14 @@ namespace OnTopic.Data.Transfer.Interchange {
         if (matchedAttribute?.LastModified >= attribute.LastModified && isStrategy(ImportStrategy.Merge)) continue;
         topic.Attributes.SetValue(
           attribute.Key,
-          attribute.Value
+          getAttributeValue(attribute)
         );
-      }
-
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Determine changes
-      \-----------------------------------------------------------------------------------------------------------------------*/
-
-      //Defermine if any attributes have changed
-      var isDirty               = topic.Attributes.Any(a => a.IsDirty);
-
-      //If not, determine if the relationship counts are different
-      if (!isDirty) {
-        isDirty                 = topicData.Relationships.Sum(r => r.Relationships.Count) != topic.Relationships.Sum(r => r.Count);
-      }
-
-      //If not, determine if any of the relationships are mismatched
-      if (!isDirty) {
-        foreach (var source in topicData.Relationships) {
-          if (topic.Relationships.GetTopics(source.Key!).Any(t => !source.Relationships.Contains(t.GetUniqueKey()))) {
-            isDirty             = true;
-            break;
-          }
-        }
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle special rules for LastModified(By) attribute
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isDirty) {
+      if (topic.Attributes.IsDirty()) {
 
         switch (options.LastModifiedStrategy) {
           case LastModifiedImportStrategy.Current:
@@ -254,12 +320,12 @@ namespace OnTopic.Data.Transfer.Interchange {
             break;
         }
 
-        if (topic.Attributes.GetValue("LastModifiedBy", null) == null) {
-          topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
-        }
-
         if (topic.Attributes.GetValue("LastModified", null) == null) {
           topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
+        }
+
+        if (topic.Attributes.GetValue("LastModifiedBy", null) == null) {
+          topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
         }
 
       }
@@ -267,23 +333,23 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (isDirty) {
 
-        //First delete any unmatched records, if appropriate
-        if (options.DeleteUnmatchedRelationships) {
-          topic.Relationships.Clear();
-        }
+      //First delete any unmatched records, if appropriate
+      if (options.DeleteUnmatchedRelationships) {
+        topic.Relationships.Clear();
+      }
 
-        //Update records based on the source collection
-        foreach (var relationship in topicData.Relationships) {
-          foreach (var relatedTopicKey in relationship.Relationships) {
-            var relatedTopic = rootTopic.FindByUniqueKey(relatedTopicKey);
-            if (relationship.Key != null && relatedTopic != null) {
-              topic.Relationships.SetTopic(relationship.Key, relatedTopic);
-            };
+      //Update records based on the source collection
+      foreach (var relationship in topicData.Relationships) {
+        foreach (var relatedTopicKey in relationship.Relationships) {
+          var relatedTopic = topic.GetByUniqueKey(relatedTopicKey);
+          if (relationship.Key != null && relatedTopic != null) {
+            topic.Relationships.SetTopic(relationship.Key, relatedTopic);
+          }
+          else {
+            unresolvedRelationships.Add(new Tuple<Topic, string, string>(topic, relationship.Key!, relatedTopicKey));
           }
         }
-
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -308,7 +374,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         if (childTopic == null) {
           childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
         }
-        childTopic.Import(childTopicData, options);
+        childTopic.Import(childTopicData, options, unresolvedRelationships);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -323,27 +389,75 @@ namespace OnTopic.Data.Transfer.Interchange {
         (attribute.Key == "LastModified" && !options!.LastModifiedStrategy.Equals(LastModifiedImportStrategy.Inherit)) ||
         (attribute.Key == "LastModifiedBy" && !options!.LastModifiedByStrategy.Equals(LastModifiedImportStrategy.Inherit));
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Get attribute value
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      string? getAttributeValue(AttributeData attribute) =>
+        attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase)?
+          GetTopicId(topic, attribute.Value) :
+          attribute.Value;
+
     }
 
     /*==========================================================================================================================
-    | FIND BY UNIQUE KEY
+    | GET UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Given a root <see cref="Topic"/>, finds the <see cref="Topic"/> with the supplied .
+    ///   Given a <c>TopicID</c>, lookup the topic in the topic graph and return the fully-qualified value. If no value can be
+    ///   found, the original <c>TopicID</c> is returned.
     /// </summary>
-    private static Topic? FindByUniqueKey(this Topic topic, string uniqueKey) {
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="topicId">The <see cref="Topic.Id"/> to retrieve the <see cref="Topic.GetUniqueKey"/> for.</param>
+    /// <param name="options">An optional <see cref="ExportOptions"/> object to specify export settings.</param>
+    private static string? GetUniqueKey(Topic topic, string? topicId, ExportOptions options) {
 
-      if (uniqueKey == null || uniqueKey.Length == 0) {
-        return topic;
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Ignore empty or non-numeric values
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (String.IsNullOrEmpty(topicId) || !Int32.TryParse(topicId, out var id)) {
+        return topicId;
       }
 
-          uniqueKey             = uniqueKey.Replace("Root:", "");
-      var firstColon            = uniqueKey.IndexOf(":", StringComparison.InvariantCultureIgnoreCase);
-      var firstKey              = uniqueKey.Substring(0, firstColon > 0? firstColon : uniqueKey.Length);
-      var subsequentKey         = firstColon > 0? uniqueKey.Substring(firstColon+1) : "";
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Establish scope
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      var uniqueKey             = topic.GetRootTopic().FindFirst(t => t.Id == id)?.GetUniqueKey();
+      var exportScope           = options.IncludeExternalReferences? "Root" : options.ExportScope;
 
-      return topic.Children.GetTopic(firstKey)?.FindByUniqueKey(subsequentKey);
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Return in-scope values
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      if (uniqueKey?.StartsWith(exportScope, StringComparison.InvariantCultureIgnoreCase)?? false) {
+        return uniqueKey;
+      }
 
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Default to null
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      return null;
+
+    }
+
+    /*==========================================================================================================================
+    | GET TOPIC ID
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Given a <c>UniqueKey</c>, lookup the topic in the topic graph and return the <c>TopicID</c>. If no value can be
+    ///   found, the original <c>UniqueKey</c> is returned.
+    /// </summary>
+    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="uniqueKey">The <see cref="Topic.GetUniqueKey"/> to retrieve the <see cref="Topic.Id"/> for.</param>
+    private static string? GetTopicId(Topic topic, string? uniqueKey) {
+      if (uniqueKey!.StartsWith("Root", StringComparison.InvariantCultureIgnoreCase)) {
+        var target = topic.GetByUniqueKey(uniqueKey);
+        if (target != null && !target.IsNew) {
+          return target.Id.ToString(CultureInfo.CurrentCulture);
+        }
+        else {
+          return null;
+        }
+      }
+      return uniqueKey;
     }
 
   } //Class

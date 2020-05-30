@@ -95,5 +95,32 @@ namespace OnTopic.Data.Transfer.Tests {
 
     }
 
+    /*==========================================================================================================================
+    | TEST: EXPORT WITH TOPIC POINTERS: EXTERNAL TOPIC POINTER: EXPORTS UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that points to another topic. Confirms
+    ///   that it is converted to a <c>UniqueKey</c> if valid, and otherwise left as is.
+    /// </summary>
+    [TestMethod]
+    public void ExportWithTopicPointers_ExternalTopicPointer_ExportsUniqueKey() {
+
+      var parentTopic           = TopicFactory.Create("Root", "Container", 5);
+      var topic                 = TopicFactory.Create("Topic", "Container", parentTopic);
+
+      topic.Attributes.SetValue("SomeId", "5");
+
+      var topicData             = topic.Export(
+        new ExportOptions() {
+          IncludeExternalReferences = true
+        }
+      );
+
+      topicData.Attributes.TryGetValue("SomeId", out var someAttribute);
+
+      Assert.AreEqual<string>("Root", someAttribute.Value);
+
+    }
+
   } //Class
 } //Namespace

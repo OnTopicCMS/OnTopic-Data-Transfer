@@ -93,7 +93,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var expected = $"{{" +
         $"\"Key\":\"{attributeData.Key}\"," +
         $"\"Value\":null," +
-        $"\"LastModified\":\"{attributeData.LastModified.ToString("o")}\"" +
+        $"\"LastModified\":\"{attributeData.LastModified:o}\"" +
         $"}}";
 
       var json = JsonSerializer.Serialize(attributeData);
@@ -143,7 +143,7 @@ namespace OnTopic.Data.Transfer.Tests {
           $"{{" +
             $"\"Key\":\"{attributeData.Key}\"," +
             $"\"Value\":null," +
-            $"\"LastModified\":\"{attributeData.LastModified.ToString("o")}\"" +
+            $"\"LastModified\":\"{attributeData.LastModified:o}\"" +
           $"}}"+
         $"]," +
         $"\"Relationships\":[" +

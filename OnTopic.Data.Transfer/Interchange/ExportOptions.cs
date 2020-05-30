@@ -95,5 +95,35 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </remarks>
     public bool IncludeChildTopics { get; set; } = false;
 
+    /*==========================================================================================================================
+    | TRANSLATE TOPIC POINTERS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Determines whether attributes that appear to be topic pointers should be mapped to their fully qualified unique key.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     Well-known topic pointers such as <see cref="Topic.Parent"/> (<c>ParentID</c>) and <see cref="Topic.DerivedTopic"/>
+    ///     (<c>TopicID</c>), as well as relationships, are translated from <see cref="Topic.Id"/> to <see
+    ///     cref="Topic.GetUniqueKey"/>. This ensures that the references can be repopulated on import even though the <see
+    ///     cref="Topic.Id"/> will be different in each database.
+    ///   </para>
+    ///   <para>
+    ///     In addition, however, there are attributes that <i>behave</i> like topic pointers, but aren't as formally defined.
+    ///     These include those corresponding to the <c>TopicList</c>, <c>TokenizedTopicList</c>, and <c>TopicReference</c>
+    ///     attribute types. By convention, these end with an <c>ID</c> (e.g., <c>RootTopicID</c>). Optionally, the export can
+    ///     attempt to map these to a <see cref="Topic.GetUniqueKey"/>, thus allowing them to maintain referential integrity
+    ///     between databases.
+    ///   </para>
+    ///   <para>
+    ///     It is important to note that this can introduce false positives. For example, if a database includes an attribute
+    ///     referring to an external identifier, and whose name ends with <c>Id</c>, that value will be interpreted as a topic
+    ///     reference assuming the value maps to an existing <see cref="Topic.Id"/>. As such, it may be desirable to disable
+    ///     this option in some circumstances if it's known that there are false positives.
+    ///   </para>
+    /// </remarks>
+    public bool TranslateTopicPointers { get; set; } = true;
+
+
   } //Class
 } //Namespace

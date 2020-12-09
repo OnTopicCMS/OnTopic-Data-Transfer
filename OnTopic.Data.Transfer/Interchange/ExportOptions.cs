@@ -78,7 +78,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   </para>
     /// </remarks>
     public bool IncludeNestedTopics {
-      get => IncludeChildTopics? true : _includeNestedTopics;
+      get => IncludeChildTopics || _includeNestedTopics;
       set => _includeNestedTopics = value;
     }
 

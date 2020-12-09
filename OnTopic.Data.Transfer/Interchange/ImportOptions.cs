@@ -57,7 +57,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   updates relevant to a particular feature).
     /// </remarks>
     public bool DeleteUnmatchedAttributes {
-      get => _deleteUnmatchedAttributes?? Strategy.Equals(ImportStrategy.Replace);
+      get => _deleteUnmatchedAttributes?? Strategy is ImportStrategy.Replace;
       set => _deleteUnmatchedAttributes = value;
     }
 
@@ -73,7 +73,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   <see cref="TopicData"/>.
     /// </remarks>
     public bool DeleteUnmatchedRelationships {
-      get => _deleteUnmatchedRelationships?? Strategy.Equals(ImportStrategy.Replace);
+      get => _deleteUnmatchedRelationships?? Strategy is ImportStrategy.Replace;
       set => _deleteUnmatchedRelationships = value;
     }
 
@@ -89,7 +89,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   updates relevant to a particular feature).
     /// </remarks>
     public bool DeleteUnmatchedChildren {
-      get => _deleteUnmatchedChildren?? Strategy.Equals(ImportStrategy.Replace);
+      get => _deleteUnmatchedChildren?? Strategy is ImportStrategy.Replace;
       set => _deleteUnmatchedChildren = value;
     }
 
@@ -105,7 +105,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   updates relevant to a particular feature).
     /// </remarks>
     public bool DeleteUnmatchedNestedTopics {
-      get => _deleteUnmatchedNestedTopics?? Strategy.Equals(ImportStrategy.Replace);
+      get => _deleteUnmatchedNestedTopics?? Strategy is ImportStrategy.Replace;
       set => _deleteUnmatchedNestedTopics = value;
     }
 
@@ -123,7 +123,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   cref="Strategy"/> is set to <see cref="ImportStrategy.Overwrite"/> or <see cref="ImportStrategy.Replace"/>.
     /// </remarks>
     public bool OverwriteContentType {
-      get => _overwriteContentType?? Strategy.Equals(ImportStrategy.Overwrite) || Strategy.Equals(ImportStrategy.Replace);
+      get => _overwriteContentType?? Strategy is ImportStrategy.Overwrite or ImportStrategy.Replace;
       set => _overwriteContentType = value;
     }
 

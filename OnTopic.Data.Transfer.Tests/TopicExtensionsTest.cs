@@ -99,7 +99,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Relationships.SetTopic("Related", relatedTopic);
 
       var topicData             = rootTopic.Export(
-        new ExportOptions() {
+        new() {
           IncludeChildTopics    = true
         }
       );
@@ -132,7 +132,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Relationships.SetTopic("Related", relatedTopic);
 
       var topicData             = topic.Export(
-        new ExportOptions() {
+        new() {
           IncludeExternalReferences = true
         }
       );
@@ -425,7 +425,7 @@ namespace OnTopic.Data.Transfer.Tests {
       };
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "Attribute",
           Value                 = "Attribute Value"
         }
@@ -457,7 +457,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Attributes.SetValue("Attribute", "Original Value");
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "Attribute",
           Value                 = "New Value",
           LastModified          = DateTime.Now.AddSeconds(5)
@@ -490,7 +490,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Attributes.SetValue("Attribute", "Original Value");
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "Attribute",
           Value                 = "Older Value",
           LastModified          = DateTime.MinValue
@@ -587,7 +587,7 @@ namespace OnTopic.Data.Transfer.Tests {
       };
 
       topicData.Children.Add(
-        new TopicData() {
+        new() {
           Key                     = "Child",
           UniqueKey               = topic.GetUniqueKey() + ":Child",
           ContentType             = topic.ContentType
@@ -621,7 +621,7 @@ namespace OnTopic.Data.Transfer.Tests {
       };
 
       topicData.Children.Add(
-        new TopicData() {
+        new() {
           Key                     = "Child",
           UniqueKey               = topic.GetUniqueKey() + ":Child",
           ContentType             = topic.ContentType
@@ -655,7 +655,7 @@ namespace OnTopic.Data.Transfer.Tests {
       };
 
       topicData.Children.Add(
-        new TopicData() {
+        new() {
           Key                     = "Child2",
           UniqueKey               = topic.GetUniqueKey() + ":Child2",
           ContentType             = topic.ContentType
@@ -691,7 +691,7 @@ namespace OnTopic.Data.Transfer.Tests {
       };
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "SomeId",
           Value                 = siblingTopic.GetUniqueKey()
         }
@@ -722,7 +722,7 @@ namespace OnTopic.Data.Transfer.Tests {
       };
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "SomeId",
           Value                 = "Root:Missing:Topic:Pointer"
         }
@@ -753,7 +753,7 @@ namespace OnTopic.Data.Transfer.Tests {
       };
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "InitialBid",
           Value                 = "6"
         }

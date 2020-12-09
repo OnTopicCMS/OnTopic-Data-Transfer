@@ -33,7 +33,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var childTopic            = TopicFactory.Create("Child1", "Container", topic);
 
       var topicData             = topic.Export(
-        new ExportOptions() {
+        new() {
           IncludeChildTopics    = true
         }
       );
@@ -59,7 +59,7 @@ namespace OnTopic.Data.Transfer.Tests {
       _                         = TopicFactory.Create("Child1", "Container", topic);
 
       var topicData             = topic.Export(
-        new ExportOptions() {
+        new() {
           IncludeNestedTopics   = true
         }
       );
@@ -111,7 +111,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Attributes.SetValue("SomeId", "5");
 
       var topicData             = topic.Export(
-        new ExportOptions() {
+        new() {
           IncludeExternalReferences = true
         }
       );

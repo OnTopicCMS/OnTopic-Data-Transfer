@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
@@ -24,7 +25,7 @@ namespace OnTopic.Data.Transfer.Tests {
     /*==========================================================================================================================
     | HELPER: GET TOPIC WITH NEWER TOPIC DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private Tuple<Topic, TopicData> GetTopicWithNewerTopicData(
+    private static Tuple<Topic, TopicData> GetTopicWithNewerTopicData(
       DateTime?                 targetDate                      = null,
       DateTime?                 sourceDate                      = null,
       bool                      isDirty                         = true
@@ -41,10 +42,10 @@ namespace OnTopic.Data.Transfer.Tests {
       sourceDate                ??= DateTime.Now.AddHours(1);
 
       topic.Attributes.SetValue("LastModifiedBy", "Old Value", isDirty);
-      topic.Attributes.SetValue("LastModified", targetDate.ToString(), isDirty);
+      topic.Attributes.SetValue("LastModified", targetDate?.ToString(CultureInfo.InvariantCulture), isDirty);
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "LastModifiedBy",
           Value                 = "New Value",
           LastModified          = DateTime.Now.AddDays(1)
@@ -52,14 +53,14 @@ namespace OnTopic.Data.Transfer.Tests {
       );
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "LastModified",
-          Value                 = sourceDate.ToString(),
+          Value                 = sourceDate?.ToString(CultureInfo.InvariantCulture),
           LastModified          = sourceDate?? DateTime.Now.AddHours(1)
         }
       );
 
-      return new Tuple<Topic, TopicData>(topic, topicData);
+      return new(topic, topicData);
 
     }
 
@@ -96,7 +97,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedByStrategy  = LastModifiedImportStrategy.Current,
           CurrentUser           = "Jeremy"
         }
@@ -120,7 +121,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedByStrategy = LastModifiedImportStrategy.System,
           CurrentUser           = "Jeremy"
         }
@@ -144,7 +145,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedByStrategy = LastModifiedImportStrategy.TargetValue
         }
       );
@@ -169,7 +170,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.AreEqual(oldTime.ToString(), topic.Attributes.GetValue("LastModified"));
+      Assert.AreEqual(oldTime.ToString(CultureInfo.InvariantCulture), topic.Attributes.GetValue("LastModified"));
 
     }
 
@@ -188,7 +189,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedStrategy  = LastModifiedImportStrategy.System
         }
       );
@@ -212,7 +213,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedStrategy  = LastModifiedImportStrategy.System,
         }
       );
@@ -236,12 +237,12 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedStrategy  = LastModifiedImportStrategy.TargetValue
         }
       );
 
-      Assert.AreEqual(yesterday.ToString(), topic.Attributes.GetValue("LastModified"));
+      Assert.AreEqual(yesterday.ToString(CultureInfo.InvariantCulture), topic.Attributes.GetValue("LastModified"));
 
     }
 
@@ -262,12 +263,12 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedStrategy  = LastModifiedImportStrategy.System
         }
       );
 
-      Assert.AreEqual(tomorrow.ToString(), topic.Attributes.GetValue("LastModified"));
+      Assert.AreEqual(tomorrow.ToString(CultureInfo.InvariantCulture), topic.Attributes.GetValue("LastModified"));
 
     }
 

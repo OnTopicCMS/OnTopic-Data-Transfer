@@ -450,7 +450,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     private static string? GetTopicId(Topic topic, string? uniqueKey) {
       if (uniqueKey!.StartsWith("Root", StringComparison.InvariantCultureIgnoreCase)) {
         var target = topic.GetByUniqueKey(uniqueKey);
-        if (target is not null && !target.IsNew) {
+        if (target is not null and { IsNew: false }) {
           return target.Id.ToString(CultureInfo.CurrentCulture);
         }
         else {

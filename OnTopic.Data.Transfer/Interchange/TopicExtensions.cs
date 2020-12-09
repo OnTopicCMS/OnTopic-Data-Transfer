@@ -62,7 +62,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default options
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (options == null) {
+      if (options is null) {
         options                 = new ExportOptions();
       }
       options.ExportScope       ??= topic.GetUniqueKey();
@@ -183,7 +183,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         var key                 = relationship.Item2;
 
         //If the relationship STILL can't be resolved, skip it
-        if (target == null) {
+        if (target is null) {
           continue;
         }
 
@@ -237,7 +237,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default options
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (options == null) {
+      if (options is null) {
         options                 = new ImportOptions() {
           Strategy              = ImportStrategy.Add
         };
@@ -262,7 +262,7 @@ namespace OnTopic.Data.Transfer.Interchange {
 
       if (topicData.DerivedTopicKey?.Length > 0) {
         var target = topic.GetByUniqueKey(topicData.DerivedTopicKey);
-        if (target != null) {
+        if (target is not null) {
           topic.DerivedTopic = target;
         }
         else {
@@ -289,7 +289,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       foreach (var attribute in topicData.Attributes) {
         if (useCustomMergeRules(attribute)) continue;
         var matchedAttribute = topic.Attributes.FirstOrDefault(a => a.Key == attribute.Key);
-        if (matchedAttribute != null && isStrategy(ImportStrategy.Add)) continue;
+        if (matchedAttribute is not null && isStrategy(ImportStrategy.Add)) continue;
         if (matchedAttribute?.LastModified >= attribute.LastModified && isStrategy(ImportStrategy.Merge)) continue;
         topic.Attributes.SetValue(
           attribute.Key,
@@ -320,11 +320,11 @@ namespace OnTopic.Data.Transfer.Interchange {
             break;
         }
 
-        if (topic.Attributes.GetValue("LastModified", null) == null) {
+        if (topic.Attributes.GetValue("LastModified", null) is null) {
           topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
         }
 
-        if (topic.Attributes.GetValue("LastModifiedBy", null) == null) {
+        if (topic.Attributes.GetValue("LastModifiedBy", null) is null) {
           topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
         }
 
@@ -343,7 +343,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       foreach (var relationship in topicData.Relationships) {
         foreach (var relatedTopicKey in relationship.Relationships) {
           var relatedTopic = topic.GetByUniqueKey(relatedTopicKey);
-          if (relationship.Key != null && relatedTopic != null) {
+          if (relationship.Key is not null && relatedTopic is not null) {
             topic.Relationships.SetTopic(relationship.Key, relatedTopic);
           }
           else {
@@ -371,7 +371,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       //Update records based on the source collection
       foreach (var childTopicData in topicData.Children) {
         var childTopic = topic?.Children.GetTopic(childTopicData.Key);
-        if (childTopic == null) {
+        if (childTopic is null) {
           childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
         }
         childTopic.Import(childTopicData, options, unresolvedRelationships);
@@ -450,7 +450,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     private static string? GetTopicId(Topic topic, string? uniqueKey) {
       if (uniqueKey!.StartsWith("Root", StringComparison.InvariantCultureIgnoreCase)) {
         var target = topic.GetByUniqueKey(uniqueKey);
-        if (target != null && !target.IsNew) {
+        if (target is not null && !target.IsNew) {
           return target.Id.ToString(CultureInfo.CurrentCulture);
         }
         else {

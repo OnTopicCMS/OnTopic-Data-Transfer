@@ -23,7 +23,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     /*==========================================================================================================================
     | PRIVATE VARIABLES
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     bool                            _includeNestedTopics            = false;
+    private                     bool                            _includeNestedTopics;
 
     /*==========================================================================================================================
     | INCLUDE EXTERNAL REFERENCES
@@ -40,7 +40,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   exporting with other exports. It may also make when the purpose of the export is to act as a backup for a portion of a
     ///   topic graph, with the expected target being the same topic graph should a bulk-restore be required.
     /// </remarks>
-    public bool IncludeExternalReferences { get; set; } = false;
+    public bool IncludeExternalReferences { get; set; }
 
     /*==========================================================================================================================
     | EXPORT SCOPE
@@ -93,7 +93,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   children under the current <see cref="Topic"/>. If enabled, this will be recursive and thus include <i>all</i>
     ///   descendents, including any nested topics.
     /// </remarks>
-    public bool IncludeChildTopics { get; set; } = false;
+    public bool IncludeChildTopics { get; set; }
 
     /*==========================================================================================================================
     | TRANSLATE TOPIC POINTERS

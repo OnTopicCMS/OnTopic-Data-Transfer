@@ -62,8 +62,8 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default options
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (options == null) {
-        options                 = new ExportOptions();
+      if (options is null) {
+        options                 = new();
       }
       options.ExportScope       ??= topic.GetUniqueKey();
 
@@ -92,7 +92,7 @@ namespace OnTopic.Data.Transfer.Interchange {
           continue;
         }
         topicData.Attributes.Add(
-          new AttributeData() {
+          new() {
             Key                 = attribute.Key,
             Value               = attributeValue,
             LastModified        = attribute.LastModified
@@ -126,9 +126,9 @@ namespace OnTopic.Data.Transfer.Interchange {
       foreach (var childTopic in topic.Children) {
         if (
           options.IncludeChildTopics ||
-          topic.ContentType == "List" ||
+          topic.ContentType is "List" ||
           options.IncludeNestedTopics &&
-          childTopic.ContentType == "List"
+          childTopic.ContentType is "List"
         ) {
           topicData.Children.Add(
             childTopic.Export(options)
@@ -183,7 +183,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         var key                 = relationship.Item2;
 
         //If the relationship STILL can't be resolved, skip it
-        if (target == null) {
+        if (target is null) {
           continue;
         }
 
@@ -237,8 +237,8 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish default options
       \-----------------------------------------------------------------------------------------------------------------------*/
-      if (options == null) {
-        options                 = new ImportOptions() {
+      if (options is null) {
+        options                 = new() {
           Strategy              = ImportStrategy.Add
         };
       };
@@ -262,11 +262,11 @@ namespace OnTopic.Data.Transfer.Interchange {
 
       if (topicData.DerivedTopicKey?.Length > 0) {
         var target = topic.GetByUniqueKey(topicData.DerivedTopicKey);
-        if (target != null) {
+        if (target is not null) {
           topic.DerivedTopic = target;
         }
         else {
-          unresolvedRelationships.Add(new Tuple<Topic, string, string>(topic, "DerivedTopic", topicData.DerivedTopicKey));
+          unresolvedRelationships.Add(new(topic, "DerivedTopic", topicData.DerivedTopicKey));
         }
       }
 
@@ -289,7 +289,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       foreach (var attribute in topicData.Attributes) {
         if (useCustomMergeRules(attribute)) continue;
         var matchedAttribute = topic.Attributes.FirstOrDefault(a => a.Key == attribute.Key);
-        if (matchedAttribute != null && isStrategy(ImportStrategy.Add)) continue;
+        if (matchedAttribute is not null && isStrategy(ImportStrategy.Add)) continue;
         if (matchedAttribute?.LastModified >= attribute.LastModified && isStrategy(ImportStrategy.Merge)) continue;
         topic.Attributes.SetValue(
           attribute.Key,
@@ -320,11 +320,11 @@ namespace OnTopic.Data.Transfer.Interchange {
             break;
         }
 
-        if (topic.Attributes.GetValue("LastModified", null) == null) {
+        if (topic.Attributes.GetValue("LastModified", null) is null) {
           topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
         }
 
-        if (topic.Attributes.GetValue("LastModifiedBy", null) == null) {
+        if (topic.Attributes.GetValue("LastModifiedBy", null) is null) {
           topic.Attributes.SetValue("LastModifiedBy", options.CurrentUser);
         }
 
@@ -343,11 +343,11 @@ namespace OnTopic.Data.Transfer.Interchange {
       foreach (var relationship in topicData.Relationships) {
         foreach (var relatedTopicKey in relationship.Relationships) {
           var relatedTopic = topic.GetByUniqueKey(relatedTopicKey);
-          if (relationship.Key != null && relatedTopic != null) {
+          if (relationship.Key is not null && relatedTopic is not null) {
             topic.Relationships.SetTopic(relationship.Key, relatedTopic);
           }
           else {
-            unresolvedRelationships.Add(new Tuple<Topic, string, string>(topic, relationship.Key!, relatedTopicKey));
+            unresolvedRelationships.Add(new(topic, relationship.Key!, relatedTopicKey));
           }
         }
       }
@@ -360,8 +360,8 @@ namespace OnTopic.Data.Transfer.Interchange {
       if (options.DeleteUnmatchedChildren || options.DeleteUnmatchedNestedTopics) {
         foreach (var child in topic.Children.Where(t1 => !topicData.Children.Any(t2 => t1.Key == t2.Key)).ToArray()) {
           if (
-            topic.ContentType == "List" && options.DeleteUnmatchedNestedTopics ||
-            topic.ContentType != "List" && options.DeleteUnmatchedChildren
+            topic.ContentType is "List" && options.DeleteUnmatchedNestedTopics ||
+            topic.ContentType is not "List" && options.DeleteUnmatchedChildren
           ) {
             topic.Children.Remove(child);
           }
@@ -371,7 +371,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       //Update records based on the source collection
       foreach (var childTopicData in topicData.Children) {
         var childTopic = topic?.Children.GetTopic(childTopicData.Key);
-        if (childTopic == null) {
+        if (childTopic is null) {
           childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
         }
         childTopic.Import(childTopicData, options, unresolvedRelationships);
@@ -386,8 +386,8 @@ namespace OnTopic.Data.Transfer.Interchange {
       | Is custom merge rules?
       \-----------------------------------------------------------------------------------------------------------------------*/
       bool useCustomMergeRules(AttributeData attribute) =>
-        (attribute.Key == "LastModified" && !options!.LastModifiedStrategy.Equals(LastModifiedImportStrategy.Inherit)) ||
-        (attribute.Key == "LastModifiedBy" && !options!.LastModifiedByStrategy.Equals(LastModifiedImportStrategy.Inherit));
+        (attribute.Key is "LastModified" && options!.LastModifiedStrategy is not LastModifiedImportStrategy.Inherit) ||
+        (attribute.Key is "LastModifiedBy" && options!.LastModifiedByStrategy is not LastModifiedImportStrategy.Inherit);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Get attribute value
@@ -450,7 +450,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     private static string? GetTopicId(Topic topic, string? uniqueKey) {
       if (uniqueKey!.StartsWith("Root", StringComparison.InvariantCultureIgnoreCase)) {
         var target = topic.GetByUniqueKey(uniqueKey);
-        if (target != null && !target.IsNew) {
+        if (target is not null and { IsNew: false }) {
           return target.Id.ToString(CultureInfo.CurrentCulture);
         }
         else {

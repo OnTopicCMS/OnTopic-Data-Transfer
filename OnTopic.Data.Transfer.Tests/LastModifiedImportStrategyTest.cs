@@ -44,7 +44,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Attributes.SetValue("LastModified", targetDate.ToString(), isDirty);
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "LastModifiedBy",
           Value                 = "New Value",
           LastModified          = DateTime.Now.AddDays(1)
@@ -52,14 +52,14 @@ namespace OnTopic.Data.Transfer.Tests {
       );
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "LastModified",
           Value                 = sourceDate.ToString(),
           LastModified          = sourceDate?? DateTime.Now.AddHours(1)
         }
       );
 
-      return new Tuple<Topic, TopicData>(topic, topicData);
+      return new(topic, topicData);
 
     }
 
@@ -96,7 +96,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedByStrategy  = LastModifiedImportStrategy.Current,
           CurrentUser           = "Jeremy"
         }
@@ -120,7 +120,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedByStrategy = LastModifiedImportStrategy.System,
           CurrentUser           = "Jeremy"
         }
@@ -144,7 +144,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedByStrategy = LastModifiedImportStrategy.TargetValue
         }
       );
@@ -188,7 +188,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedStrategy  = LastModifiedImportStrategy.System
         }
       );
@@ -212,7 +212,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedStrategy  = LastModifiedImportStrategy.System,
         }
       );
@@ -236,7 +236,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedStrategy  = LastModifiedImportStrategy.TargetValue
         }
       );
@@ -262,7 +262,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           LastModifiedStrategy  = LastModifiedImportStrategy.System
         }
       );

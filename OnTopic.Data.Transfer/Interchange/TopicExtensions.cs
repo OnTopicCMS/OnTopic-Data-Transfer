@@ -126,9 +126,9 @@ namespace OnTopic.Data.Transfer.Interchange {
       foreach (var childTopic in topic.Children) {
         if (
           options.IncludeChildTopics ||
-          topic.ContentType == "List" ||
+          topic.ContentType is "List" ||
           options.IncludeNestedTopics &&
-          childTopic.ContentType == "List"
+          childTopic.ContentType is "List"
         ) {
           topicData.Children.Add(
             childTopic.Export(options)
@@ -360,8 +360,8 @@ namespace OnTopic.Data.Transfer.Interchange {
       if (options.DeleteUnmatchedChildren || options.DeleteUnmatchedNestedTopics) {
         foreach (var child in topic.Children.Where(t1 => !topicData.Children.Any(t2 => t1.Key == t2.Key)).ToArray()) {
           if (
-            topic.ContentType == "List" && options.DeleteUnmatchedNestedTopics ||
-            topic.ContentType != "List" && options.DeleteUnmatchedChildren
+            topic.ContentType is "List" && options.DeleteUnmatchedNestedTopics ||
+            topic.ContentType is not "List" && options.DeleteUnmatchedChildren
           ) {
             topic.Children.Remove(child);
           }
@@ -386,8 +386,8 @@ namespace OnTopic.Data.Transfer.Interchange {
       | Is custom merge rules?
       \-----------------------------------------------------------------------------------------------------------------------*/
       bool useCustomMergeRules(AttributeData attribute) =>
-        (attribute.Key == "LastModified" && !options!.LastModifiedStrategy.Equals(LastModifiedImportStrategy.Inherit)) ||
-        (attribute.Key == "LastModifiedBy" && !options!.LastModifiedByStrategy.Equals(LastModifiedImportStrategy.Inherit));
+        (attribute.Key is "LastModified" && options!.LastModifiedStrategy is not LastModifiedImportStrategy.Inherit) ||
+        (attribute.Key is "LastModifiedBy" && options!.LastModifiedByStrategy is not LastModifiedImportStrategy.Inherit);
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Get attribute value

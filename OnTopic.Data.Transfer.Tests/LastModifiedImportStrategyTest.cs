@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Globalization;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OnTopic.Attributes;
@@ -169,7 +170,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.AreEqual(oldTime.ToString(), topic.Attributes.GetValue("LastModified"));
+      Assert.AreEqual(oldTime.ToString(CultureInfo.InvariantCulture), topic.Attributes.GetValue("LastModified"));
 
     }
 
@@ -241,7 +242,7 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
-      Assert.AreEqual(yesterday.ToString(), topic.Attributes.GetValue("LastModified"));
+      Assert.AreEqual(yesterday.ToString(CultureInfo.InvariantCulture), topic.Attributes.GetValue("LastModified"));
 
     }
 
@@ -267,7 +268,7 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
-      Assert.AreEqual(tomorrow.ToString(), topic.Attributes.GetValue("LastModified"));
+      Assert.AreEqual(tomorrow.ToString(CultureInfo.InvariantCulture), topic.Attributes.GetValue("LastModified"));
 
     }
 

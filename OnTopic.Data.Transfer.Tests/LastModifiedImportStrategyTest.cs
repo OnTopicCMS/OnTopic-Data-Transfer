@@ -24,7 +24,7 @@ namespace OnTopic.Data.Transfer.Tests {
     /*==========================================================================================================================
     | HELPER: GET TOPIC WITH NEWER TOPIC DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
-    private Tuple<Topic, TopicData> GetTopicWithNewerTopicData(
+    private static Tuple<Topic, TopicData> GetTopicWithNewerTopicData(
       DateTime?                 targetDate                      = null,
       DateTime?                 sourceDate                      = null,
       bool                      isDirty                         = true

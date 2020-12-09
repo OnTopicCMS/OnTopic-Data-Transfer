@@ -82,7 +82,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var attributes            = topic.Attributes.Where(a =>
         !ReservedAttributeKeys.Any(r =>
-          r.Equals(a.Key, StringComparison.InvariantCultureIgnoreCase)
+          r.Equals(a.Key, StringComparison.OrdinalIgnoreCase)
         )
       );
 
@@ -188,7 +188,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         }
 
         //Wire up derived topics
-        if (key.Equals("DerivedTopic", StringComparison.CurrentCultureIgnoreCase)) {
+        if (key.Equals("DerivedTopic", StringComparison.OrdinalIgnoreCase)) {
           source.DerivedTopic = target;
         }
 

@@ -39,7 +39,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           OverwriteContentType  = true
         }
       );
@@ -68,7 +68,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Attributes.SetValue("Attribute", "Original Value");
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "Attribute",
           Value                 = "New Value",
           LastModified          = DateTime.Now.AddTicks(1)
@@ -77,7 +77,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           Strategy              = ImportStrategy.Merge
         }
       );
@@ -106,7 +106,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Attributes.SetValue("Attribute", "Original Value");
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "Attribute",
           Value                 = "New Value",
           LastModified          = DateTime.Now.AddSeconds(-5)
@@ -115,7 +115,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           Strategy              = ImportStrategy.Merge
         }
       );
@@ -144,7 +144,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Attributes.SetValue("Attribute", "Original Value");
 
       topicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "Attribute",
           Value                 = "New Value",
           LastModified          = DateTime.Now.AddSeconds(-5)
@@ -153,7 +153,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           Strategy              = ImportStrategy.Overwrite
         }
       );
@@ -195,7 +195,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           Strategy              = ImportStrategy.Replace
         }
       );
@@ -226,7 +226,7 @@ namespace OnTopic.Data.Transfer.Tests {
       };
 
       topicData.Children.Add(
-        new TopicData() {
+        new() {
           Key                     = "Child2",
           UniqueKey               = topic.GetUniqueKey() + ":Child2",
           ContentType             = topic.ContentType
@@ -235,7 +235,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           Strategy              = ImportStrategy.Replace
         }
       );
@@ -273,7 +273,7 @@ namespace OnTopic.Data.Transfer.Tests {
       childTopic.Attributes.SetValue("Description", "Old Value");
 
       childTopicData.Attributes.Add(
-        new AttributeData() {
+        new() {
           Key                   = "Description",
           Value                 = "New Value",
           LastModified          = DateTime.Now.AddDays(1)
@@ -284,7 +284,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           Strategy              = ImportStrategy.Merge
         }
       );
@@ -325,7 +325,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topicData.Children.Add(nestedTopicsData);
 
       nestedTopicsData.Children.Add(
-        new TopicData() {
+        new() {
           Key                     = "Nested2",
           UniqueKey               = nestedTopic2.GetUniqueKey(),
           ContentType             = nestedTopic2.ContentType
@@ -334,7 +334,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(
         topicData,
-        new ImportOptions() {
+        new() {
           Strategy              = ImportStrategy.Replace
         }
       );

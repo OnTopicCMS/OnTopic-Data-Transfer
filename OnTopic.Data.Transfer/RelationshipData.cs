@@ -35,7 +35,7 @@ namespace OnTopic.Data.Transfer {
     /// <summary>
     ///   Gets a collection of unique keys associated with related <see cref="Topic"/> entities.
     /// </summary>
-    public List<string> Relationships { get; set; } = new List<string>();
+    public List<string> Relationships { get; set; } = new();
 
   } //Class
 } //Namespace

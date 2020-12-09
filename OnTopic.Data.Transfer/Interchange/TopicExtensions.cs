@@ -63,7 +63,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       | Establish default options
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (options is null) {
-        options                 = new ExportOptions();
+        options                 = new();
       }
       options.ExportScope       ??= topic.GetUniqueKey();
 
@@ -92,7 +92,7 @@ namespace OnTopic.Data.Transfer.Interchange {
           continue;
         }
         topicData.Attributes.Add(
-          new AttributeData() {
+          new() {
             Key                 = attribute.Key,
             Value               = attributeValue,
             LastModified        = attribute.LastModified
@@ -238,7 +238,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       | Establish default options
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (options is null) {
-        options                 = new ImportOptions() {
+        options                 = new() {
           Strategy              = ImportStrategy.Add
         };
       };
@@ -266,7 +266,7 @@ namespace OnTopic.Data.Transfer.Interchange {
           topic.DerivedTopic = target;
         }
         else {
-          unresolvedRelationships.Add(new Tuple<Topic, string, string>(topic, "DerivedTopic", topicData.DerivedTopicKey));
+          unresolvedRelationships.Add(new(topic, "DerivedTopic", topicData.DerivedTopicKey));
         }
       }
 
@@ -347,7 +347,7 @@ namespace OnTopic.Data.Transfer.Interchange {
             topic.Relationships.SetTopic(relationship.Key, relatedTopic);
           }
           else {
-            unresolvedRelationships.Add(new Tuple<Topic, string, string>(topic, relationship.Key!, relatedTopicKey));
+            unresolvedRelationships.Add(new(topic, relationship.Key!, relatedTopicKey));
           }
         }
       }

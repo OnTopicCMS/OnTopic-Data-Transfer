@@ -71,7 +71,7 @@ namespace OnTopic.Data.Transfer {
     ///   Provides a collection of <see cref="AttributeData"/> representing the attributes from the associated <see
     ///   cref="Topic"/> object.
     /// </summary>
-    public AttributeDataCollection Attributes { get; set; } = new AttributeDataCollection();
+    public AttributeDataCollection Attributes { get; set; } = new();
 
     /*==========================================================================================================================
     | RELATIONSHIPS
@@ -80,7 +80,7 @@ namespace OnTopic.Data.Transfer {
     ///   Provides a collection of <see cref="RelationshipData"/> representing the relationships from the associated <see
     ///   cref="Topic"/> object.
     /// </summary>
-    public RelationshipDataCollection Relationships { get; set; } = new RelationshipDataCollection();
+    public RelationshipDataCollection Relationships { get; set; } = new();
 
     /*==========================================================================================================================
     | CHILDREN
@@ -89,7 +89,7 @@ namespace OnTopic.Data.Transfer {
     ///   Provides a collection of <see cref="TopicData"/> objects representing the children of the associated <see
     ///   cref="Topic"/>.
     /// </summary>
-    public List<TopicData> Children { get; set; } = new List<TopicData>();
+    public List<TopicData> Children { get; set; } = new();
 
   } //Class
 } //Namespace

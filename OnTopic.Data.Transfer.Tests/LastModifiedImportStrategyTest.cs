@@ -42,7 +42,7 @@ namespace OnTopic.Data.Transfer.Tests {
       sourceDate                ??= DateTime.Now.AddHours(1);
 
       topic.Attributes.SetValue("LastModifiedBy", "Old Value", isDirty);
-      topic.Attributes.SetValue("LastModified", targetDate.ToString(), isDirty);
+      topic.Attributes.SetValue("LastModified", targetDate?.ToString(CultureInfo.InvariantCulture), isDirty);
 
       topicData.Attributes.Add(
         new() {
@@ -55,7 +55,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topicData.Attributes.Add(
         new() {
           Key                   = "LastModified",
-          Value                 = sourceDate.ToString(),
+          Value                 = sourceDate?.ToString(CultureInfo.InvariantCulture),
           LastModified          = sourceDate?? DateTime.Now.AddHours(1)
         }
       );

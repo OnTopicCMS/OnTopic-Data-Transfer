@@ -57,12 +57,12 @@ namespace OnTopic.Data.Transfer {
     public string? ContentType { get; set; }
 
     /*==========================================================================================================================
-    | DERIVED TOPIC KEY
+    | BASE TOPIC KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets the <see cref="UniqueKey"/> of a <see cref="Topic"/> that the associated <see cref="Topic"/> should derive from.
     /// </summary>
-    public string? DerivedTopicKey { get; set; }
+    public string? BaseTopicKey { get; set; }
 
     /*==========================================================================================================================
     | ATTRIBUTES

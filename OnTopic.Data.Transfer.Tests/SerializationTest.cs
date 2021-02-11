@@ -39,7 +39,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Key\":\"{topicData.Key}\"," +
         $"\"UniqueKey\":\"{topicData.UniqueKey}\"," +
         $"\"ContentType\":\"{topicData.ContentType}\"," +
-        $"\"DerivedTopicKey\":null," +
+        $"\"BaseTopicKey\":null," +
         $"\"Attributes\":[]," +
         $"\"Relationships\":[]," +
         $"\"Children\":[]" +
@@ -138,7 +138,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Key\":\"{topicData.Key}\"," +
         $"\"UniqueKey\":\"{topicData.UniqueKey}\"," +
         $"\"ContentType\":\"{topicData.ContentType}\"," +
-        $"\"DerivedTopicKey\":null," +
+        $"\"BaseTopicKey\":null," +
         $"\"Attributes\":[" +
           $"{{" +
             $"\"Key\":\"{attributeData.Key}\"," +
@@ -157,7 +157,7 @@ namespace OnTopic.Data.Transfer.Tests {
             $"\"Key\":\"{childTopicData.Key}\"," +
             $"\"UniqueKey\":\"{childTopicData.UniqueKey}\"," +
             $"\"ContentType\":\"{childTopicData.ContentType}\"," +
-            $"\"DerivedTopicKey\":null," +
+            $"\"BaseTopicKey\":null," +
             $"\"Attributes\":[]," +
             $"\"Relationships\":[]," +
             $"\"Children\":[]" +

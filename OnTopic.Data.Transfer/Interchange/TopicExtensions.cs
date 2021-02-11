@@ -336,7 +336,9 @@ namespace OnTopic.Data.Transfer.Interchange {
 
       //First delete any unmatched records, if appropriate
       if (options.DeleteUnmatchedRelationships) {
-        topic.Relationships.Clear();
+        foreach (var relationship in topic.Relationships) {
+          topic.Relationships.Clear(relationship.Key);
+        }
       }
 
       //Update records based on the source collection

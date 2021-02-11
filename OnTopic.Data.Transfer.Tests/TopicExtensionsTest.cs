@@ -175,8 +175,8 @@ namespace OnTopic.Data.Transfer.Tests {
     public void Export_ExcludesReservedAttributes() {
 
       var topic                 = TopicFactory.Create("Topic", "Container", 5);
-      _                         = TopicFactory.Create("ChildA", "Container", 6, topic);
-      _                         = TopicFactory.Create("ChildB", "Container", 7, topic);
+      _                         = TopicFactory.Create("ChildA", "Container", topic, 6);
+      _                         = TopicFactory.Create("ChildB", "Container", topic, 7);
 
       //Manually setting using non-standard casing to evaluate case insensitivity
       topic.Attributes.SetValue("parentId", "5");
@@ -315,7 +315,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
-      var derivedTopic          = TopicFactory.Create("Derived", "Container", 5, rootTopic);
+      var derivedTopic          = TopicFactory.Create("Derived", "Container", rootTopic, 5);
 
       var topicData             = new TopicData() {
         Key                     = topic.Key,
@@ -388,7 +388,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
-      var derivedTopic          = TopicFactory.Create("Derived", "Container", 5, rootTopic);
+      var derivedTopic          = TopicFactory.Create("Derived", "Container", rootTopic, 5);
 
       topic.DerivedTopic        = derivedTopic;
 
@@ -682,7 +682,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Topic", "Container", rootTopic);
-      var siblingTopic          = TopicFactory.Create("SiblingTopic", "Container", 5, rootTopic);
+      var siblingTopic          = TopicFactory.Create("SiblingTopic", "Container", rootTopic, 5);
 
       var topicData             = new TopicData() {
         Key                     = topic.Key,

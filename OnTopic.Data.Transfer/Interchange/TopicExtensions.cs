@@ -194,7 +194,7 @@ namespace OnTopic.Data.Transfer.Interchange {
 
         //Wire up relationships
         else {
-          source.Relationships.SetTopic(key, target);
+          source.Relationships.SetValue(key, target);
         }
 
       }
@@ -344,7 +344,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         foreach (var relatedTopicKey in relationship.Relationships) {
           var relatedTopic = topic.GetByUniqueKey(relatedTopicKey);
           if (relationship.Key is not null && relatedTopic is not null) {
-            topic.Relationships.SetTopic(relationship.Key, relatedTopic);
+            topic.Relationships.SetValue(relationship.Key, relatedTopic);
           }
           else {
             unresolvedRelationships.Add(new(topic, relationship.Key!, relatedTopicKey));
@@ -370,7 +370,7 @@ namespace OnTopic.Data.Transfer.Interchange {
 
       //Update records based on the source collection
       foreach (var childTopicData in topicData.Children) {
-        var childTopic = topic?.Children.GetTopic(childTopicData.Key);
+        var childTopic = topic?.Children.GetValue(childTopicData.Key);
         if (childTopic is null) {
           childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
         }

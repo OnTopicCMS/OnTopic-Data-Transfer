@@ -96,7 +96,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
       var relatedTopic          = TopicFactory.Create("Related", "Container", rootTopic);
 
-      topic.Relationships.SetTopic("Related", relatedTopic);
+      topic.Relationships.SetValue("Related", relatedTopic);
 
       var topicData             = rootTopic.Export(
         new() {
@@ -129,7 +129,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
       var relatedTopic          = TopicFactory.Create("Related", "Container", rootTopic);
 
-      topic.Relationships.SetTopic("Related", relatedTopic);
+      topic.Relationships.SetValue("Related", relatedTopic);
 
       var topicData             = topic.Export(
         new() {
@@ -530,7 +530,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.AreEqual(relatedTopic, topic.Relationships.GetTopics("Related")?.FirstOrDefault());
+      Assert.AreEqual(relatedTopic, topic.Relationships.GetValues("Related")?.FirstOrDefault());
 
     }
 
@@ -557,15 +557,15 @@ namespace OnTopic.Data.Transfer.Tests {
         Key                   = "Related"
       };
 
-      topic.Relationships.SetTopic("Related", relatedTopic1);
+      topic.Relationships.SetValue("Related", relatedTopic1);
 
       topicData.Relationships.Add(relationshipData);
       relationshipData.Relationships.Add(relatedTopic2.GetUniqueKey());
 
       topic.Import(topicData);
 
-      Assert.AreEqual(relatedTopic1, topic.Relationships.GetTopics("Related")?.FirstOrDefault());
-      Assert.AreEqual(relatedTopic2, topic.Relationships.GetTopics("Related")?.LastOrDefault());
+      Assert.AreEqual(relatedTopic1, topic.Relationships.GetValues("Related")?.FirstOrDefault());
+      Assert.AreEqual(relatedTopic2, topic.Relationships.GetValues("Related")?.LastOrDefault());
 
     }
 

@@ -49,13 +49,13 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
-      var derivedTopic          = TopicFactory.Create("Derived", "Container", rootTopic);
-      topic.DerivedTopic        = derivedTopic;
+      var baseTopic             = TopicFactory.Create("Derived", "Container", rootTopic);
+      topic.BaseTopic           = baseTopic;
 
       var topicData             = topic.Export();
 
       Assert.IsNotNull(topicData);
-      Assert.AreEqual<string>(topic.DerivedTopic.GetUniqueKey(), topicData.DerivedTopicKey);
+      Assert.AreEqual<string>(topic.BaseTopic.GetUniqueKey(), topicData.DerivedTopicKey);
 
     }
 
@@ -326,9 +326,9 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.IsNotNull(topic.DerivedTopic);
+      Assert.IsNotNull(topic.BaseTopic);
       Assert.AreEqual<string>("5", topic.Attributes.GetValue("TopicID"));
-      Assert.AreEqual(derivedTopic, topic.DerivedTopic);
+      Assert.AreEqual(derivedTopic, topic.BaseTopic);
 
     }
 
@@ -371,8 +371,8 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var childTopic            = topic.Children.FirstOrDefault();
 
-      Assert.IsNotNull(childTopic.DerivedTopic);
-      Assert.AreEqual<string>(relatedTopicData.Key, childTopic.DerivedTopic?.Key);
+      Assert.IsNotNull(childTopic.BaseTopic);
+      Assert.AreEqual<string>(relatedTopicData.Key, childTopic.BaseTopic?.Key);
 
     }
 
@@ -388,9 +388,9 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
-      var derivedTopic          = TopicFactory.Create("Derived", "Container", rootTopic, 5);
+      var baseTopic             = TopicFactory.Create("Derived", "Container", rootTopic, 5);
 
-      topic.DerivedTopic        = derivedTopic;
+      topic.BaseTopic           = baseTopic;
 
       var topicData             = new TopicData() {
         Key                     = topic.Key,
@@ -401,9 +401,9 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.IsNotNull(topic.DerivedTopic);
+      Assert.IsNotNull(topic.BaseTopic);
       Assert.AreEqual<string>("5", topic.Attributes.GetValue("TopicID"));
-      Assert.AreEqual(derivedTopic, topic.DerivedTopic);
+      Assert.AreEqual(baseTopic, topic.BaseTopic);
 
     }
 

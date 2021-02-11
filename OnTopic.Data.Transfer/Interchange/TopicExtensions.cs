@@ -74,7 +74,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType,
-        DerivedTopicKey         = topic.DerivedTopic?.GetUniqueKey()
+        DerivedTopicKey         = topic.BaseTopic?.GetUniqueKey()
       };
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -189,7 +189,7 @@ namespace OnTopic.Data.Transfer.Interchange {
 
         //Wire up derived topics
         if (key.Equals("DerivedTopic", StringComparison.OrdinalIgnoreCase)) {
-          source.DerivedTopic = target;
+          source.BaseTopic = target;
         }
 
         //Wire up relationships
@@ -263,7 +263,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       if (topicData.DerivedTopicKey?.Length > 0) {
         var target = topic.GetByUniqueKey(topicData.DerivedTopicKey);
         if (target is not null) {
-          topic.DerivedTopic = target;
+          topic.BaseTopic = target;
         }
         else {
           unresolvedRelationships.Add(new(topic, "DerivedTopic", topicData.DerivedTopicKey));

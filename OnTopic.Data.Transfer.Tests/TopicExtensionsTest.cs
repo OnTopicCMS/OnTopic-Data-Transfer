@@ -42,7 +42,7 @@ namespace OnTopic.Data.Transfer.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> with a <see cref="Topic.DerivedTopic"/> and ensures that the <see
-    ///   cref="TopicData.DerivedTopicKey"/> is set correctly.
+    ///   cref="TopicData.BaseTopicKey"/> is set correctly.
     /// </summary>
     [TestMethod]
     public void Export_DerivedTopic_MapsDerivedTopicKey() {
@@ -55,7 +55,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var topicData             = topic.Export();
 
       Assert.IsNotNull(topicData);
-      Assert.AreEqual<string>(topic.BaseTopic.GetUniqueKey(), topicData.DerivedTopicKey);
+      Assert.AreEqual<string>(topic.BaseTopic.GetUniqueKey(), topicData.BaseTopicKey);
 
     }
 
@@ -307,7 +307,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: IMPORT: DERIVED TOPIC KEY: MAPS DERIVED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.DerivedTopicKey"/> and ensures that the <see
+    ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.BaseTopicKey"/> and ensures that the <see
     ///   cref="Topic.DerivedTopic"/> is set correctly.
     /// </summary>
     [TestMethod]
@@ -321,7 +321,7 @@ namespace OnTopic.Data.Transfer.Tests {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType,
-        DerivedTopicKey         = baseTopic.GetUniqueKey()
+        BaseTopicKey         = baseTopic.GetUniqueKey()
       };
 
       topic.Import(topicData);
@@ -335,7 +335,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: IMPORT: DERIVED TOPIC KEY: MAPS NEWLY DERIVED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.DerivedTopicKey"/> that points to a newly imported
+    ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.BaseTopicKey"/> that points to a newly imported
     ///   topic that is later in the tree traversal, and ensures that the <see cref="Topic.DerivedTopic"/> is set correctly.
     /// </summary>
     [TestMethod]
@@ -354,7 +354,7 @@ namespace OnTopic.Data.Transfer.Tests {
         Key                     = "Child",
         UniqueKey               = $"{topicData.UniqueKey}:Child",
         ContentType             = "Container",
-        DerivedTopicKey         = "Root:Test:Related"
+        BaseTopicKey         = "Root:Test:Related"
       };
 
       var relatedTopicData      = new TopicData() {
@@ -379,7 +379,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: IMPORT: INVALID DERIVED TOPIC KEY: MAINTAINS EXISTING VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.DerivedTopicKey"/> that is invalid and ensures that the
+    ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.BaseTopicKey"/> that is invalid and ensures that the
     ///   <see cref="Topic.DerivedTopic"/> is not updated.
     /// </summary>
     [TestMethod]
@@ -395,7 +395,7 @@ namespace OnTopic.Data.Transfer.Tests {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType,
-        DerivedTopicKey         = "Root:InvalidKey"
+        BaseTopicKey         = "Root:InvalidKey"
       };
 
       topic.Import(topicData);

@@ -74,7 +74,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType,
-        DerivedTopicKey         = topic.BaseTopic?.GetUniqueKey()
+        BaseTopicKey         = topic.BaseTopic?.GetUniqueKey()
       };
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -260,13 +260,13 @@ namespace OnTopic.Data.Transfer.Interchange {
         topic.ContentType       = topicData.ContentType;
       }
 
-      if (topicData.DerivedTopicKey?.Length > 0) {
-        var target = topic.GetByUniqueKey(topicData.DerivedTopicKey);
+      if (topicData.BaseTopicKey?.Length > 0) {
+        var target = topic.GetByUniqueKey(topicData.BaseTopicKey);
         if (target is not null) {
           topic.BaseTopic = target;
         }
         else {
-          unresolvedRelationships.Add(new(topic, "DerivedTopic", topicData.DerivedTopicKey));
+          unresolvedRelationships.Add(new(topic, "DerivedTopic", topicData.BaseTopicKey));
         }
       }
 

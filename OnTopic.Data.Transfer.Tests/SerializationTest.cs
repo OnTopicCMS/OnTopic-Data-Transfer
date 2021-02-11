@@ -39,13 +39,12 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Key\":\"{topicData.Key}\"," +
         $"\"UniqueKey\":\"{topicData.UniqueKey}\"," +
         $"\"ContentType\":\"{topicData.ContentType}\"," +
-        $"\"DerivedTopicKey\":null," +
         $"\"Attributes\":[]," +
         $"\"Relationships\":[]," +
         $"\"Children\":[]" +
         $"}}";
 
-      var json = JsonSerializer.Serialize(topicData);
+      var json = JsonSerializer.Serialize(topicData, new() { IgnoreNullValues = true });
 
       Assert.AreEqual<string>(expected, json);
 
@@ -138,11 +137,9 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Key\":\"{topicData.Key}\"," +
         $"\"UniqueKey\":\"{topicData.UniqueKey}\"," +
         $"\"ContentType\":\"{topicData.ContentType}\"," +
-        $"\"DerivedTopicKey\":null," +
         $"\"Attributes\":[" +
           $"{{" +
             $"\"Key\":\"{attributeData.Key}\"," +
-            $"\"Value\":null," +
             $"\"LastModified\":\"{attributeData.LastModified:o}\"" +
           $"}}"+
         $"]," +
@@ -157,7 +154,6 @@ namespace OnTopic.Data.Transfer.Tests {
             $"\"Key\":\"{childTopicData.Key}\"," +
             $"\"UniqueKey\":\"{childTopicData.UniqueKey}\"," +
             $"\"ContentType\":\"{childTopicData.ContentType}\"," +
-            $"\"DerivedTopicKey\":null," +
             $"\"Attributes\":[]," +
             $"\"Relationships\":[]," +
             $"\"Children\":[]" +
@@ -165,7 +161,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"]" +
         $"}}";
 
-      var json = JsonSerializer.Serialize(topicData);
+      var json = JsonSerializer.Serialize(topicData, new() { IgnoreNullValues = true });
 
       Assert.AreEqual<string>(expected, json);
 

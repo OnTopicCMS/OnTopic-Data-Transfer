@@ -49,13 +49,13 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
-      var derivedTopic          = TopicFactory.Create("Derived", "Container", rootTopic);
-      topic.DerivedTopic        = derivedTopic;
+      var baseTopic             = TopicFactory.Create("Base", "Container", rootTopic);
+      topic.BaseTopic           = baseTopic;
 
       var topicData             = topic.Export();
 
       Assert.IsNotNull(topicData);
-      Assert.AreEqual<string>(topic.DerivedTopic.GetUniqueKey(), topicData.DerivedTopicKey);
+      Assert.AreEqual<string>(topic.BaseTopic.GetUniqueKey(), topicData.DerivedTopicKey);
 
     }
 
@@ -96,7 +96,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
       var relatedTopic          = TopicFactory.Create("Related", "Container", rootTopic);
 
-      topic.Relationships.SetTopic("Related", relatedTopic);
+      topic.Relationships.SetValue("Related", relatedTopic);
 
       var topicData             = rootTopic.Export(
         new() {
@@ -129,7 +129,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
       var relatedTopic          = TopicFactory.Create("Related", "Container", rootTopic);
 
-      topic.Relationships.SetTopic("Related", relatedTopic);
+      topic.Relationships.SetValue("Related", relatedTopic);
 
       var topicData             = topic.Export(
         new() {
@@ -175,8 +175,8 @@ namespace OnTopic.Data.Transfer.Tests {
     public void Export_ExcludesReservedAttributes() {
 
       var topic                 = TopicFactory.Create("Topic", "Container", 5);
-      _                         = TopicFactory.Create("ChildA", "Container", 6, topic);
-      _                         = TopicFactory.Create("ChildB", "Container", 7, topic);
+      _                         = TopicFactory.Create("ChildA", "Container", topic, 6);
+      _                         = TopicFactory.Create("ChildB", "Container", topic, 7);
 
       //Manually setting using non-standard casing to evaluate case insensitivity
       topic.Attributes.SetValue("parentId", "5");
@@ -315,20 +315,19 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
-      var derivedTopic          = TopicFactory.Create("Derived", "Container", 5, rootTopic);
+      var baseTopic             = TopicFactory.Create("Base", "Container", rootTopic, 5);
 
       var topicData             = new TopicData() {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType,
-        DerivedTopicKey         = derivedTopic.GetUniqueKey()
+        DerivedTopicKey         = baseTopic.GetUniqueKey()
       };
 
       topic.Import(topicData);
 
-      Assert.IsNotNull(topic.DerivedTopic);
-      Assert.AreEqual<string>("5", topic.Attributes.GetValue("TopicID"));
-      Assert.AreEqual(derivedTopic, topic.DerivedTopic);
+      Assert.IsNotNull(topic.BaseTopic);
+      Assert.AreEqual(baseTopic, topic.BaseTopic);
 
     }
 
@@ -371,8 +370,8 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var childTopic            = topic.Children.FirstOrDefault();
 
-      Assert.IsNotNull(childTopic.DerivedTopic);
-      Assert.AreEqual<string>(relatedTopicData.Key, childTopic.DerivedTopic?.Key);
+      Assert.IsNotNull(childTopic.BaseTopic);
+      Assert.AreEqual<string>(relatedTopicData.Key, childTopic.BaseTopic?.Key);
 
     }
 
@@ -388,9 +387,9 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
-      var derivedTopic          = TopicFactory.Create("Derived", "Container", 5, rootTopic);
+      var baseTopic             = TopicFactory.Create("Base", "Container", rootTopic, 5);
 
-      topic.DerivedTopic        = derivedTopic;
+      topic.BaseTopic           = baseTopic;
 
       var topicData             = new TopicData() {
         Key                     = topic.Key,
@@ -401,9 +400,8 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.IsNotNull(topic.DerivedTopic);
-      Assert.AreEqual<string>("5", topic.Attributes.GetValue("TopicID"));
-      Assert.AreEqual(derivedTopic, topic.DerivedTopic);
+      Assert.IsNotNull(topic.BaseTopic);
+      Assert.AreEqual(baseTopic, topic.BaseTopic);
 
     }
 
@@ -530,7 +528,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.AreEqual(relatedTopic, topic.Relationships.GetTopics("Related")?.FirstOrDefault());
+      Assert.AreEqual(relatedTopic, topic.Relationships.GetValues("Related")?.FirstOrDefault());
 
     }
 
@@ -557,15 +555,15 @@ namespace OnTopic.Data.Transfer.Tests {
         Key                   = "Related"
       };
 
-      topic.Relationships.SetTopic("Related", relatedTopic1);
+      topic.Relationships.SetValue("Related", relatedTopic1);
 
       topicData.Relationships.Add(relationshipData);
       relationshipData.Relationships.Add(relatedTopic2.GetUniqueKey());
 
       topic.Import(topicData);
 
-      Assert.AreEqual(relatedTopic1, topic.Relationships.GetTopics("Related")?.FirstOrDefault());
-      Assert.AreEqual(relatedTopic2, topic.Relationships.GetTopics("Related")?.LastOrDefault());
+      Assert.AreEqual(relatedTopic1, topic.Relationships.GetValues("Related")?.FirstOrDefault());
+      Assert.AreEqual(relatedTopic2, topic.Relationships.GetValues("Related")?.LastOrDefault());
 
     }
 
@@ -682,7 +680,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Topic", "Container", rootTopic);
-      var siblingTopic          = TopicFactory.Create("SiblingTopic", "Container", 5, rootTopic);
+      var siblingTopic          = TopicFactory.Create("SiblingTopic", "Container", rootTopic, 5);
 
       var topicData             = new TopicData() {
         Key                     = topic.Key,

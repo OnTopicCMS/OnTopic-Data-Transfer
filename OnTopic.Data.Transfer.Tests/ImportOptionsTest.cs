@@ -71,7 +71,7 @@ namespace OnTopic.Data.Transfer.Tests {
         new() {
           Key                   = "Attribute",
           Value                 = "New Value",
-          LastModified          = DateTime.Now.AddTicks(1)
+          LastModified          = DateTime.UtcNow.AddTicks(300)
         }
       );
 
@@ -186,9 +186,9 @@ namespace OnTopic.Data.Transfer.Tests {
         Key                   = "Related"
       };
 
-      topic.Relationships.SetTopic("Related", relatedTopic1);
-      topic.Relationships.SetTopic("Related", relatedTopic2);
-      topic.Relationships.SetTopic("Cousin",  relatedTopic3);
+      topic.Relationships.SetValue("Related", relatedTopic1);
+      topic.Relationships.SetValue("Related", relatedTopic2);
+      topic.Relationships.SetValue("Cousin",  relatedTopic3);
 
       topicData.Relationships.Add(relationshipData);
       relationshipData.Relationships.Add(relatedTopic1.GetUniqueKey());
@@ -200,9 +200,9 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
-      Assert.AreEqual(relatedTopic1, topic.Relationships.GetTopics("Related")?.FirstOrDefault());
-      Assert.AreEqual<int>(1, topic.Relationships.GetTopics("Related").Count);
-      Assert.AreEqual<int>(0, topic.Relationships.GetTopics("Cousin").Count);
+      Assert.AreEqual(relatedTopic1, topic.Relationships.GetValues("Related")?.FirstOrDefault());
+      Assert.AreEqual<int>(1, topic.Relationships.GetValues("Related").Count);
+      Assert.AreEqual<int>(0, topic.Relationships.GetValues("Cousin").Count);
 
     }
 
@@ -309,8 +309,8 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var topic                 = TopicFactory.Create("Test", "Container");
       var nestedTopics          = TopicFactory.Create("Nested", "List", topic);
-      _                         = TopicFactory.Create("Nested1", "Page", 1, nestedTopics);
-      var nestedTopic2          = TopicFactory.Create("Nested2", "Page", 2, nestedTopics);
+      _                         = TopicFactory.Create("Nested1", "Page", nestedTopics, 1);
+      var nestedTopic2          = TopicFactory.Create("Nested2", "Page", nestedTopics, 2);
       var topicData             = new TopicData() {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),

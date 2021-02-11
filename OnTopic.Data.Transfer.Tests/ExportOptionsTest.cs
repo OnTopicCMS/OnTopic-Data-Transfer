@@ -86,7 +86,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
       var relatedTopic          = TopicFactory.Create("Related", "Container", rootTopic);
 
-      topic.Relationships.SetTopic("Related", relatedTopic);
+      topic.Relationships.SetValue("Related", relatedTopic);
 
       var topicData             = topic.Export();
 

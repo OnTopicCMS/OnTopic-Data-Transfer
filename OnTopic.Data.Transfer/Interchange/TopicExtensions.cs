@@ -74,7 +74,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType,
-        DerivedTopicKey         = topic.DerivedTopic?.GetUniqueKey()
+        DerivedTopicKey         = topic.BaseTopic?.GetUniqueKey()
       };
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -105,9 +105,9 @@ namespace OnTopic.Data.Transfer.Interchange {
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var relationship in topic.Relationships) {
         var relationshipData    = new RelationshipData() {
-          Key                   = relationship.Name,
+          Key                   = relationship.Key,
         };
-        foreach (var relatedTopic in relationship) {
+        foreach (var relatedTopic in relationship.Values) {
           if (
             options.IncludeExternalReferences ||
             relatedTopic.GetUniqueKey().StartsWith(options.ExportScope, StringComparison.InvariantCultureIgnoreCase)
@@ -144,7 +144,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string? getAttributeValue(AttributeValue attribute) =>
+      string? getAttributeValue(AttributeRecord attribute) =>
         options.TranslateTopicPointers && attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase)?
           GetUniqueKey(topic, attribute.Value, options) :
           attribute.Value;
@@ -189,12 +189,12 @@ namespace OnTopic.Data.Transfer.Interchange {
 
         //Wire up derived topics
         if (key.Equals("DerivedTopic", StringComparison.OrdinalIgnoreCase)) {
-          source.DerivedTopic = target;
+          source.BaseTopic = target;
         }
 
         //Wire up relationships
         else {
-          source.Relationships.SetTopic(key, target);
+          source.Relationships.SetValue(key, target);
         }
 
       }
@@ -263,7 +263,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       if (topicData.DerivedTopicKey?.Length > 0) {
         var target = topic.GetByUniqueKey(topicData.DerivedTopicKey);
         if (target is not null) {
-          topic.DerivedTopic = target;
+          topic.BaseTopic = target;
         }
         else {
           unresolvedRelationships.Add(new(topic, "DerivedTopic", topicData.DerivedTopicKey));
@@ -336,7 +336,9 @@ namespace OnTopic.Data.Transfer.Interchange {
 
       //First delete any unmatched records, if appropriate
       if (options.DeleteUnmatchedRelationships) {
-        topic.Relationships.Clear();
+        foreach (var relationship in topic.Relationships) {
+          topic.Relationships.Clear(relationship.Key);
+        }
       }
 
       //Update records based on the source collection
@@ -344,7 +346,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         foreach (var relatedTopicKey in relationship.Relationships) {
           var relatedTopic = topic.GetByUniqueKey(relatedTopicKey);
           if (relationship.Key is not null && relatedTopic is not null) {
-            topic.Relationships.SetTopic(relationship.Key, relatedTopic);
+            topic.Relationships.SetValue(relationship.Key, relatedTopic);
           }
           else {
             unresolvedRelationships.Add(new(topic, relationship.Key!, relatedTopicKey));
@@ -370,7 +372,7 @@ namespace OnTopic.Data.Transfer.Interchange {
 
       //Update records based on the source collection
       foreach (var childTopicData in topicData.Children) {
-        var childTopic = topic?.Children.GetTopic(childTopicData.Key);
+        var childTopic = topic?.Children.GetValue(childTopicData.Key);
         if (childTopic is null) {
           childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
         }

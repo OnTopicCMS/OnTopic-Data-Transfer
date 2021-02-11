@@ -105,9 +105,9 @@ namespace OnTopic.Data.Transfer.Interchange {
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var relationship in topic.Relationships) {
         var relationshipData    = new RelationshipData() {
-          Key                   = relationship.Name,
+          Key                   = relationship.Key,
         };
-        foreach (var relatedTopic in relationship) {
+        foreach (var relatedTopic in relationship.Values) {
           if (
             options.IncludeExternalReferences ||
             relatedTopic.GetUniqueKey().StartsWith(options.ExportScope, StringComparison.InvariantCultureIgnoreCase)

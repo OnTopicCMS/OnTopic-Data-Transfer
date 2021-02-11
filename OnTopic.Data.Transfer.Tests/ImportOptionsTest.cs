@@ -71,7 +71,7 @@ namespace OnTopic.Data.Transfer.Tests {
         new() {
           Key                   = "Attribute",
           Value                 = "New Value",
-          LastModified          = DateTime.Now.AddTicks(1)
+          LastModified          = DateTime.UtcNow.AddTicks(300)
         }
       );
 

@@ -3,7 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Data.Transfer {
@@ -89,7 +89,7 @@ namespace OnTopic.Data.Transfer {
     ///   Provides a collection of <see cref="TopicData"/> objects representing the children of the associated <see
     ///   cref="Topic"/>.
     /// </summary>
-    public List<TopicData> Children { get; set; } = new();
+    public Collection<TopicData> Children { get; set; } = new();
 
   } //Class
 } //Namespace

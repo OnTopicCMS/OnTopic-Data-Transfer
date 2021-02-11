@@ -31,14 +31,15 @@ namespace OnTopic.Data.Transfer.Tests {
       var sourceData             = new TopicData() {
         Key                     = "Test",
         UniqueKey               = "Root:Test",
-        ContentType             = "Container"
+        ContentType             = "Container",
+        BaseTopicKey            = "Root:Meta:Test"
       };
 
       var json = $"{{" +
         $"\"Key\":\"{sourceData.Key}\"," +
         $"\"UniqueKey\":\"{sourceData.UniqueKey}\"," +
         $"\"ContentType\":\"{sourceData.ContentType}\"," +
-        $"\"BaseTopicKey\":null," +
+        $"\"BaseTopicKey\":\"{sourceData.BaseTopicKey}\"," +
         $"\"Attributes\":[]," +
         $"\"Relationships\":[]," +
         $"\"Children\":[]" +

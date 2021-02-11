@@ -58,6 +58,45 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: DESERIALIZE: DERIVED TOPIC KEY: RETURNS EXPECTED RESULTS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a json string with a legacy <c>DerivedTopicKey</c> and attempts to deserialize it as a <see cref="TopicData"/>
+    ///   class.
+    /// </summary>
+    [TestMethod]
+    public void Deserialize_DeriedTopicKey_ReturnsExpectedResults() {
+
+      var sourceData             = new TopicData() {
+        Key                     = "Test",
+        UniqueKey               = "Root:Test",
+        ContentType             = "Container",
+        BaseTopicKey            = "Root:Meta:Test"
+      };
+
+      var json = $"{{" +
+        $"\"Key\":\"{sourceData.Key}\"," +
+        $"\"UniqueKey\":\"{sourceData.UniqueKey}\"," +
+        $"\"ContentType\":\"{sourceData.ContentType}\"," +
+        $"\"DerivedTopicKey\":\"{sourceData.BaseTopicKey}\"," +
+        $"\"Attributes\":[]," +
+        $"\"Relationships\":[]," +
+        $"\"Children\":[]" +
+        $"}}";
+
+      var topicData = JsonSerializer.Deserialize<TopicData>(json);
+
+      Assert.AreEqual<string>(sourceData.Key, topicData.Key);
+      Assert.AreEqual<string>(sourceData.UniqueKey, topicData.UniqueKey);
+      Assert.AreEqual<string>(sourceData.ContentType, topicData.ContentType);
+      Assert.AreEqual<string>(sourceData.BaseTopicKey, topicData.BaseTopicKey);
+      Assert.AreEqual<int>(0, topicData.Relationships.Count);
+      Assert.AreEqual<int>(0, topicData.Attributes.Count);
+      Assert.AreEqual<int>(0, topicData.Children.Count);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DESERIALIZE: RELATIONSHIP DATA: RETURNS EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

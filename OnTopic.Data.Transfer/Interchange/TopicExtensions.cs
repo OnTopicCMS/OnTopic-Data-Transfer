@@ -144,7 +144,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Get attribute value
       \-----------------------------------------------------------------------------------------------------------------------*/
-      string? getAttributeValue(AttributeValue attribute) =>
+      string? getAttributeValue(AttributeRecord attribute) =>
         options.TranslateTopicPointers && attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase)?
           GetUniqueKey(topic, attribute.Value, options) :
           attribute.Value;

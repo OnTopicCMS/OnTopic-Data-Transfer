@@ -463,6 +463,13 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   Given a <c>TopicID</c>, lookup the topic in the topic graph and return the fully-qualified value. If no value can be
     ///   found, the original <c>TopicID</c> is returned.
     /// </summary>
+    /// <remarks>
+    ///   Note that this function is <i>exclusively</i> required for maintaining backward compatibility the <see cref="
+    ///   ExportOptions.TranslateTopicPointers"/> option/ With the release of OnTopic 5.0.0, and OnTopic Data Transfer 3.0.0,
+    ///   implementers should prefer the use of <see cref="Topic.References"/>. The <see cref="GetUniqueKey(Topic, String?,
+    ///   ExportOptions)"/> method continues to be included primarily for backward compatibility with legacy database
+    ///   configurations.
+    /// </remarks>
     /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
     /// <param name="topicId">The <see cref="Topic.Id"/> to retrieve the <see cref="Topic.GetUniqueKey"/> for.</param>
     /// <param name="options">An optional <see cref="ExportOptions"/> object to specify export settings.</param>
@@ -502,6 +509,13 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   Given a <c>UniqueKey</c>, lookup the topic in the topic graph and return the <c>TopicID</c>. If no value can be
     ///   found, the original <c>UniqueKey</c> is returned.
     /// </summary>
+    /// <remarks>
+    ///   Note that this function is <i>exclusively</i> required for maintaining backward compatibility with <see cref="
+    ///   TopicData"/> exported using the <see cref="ExportOptions.TranslateTopicPointers"/> option, which was the default in
+    ///   OnTopic Data Transfer 2.x. With the release of OnTopic 5.0.0, and OnTopic Data Transfer 3.0.0, implementers should
+    ///   prefer the use of <see cref="Topic.References"/>. The <see cref="GetTopicId(Topic, String?)"/> method continues to be
+    ///   included primarily for backward compatibility with legacy JSON data.
+    /// </remarks>
     /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
     /// <param name="uniqueKey">The <see cref="Topic.GetUniqueKey"/> to retrieve the <see cref="Topic.Id"/> for.</param>
     private static string? GetTopicId(Topic topic, string? uniqueKey) {

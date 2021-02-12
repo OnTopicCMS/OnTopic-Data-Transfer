@@ -281,14 +281,16 @@ namespace OnTopic.Data.Transfer.Interchange {
         topic.ContentType       = topicData.ContentType;
       }
 
-      if (topicData.BaseTopicKey?.Length > 0 && !topicData.References.Contains("BaseTopic")) {
+      #pragma warning disable CS0618 // Type or member is obsolete
+      if (topicData.DerivedTopicKey?.Length > 0 && !topicData.References.Contains("BaseTopic")) {
         topicData.References.Add(
           new() {
             Key                 = "BaseTopic",
-            Value               = topicData.BaseTopicKey
+            Value               = topicData.DerivedTopicKey
           }
         );
       }
+      #pragma warning restore CS0618 // Type or member is obsolete
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attributes

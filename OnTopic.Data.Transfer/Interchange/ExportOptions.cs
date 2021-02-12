@@ -103,27 +103,33 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     Well-known topic pointers such as <see cref="Topic.Parent"/> (<c>ParentID</c>) and <see cref="Topic.DerivedTopic"/>
-    ///     (<c>TopicID</c>), as well as relationships, are translated from <see cref="Topic.Id"/> to <see
-    ///     cref="Topic.GetUniqueKey"/>. This ensures that the references can be repopulated on import even though the <see
-    ///     cref="Topic.Id"/> will be different in each database.
+    ///     Strongly typed topic asociations, such as <see cref="Topic.Parent"/>, <see cref="Topic.Relationships"/>, and <see
+    ///     cref="Topic.References"/>—which includes <see cref="Topic.BaseTopic"/>—are all translated from from <see cref="Topic
+    ///     .Id"/> to <see cref="Topic.GetUniqueKey"/>. This ensures that the references can be repopulated on import even
+    ///     though the <see cref="Topic.Id"/> will be different in each database.
     ///   </para>
     ///   <para>
-    ///     In addition, however, there are attributes that <i>behave</i> like topic pointers, but aren't as formally defined.
-    ///     These include those corresponding to the <c>TopicList</c>, <c>TokenizedTopicList</c>, and <c>TopicReference</c>
-    ///     attribute types. By convention, these end with an <c>ID</c> (e.g., <c>RootTopicID</c>). Optionally, the export can
-    ///     attempt to map these to a <see cref="Topic.GetUniqueKey"/>, thus allowing them to maintain referential integrity
-    ///     between databases.
+    ///     In addition, however, there may be attributes that <i>behave</i> like topic associations, but aren't formally stored
+    ///     using the aforementioned structures. Notably, these were used by previous versions of OnTopic Editor to stored
+    ///     values derived from the <c>TopicList</c>, <c>TokenizedTopicList</c>, and <c>TopicReference</c> attribute types. By
+    ///     convention, those references were named with a suffix of <c>ID</c> (e.g., <c>RootTopicID</c>). Optionally, the
+    ///     export can attempt to map these to a <see cref="Topic.GetUniqueKey"/>, thus allowing them to maintain referential
+    ///     integrity between databases.
+    ///   </para>
+    ///   <para>
+    ///     As of OnTopic 5.0.0, these references should be upgraded to <see cref="Topic.References"/>, which are fully
+    ///     supported by the OnTopic Data Transfer library via <see cref="TopicData.References"/>. As such, this option is only
+    ///     needed for databases that continue to use the legacy format, potentially in order to maintain backward
+    ///     compatibility.
     ///   </para>
     ///   <para>
     ///     It is important to note that this can introduce false positives. For example, if a database includes an attribute
     ///     referring to an external identifier, and whose name ends with <c>Id</c>, that value will be interpreted as a topic
-    ///     reference assuming the value maps to an existing <see cref="Topic.Id"/>. As such, it may be desirable to disable
-    ///     this option in some circumstances if it's known that there are false positives.
+    ///     association, assuming the value maps to an existing <see cref="Topic.Id"/>. As such, this option should only be
+    ///     enabled when it's known to be necessary to maintain backward compatibility.
     ///   </para>
     /// </remarks>
-    public bool TranslateTopicPointers { get; set; } = true;
-
+    public bool TranslateTopicPointers { get; set; }
 
   } //Class
 } //Namespace

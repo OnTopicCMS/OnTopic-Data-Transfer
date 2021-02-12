@@ -332,6 +332,41 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IMPORT: BASE TOPIC: MAPS BASE TOPIC
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with a <see cref="AttributeData"/> with the <see cref="AttributeData.Key"/> of <c>
+    ///   BaseTopic</c> in the <see cref="TopicData.References"/> collection, which points to a topic in the topic graph.
+    ///   Ensures that it is correctly wired up.
+    /// </summary>
+    [TestMethod]
+    public void Import_BaseTopic_MapsBaseTopic() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var baseTopic             = TopicFactory.Create("BaseTopic", "Container", rootTopic);
+
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+
+      var referencedTopicData   = new AttributeData() {
+        Key                     = "BaseTopic",
+        Value                   = $"{baseTopic.GetUniqueKey()}"
+      };
+
+      topicData.References.Add(referencedTopicData);
+
+      topic.Import(topicData);
+
+      Assert.IsNotNull(topic.BaseTopic);
+      Assert.AreEqual<Topic>(baseTopic, topic.BaseTopic);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IMPORT: DERIVED TOPIC KEY: MAPS NEWLY DERIVED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

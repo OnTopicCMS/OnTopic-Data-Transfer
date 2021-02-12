@@ -65,20 +65,21 @@ namespace OnTopic.Data.Transfer.Tests {
     ///   class.
     /// </summary>
     [TestMethod]
-    public void Deserialize_DeriedTopicKey_ReturnsExpectedResults() {
+    #pragma warning disable CS0618 // Type or member is obsolete
+    public void Deserialize_DerivedTopicKey_ReturnsExpectedResults() {
 
       var sourceData             = new TopicData() {
         Key                     = "Test",
         UniqueKey               = "Root:Test",
         ContentType             = "Container",
-        BaseTopicKey            = "Root:Meta:Test"
+        DerivedTopicKey         = "Root:Meta:Test"
       };
 
       var json = $"{{" +
         $"\"Key\":\"{sourceData.Key}\"," +
         $"\"UniqueKey\":\"{sourceData.UniqueKey}\"," +
         $"\"ContentType\":\"{sourceData.ContentType}\"," +
-        $"\"DerivedTopicKey\":\"{sourceData.BaseTopicKey}\"," +
+        $"\"DerivedTopicKey\":\"{sourceData.DerivedTopicKey}\"," +
         $"\"Attributes\":[]," +
         $"\"Relationships\":[]," +
         $"\"Children\":[]" +
@@ -89,12 +90,13 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual<string>(sourceData.Key, topicData.Key);
       Assert.AreEqual<string>(sourceData.UniqueKey, topicData.UniqueKey);
       Assert.AreEqual<string>(sourceData.ContentType, topicData.ContentType);
-      Assert.AreEqual<string>(sourceData.BaseTopicKey, topicData.BaseTopicKey);
+      Assert.AreEqual<string>(sourceData.DerivedTopicKey, topicData.DerivedTopicKey);
       Assert.AreEqual<int>(0, topicData.Relationships.Count);
       Assert.AreEqual<int>(0, topicData.Attributes.Count);
       Assert.AreEqual<int>(0, topicData.Children.Count);
 
     }
+    #pragma warning restore CS0618 // Type or member is obsolete
 
     /*==========================================================================================================================
     | TEST: DESERIALIZE: RELATIONSHIP DATA: RETURNS EXPECTED RESULTS

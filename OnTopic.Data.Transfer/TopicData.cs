@@ -28,11 +28,6 @@ namespace OnTopic.Data.Transfer {
   public class TopicData {
 
     /*==========================================================================================================================
-    | PRIVATE VARIABLES
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    private                     string?                         _baseTopicKey;
-
-    /*==========================================================================================================================
     | KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -64,19 +59,6 @@ namespace OnTopic.Data.Transfer {
     public string? ContentType { get; set; }
 
     /*==========================================================================================================================
-    | BASE TOPIC KEY
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets the <see cref="BaseTopicKey"/> of a <see cref="Topic"/> that the associated <see cref="Topic"/> should derive from.
-    /// </summary>
-    #pragma warning disable CS0618 // Type or member is obsolete
-    public string? BaseTopicKey {
-      get => _baseTopicKey?? DerivedTopicKey;
-      set => _baseTopicKey = value;
-    }
-#pragma warning restore CS0618 // Type or member is obsolete
-
-    /*==========================================================================================================================
     | DERIVED TOPIC KEY (DEPRECATED)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -93,7 +75,7 @@ namespace OnTopic.Data.Transfer {
     ///     Unfortunately, .NET 3.x doesn't permit a way to hide this from the public interface or from serialization. As such,
     ///     it will continue to pollute the interface and, potentially, the JSON output. Given this, it is recommended that
     ///     callers use <see cref="JsonSerializerOptions.IgnoreNullValues"/> to prevent this—and any other null properties—from
-    ///     being written.
+    ///     being written in the future.
     ///   </para>
     /// </remarks>
     [Obsolete("The DerivedTopicKey has been renamed to BaseTopicKey.", false)]

@@ -38,14 +38,14 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT: DERIVED TOPIC: MAPS REFERENCE DATA
+    | TEST: EXPORT: BASE TOPIC: MAPS REFERENCE DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> with a <see cref="Topic.BaseTopic"/> and ensures that a <see cref="AttributeData"/>
     ///   item with a <see cref="AttributeData.Key"/> of <c>BasedTopic</c> is correctly set.
     /// </summary>
     [TestMethod]
-    public void Export_DerivedTopic_MapsReferenceData() {
+    public void Export_BaseTopic_MapsReferenceData() {
 
       var topic                 = TopicFactory.Create("Test", "Container");
       var baseTopic             = TopicFactory.Create("Base", "Container", topic);
@@ -376,7 +376,7 @@ namespace OnTopic.Data.Transfer.Tests {
     ///   later in the tree, ensuring that the <see cref="Topic.BaseTopic"/> is set correctly.
     /// </summary>
     [TestMethod]
-    public void Import_DerivedTopicKey_MapsNewlyDerivedTopic() {
+    public void Import_BaseTopic_MapsNewBaseTopic() {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
@@ -422,7 +422,7 @@ namespace OnTopic.Data.Transfer.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.BaseTopicKey"/> that is invalid and ensures that the
-    ///   <see cref="Topic.DerivedTopic"/> is not updated.
+    ///   <see cref="Topic.BaseTopic"/> is not updated.
     /// </summary>
     [TestMethod]
     public void Import_InvalidBaseTopic_MaintainsExistingValue() {

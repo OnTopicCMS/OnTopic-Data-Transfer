@@ -207,11 +207,6 @@ namespace OnTopic.Data.Transfer.Interchange {
           continue;
         }
 
-        //Wire up derived topics
-        if (key.Equals("DerivedTopic", StringComparison.OrdinalIgnoreCase)) {
-          source.BaseTopic = target;
-        }
-
         //Wire up relationships
         else if (isRelationship) {
           source.Relationships.SetValue(key, target);
@@ -293,7 +288,7 @@ namespace OnTopic.Data.Transfer.Interchange {
           topic.BaseTopic = target;
         }
         else {
-          unresolvedAssociations.Add(new(topic, false, "DerivedTopic", topicData.BaseTopicKey));
+          unresolvedAssociations.Add(new(topic, false, "BaseTopic", topicData.BaseTopicKey));
         }
       }
 

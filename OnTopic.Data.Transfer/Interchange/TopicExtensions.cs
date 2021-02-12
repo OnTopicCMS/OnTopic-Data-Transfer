@@ -73,8 +73,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       var topicData             = new TopicData {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = topic.ContentType,
-        BaseTopicKey         = topic.BaseTopic?.GetUniqueKey()
+        ContentType             = topic.ContentType
       };
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -207,11 +206,6 @@ namespace OnTopic.Data.Transfer.Interchange {
           continue;
         }
 
-        //Wire up derived topics
-        if (key.Equals("DerivedTopic", StringComparison.OrdinalIgnoreCase)) {
-          source.BaseTopic = target;
-        }
-
         //Wire up relationships
         else if (isRelationship) {
           source.Relationships.SetValue(key, target);
@@ -233,15 +227,15 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// <remarks>
     ///   <para>
     ///     While traversing a topic graph with many new topics, scenarios emerge where the topic graph cannot be fully
-    ///     reconstructed since the relationships and derived topics may refer to new topics that haven't yet been imported. To
-    ///     mitigate that, this overload accepts and populates a cache of such relationships, so that they can be recreated
+    ///     reconstructed since the relationships and referenced topics may refer to new topics that haven't yet been imported.
+    ///     To mitigate that, this overload accepts and populates a cache of such associations, so that they can be recreated
     ///     afterwards.
     ///   </para>
     ///   <para>
     ///     This does <i>not</i> address the scenario where implicit topic pointers (i.e., attributes ending in <c>Id</c>)
-    ///     cannot be resolved because the target topics haven't yet been saved—and, therefore, the <see
-    ///     cref="Topic.GetUniqueKey"/> cannot be translated to a <see cref="Topic.Id"/>. There isn't any obvious way to address
-    ///     this via <see cref="Import"/> directly.
+    ///     cannot be resolved because the target topics haven't yet been saved—and, therefore, the <see cref="Topic.
+    ///     GetUniqueKey"/> cannot be translated to a <see cref="Topic.Id"/>. There isn't any obvious way to address this via
+    ///     <see cref="Import"/> directly.
     ///   </para>
     /// </remarks>
     /// <param name="topic">The target <see cref="Topic"/> to write data to.</param>
@@ -287,15 +281,16 @@ namespace OnTopic.Data.Transfer.Interchange {
         topic.ContentType       = topicData.ContentType;
       }
 
-      if (topicData.BaseTopicKey?.Length > 0) {
-        var target = topic.GetByUniqueKey(topicData.BaseTopicKey);
-        if (target is not null) {
-          topic.BaseTopic = target;
-        }
-        else {
-          unresolvedAssociations.Add(new(topic, false, "DerivedTopic", topicData.BaseTopicKey));
-        }
+      #pragma warning disable CS0618 // Type or member is obsolete
+      if (topicData.DerivedTopicKey?.Length > 0 && !topicData.References.Contains("BaseTopic")) {
+        topicData.References.Add(
+          new() {
+            Key                 = "BaseTopic",
+            Value               = topicData.DerivedTopicKey
+          }
+        );
       }
+      #pragma warning restore CS0618 // Type or member is obsolete
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Set attributes

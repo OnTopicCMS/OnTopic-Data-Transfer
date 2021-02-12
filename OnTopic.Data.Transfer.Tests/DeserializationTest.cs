@@ -31,15 +31,13 @@ namespace OnTopic.Data.Transfer.Tests {
       var sourceData             = new TopicData() {
         Key                     = "Test",
         UniqueKey               = "Root:Test",
-        ContentType             = "Container",
-        BaseTopicKey            = "Root:Meta:Test"
+        ContentType             = "Container"
       };
 
       var json = $"{{" +
         $"\"Key\":\"{sourceData.Key}\"," +
         $"\"UniqueKey\":\"{sourceData.UniqueKey}\"," +
         $"\"ContentType\":\"{sourceData.ContentType}\"," +
-        $"\"BaseTopicKey\":\"{sourceData.BaseTopicKey}\"," +
         $"\"Attributes\":[]," +
         $"\"Relationships\":[]," +
         $"\"Children\":[]" +
@@ -50,7 +48,6 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual<string>(sourceData.Key, topicData.Key);
       Assert.AreEqual<string>(sourceData.UniqueKey, topicData.UniqueKey);
       Assert.AreEqual<string>(sourceData.ContentType, topicData.ContentType);
-      Assert.AreEqual<string>(sourceData.BaseTopicKey, topicData.BaseTopicKey);
       Assert.AreEqual<int>(0, topicData.Relationships.Count);
       Assert.AreEqual<int>(0, topicData.Attributes.Count);
       Assert.AreEqual<int>(0, topicData.Children.Count);
@@ -65,20 +62,21 @@ namespace OnTopic.Data.Transfer.Tests {
     ///   class.
     /// </summary>
     [TestMethod]
-    public void Deserialize_DeriedTopicKey_ReturnsExpectedResults() {
+    #pragma warning disable CS0618 // Type or member is obsolete
+    public void Deserialize_DerivedTopicKey_ReturnsExpectedResults() {
 
       var sourceData             = new TopicData() {
         Key                     = "Test",
         UniqueKey               = "Root:Test",
         ContentType             = "Container",
-        BaseTopicKey            = "Root:Meta:Test"
+        DerivedTopicKey         = "Root:Meta:Test"
       };
 
       var json = $"{{" +
         $"\"Key\":\"{sourceData.Key}\"," +
         $"\"UniqueKey\":\"{sourceData.UniqueKey}\"," +
         $"\"ContentType\":\"{sourceData.ContentType}\"," +
-        $"\"DerivedTopicKey\":\"{sourceData.BaseTopicKey}\"," +
+        $"\"DerivedTopicKey\":\"{sourceData.DerivedTopicKey}\"," +
         $"\"Attributes\":[]," +
         $"\"Relationships\":[]," +
         $"\"Children\":[]" +
@@ -89,12 +87,13 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual<string>(sourceData.Key, topicData.Key);
       Assert.AreEqual<string>(sourceData.UniqueKey, topicData.UniqueKey);
       Assert.AreEqual<string>(sourceData.ContentType, topicData.ContentType);
-      Assert.AreEqual<string>(sourceData.BaseTopicKey, topicData.BaseTopicKey);
+      Assert.AreEqual<string>(sourceData.DerivedTopicKey, topicData.DerivedTopicKey);
       Assert.AreEqual<int>(0, topicData.Relationships.Count);
       Assert.AreEqual<int>(0, topicData.Attributes.Count);
       Assert.AreEqual<int>(0, topicData.Children.Count);
 
     }
+    #pragma warning restore CS0618 // Type or member is obsolete
 
     /*==========================================================================================================================
     | TEST: DESERIALIZE: RELATIONSHIP DATA: RETURNS EXPECTED RESULTS
@@ -188,7 +187,6 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Key\":\"{sourceTopicData.Key}\"," +
         $"\"UniqueKey\":\"{sourceTopicData.UniqueKey}\"," +
         $"\"ContentType\":\"{sourceTopicData.ContentType}\"," +
-        $"\"BaseTopicKey\":null," +
         $"\"Attributes\":[" +
           $"{{" +
             $"\"Key\":\"{sourceAttributeData.Key}\"," +
@@ -207,7 +205,6 @@ namespace OnTopic.Data.Transfer.Tests {
             $"\"Key\":\"{sourceChildTopicData.Key}\"," +
             $"\"UniqueKey\":\"{sourceChildTopicData.UniqueKey}\"," +
             $"\"ContentType\":\"{sourceChildTopicData.ContentType}\"," +
-            $"\"BaseTopicKey\":null," +
             $"\"Attributes\":[]," +
             $"\"Relationships\":[]," +
             $"\"Children\":[]" +
@@ -224,7 +221,6 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual<string>(sourceTopicData.Key, topicData.Key);
       Assert.AreEqual<string>(sourceTopicData.UniqueKey, topicData.UniqueKey);
       Assert.AreEqual<string>(sourceTopicData.ContentType, topicData.ContentType);
-      Assert.AreEqual<string>(sourceTopicData.BaseTopicKey, topicData.BaseTopicKey);
       Assert.AreEqual<int>(1, sourceTopicData.Relationships.Count);
       Assert.AreEqual<int>(1, sourceTopicData.Attributes.Count);
       Assert.AreEqual<int>(1, sourceTopicData.Children.Count);
@@ -240,7 +236,6 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual<string>(sourceChildTopicData.Key, childTopicData.Key);
       Assert.AreEqual<string>(sourceChildTopicData.UniqueKey, childTopicData.UniqueKey);
       Assert.AreEqual<string>(sourceChildTopicData.ContentType, childTopicData.ContentType);
-      Assert.AreEqual<string>(sourceChildTopicData.BaseTopicKey, childTopicData.BaseTopicKey);
       Assert.AreEqual<int>(0, sourceChildTopicData.Relationships.Count);
       Assert.AreEqual<int>(0, sourceChildTopicData.Children.Count);
     }

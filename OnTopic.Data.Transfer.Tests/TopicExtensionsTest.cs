@@ -686,6 +686,40 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH REFERENCES: MAINTAINS EXISTING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with <see cref="Topic.References"/> and ensures that the <see cref="Topic.References
+    ///   "/> collection is set correctly.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithReferences_MaintainsExisting() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var referencedTopic1      = TopicFactory.Create("Referenced1", "Container", rootTopic);
+      var referencedTopic2      = TopicFactory.Create("Referenced2", "Container", rootTopic);
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+      var referenceData         = new AttributeData() {
+        Key                     = "Referenced",
+        Value                   = referencedTopic2.GetUniqueKey()
+      };
+
+      topic.References.SetValue("Referenced", referencedTopic1);
+
+      topicData.References.Add(referenceData);
+
+      topic.Import(topicData);
+
+      Assert.AreEqual(referencedTopic1, topic.References.GetValue("Referenced"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IMPORT: TOPIC DATA WITH CHILD: MAPS NEW TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

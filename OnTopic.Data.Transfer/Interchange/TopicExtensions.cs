@@ -411,7 +411,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       //First delete any unmatched records, if appropriate
       if (options.DeleteUnmatchedReferences) {
         var unmatchedReferences = topic.References.Where(a1 =>
-          !topicData.Attributes.Any(a2 => a1.Key == a2.Key)
+          !topicData.References.Any(a2 => a1.Key == a2.Key)
         );
         foreach (var reference in unmatchedReferences.ToArray()) {
           topic.References.Remove(reference);

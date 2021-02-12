@@ -655,6 +655,37 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH REFERENCES: MAPS REFERENCE COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with <see cref="Topic.References"/> and ensures that the <see cref="Topic.References
+    ///   "/> collection is set correctly.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithReferences_MapsReferenceCollection() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var referencedTopic       = TopicFactory.Create("Referenced", "Container", rootTopic);
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+      var referenData           = new AttributeData() {
+        Key                     = "Referenced",
+        Value                   = referencedTopic.GetUniqueKey()
+      };
+
+      topicData.References.Add(referenData);
+
+      topic.Import(topicData);
+
+      Assert.AreEqual(referencedTopic, topic.References.GetValue("Referenced"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IMPORT: TOPIC DATA WITH CHILD: MAPS NEW TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

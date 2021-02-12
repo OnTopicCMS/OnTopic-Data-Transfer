@@ -101,6 +101,25 @@ namespace OnTopic.Data.Transfer.Interchange {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Set topic references
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var reference in topic.References) {
+        if (
+          !options.IncludeExternalReferences &&
+          !(reference.Value?.GetUniqueKey().StartsWith(options.ExportScope, StringComparison.InvariantCultureIgnoreCase)?? true)
+        ) {
+          continue;
+        }
+        topicData.References.Add(
+          new() {
+            Key               = reference.Key,
+            Value             = reference.Value?.GetUniqueKey(),
+            LastModified      = reference.LastModified
+          }
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var relationship in topic.Relationships) {
@@ -165,24 +184,25 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish cache
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var unresolvedRelationships = new List<Tuple<Topic, string, string>>();
+      var unresolvedAssociations = new List<Tuple<Topic, bool, string, string>>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle first pass
       \-----------------------------------------------------------------------------------------------------------------------*/
-      topic.Import(topicData, options, unresolvedRelationships);
+      topic.Import(topicData, options, unresolvedAssociations);
 
       /*------------------------------------------------------------------------------------------------------------------------
-      | Attempt to resolve outstanding relationships
+      | Attempt to resolve outstanding assocations
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var relationship in unresolvedRelationships) {
+      foreach (var relationship in unresolvedAssociations) {
 
-        //Attempt to find the target relationship
+        //Attempt to find the target association
         var source              = relationship.Item1;
-        var target              = topic.GetByUniqueKey(relationship.Item3);
-        var key                 = relationship.Item2;
+        var isRelationship      = relationship.Item2;
+        var key                 = relationship.Item3;
+        var target              = topic.GetByUniqueKey(relationship.Item4);
 
-        //If the relationship STILL can't be resolved, skip it
+        //If the association STILL can't be resolved, skip it
         if (target is null) {
           continue;
         }
@@ -193,8 +213,13 @@ namespace OnTopic.Data.Transfer.Interchange {
         }
 
         //Wire up relationships
-        else {
+        else if (isRelationship) {
           source.Relationships.SetValue(key, target);
+        }
+
+        //Wire up topic references
+        else {
+          source.References.SetValue(key, target);
         }
 
       }
@@ -219,13 +244,15 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///     this via <see cref="Import"/> directly.
     ///   </para>
     /// </remarks>
-    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="topic">The target <see cref="Topic"/> to write data to.</param>
+    /// <param name="topicData">The source <see cref="TopicData"/> to import data from.</param>
     /// <param name="options">An optional <see cref="ImportOptions"/> object to specify import settings.</param>
+    /// <param name="unresolvedAssociations">A list of associations that could not be resolved on the first </param>
     private static void Import(
       this Topic topic,
       TopicData topicData,
       [NotNull]ImportOptions? options,
-      List<Tuple<Topic, string, string>> unresolvedRelationships
+      List<Tuple<Topic, bool, string, string>> unresolvedAssociations
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -266,7 +293,7 @@ namespace OnTopic.Data.Transfer.Interchange {
           topic.BaseTopic = target;
         }
         else {
-          unresolvedRelationships.Add(new(topic, "DerivedTopic", topicData.BaseTopicKey));
+          unresolvedAssociations.Add(new(topic, false, "DerivedTopic", topicData.BaseTopicKey));
         }
       }
 
@@ -349,8 +376,41 @@ namespace OnTopic.Data.Transfer.Interchange {
             topic.Relationships.SetValue(relationship.Key, relatedTopic);
           }
           else {
-            unresolvedRelationships.Add(new(topic, relationship.Key!, relatedTopicKey));
+            unresolvedAssociations.Add(new(topic, true, relationship.Key!, relatedTopicKey));
           }
+        }
+      }
+
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set topic references
+      \-----------------------------------------------------------------------------------------------------------------------*/
+
+      //First delete any unmatched records, if appropriate
+      if (options.DeleteUnmatchedReferences) {
+        var unmatchedReferences = topic.References.Where(a1 =>
+          !topicData.Attributes.Any(a2 => a1.Key == a2.Key)
+        );
+        foreach (var reference in unmatchedReferences.ToArray()) {
+          topic.References.Remove(reference);
+        };
+      }
+
+      //Update records based on the source collection
+      foreach (var reference in topicData.References) {
+        if (useCustomMergeRules(reference)) continue;
+        var matchedReference = topic.References.FirstOrDefault(a => a.Key == reference.Key);
+        if (matchedReference is not null && isStrategy(ImportStrategy.Add)) continue;
+        if (matchedReference?.LastModified >= reference.LastModified && isStrategy(ImportStrategy.Merge)) continue;
+        var referencedTopic = topic.GetByUniqueKey(reference.Key);
+        if (reference.Value is null || referencedTopic != null) {
+          topic.References.SetValue(
+            reference.Key,
+            referencedTopic
+          );
+        }
+        else {
+          unresolvedAssociations.Add(new(topic, false, reference.Key, reference.Value));
         }
       }
 
@@ -376,7 +436,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         if (childTopic is null) {
           childTopic = TopicFactory.Create(childTopicData.Key, childTopicData.ContentType, topic);
         }
-        childTopic.Import(childTopicData, options, unresolvedRelationships);
+        childTopic.Import(childTopicData, options, unresolvedAssociations);
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -41,6 +41,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"ContentType\":\"{topicData.ContentType}\"," +
         $"\"Attributes\":[]," +
         $"\"Relationships\":[]," +
+        $"\"References\":[]," +
         $"\"Children\":[]" +
         $"}}";
 
@@ -149,6 +150,7 @@ namespace OnTopic.Data.Transfer.Tests {
             $"\"Relationships\":[\"Root:Web\"]" +
           $"}}" +
         $"]," +
+        $"\"References\":[]," +
         $"\"Children\":[" +
           $"{{" +
             $"\"Key\":\"{childTopicData.Key}\"," +
@@ -156,6 +158,7 @@ namespace OnTopic.Data.Transfer.Tests {
             $"\"ContentType\":\"{childTopicData.ContentType}\"," +
             $"\"Attributes\":[]," +
             $"\"Relationships\":[]," +
+            $"\"References\":[]," +
             $"\"Children\":[]" +
           $"}}" +
         $"]" +

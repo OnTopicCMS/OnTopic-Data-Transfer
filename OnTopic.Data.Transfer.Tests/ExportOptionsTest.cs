@@ -72,15 +72,15 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT: TOPIC WITH RELATIONSHIPS: EXCLUDES EXTERNAL REFERENCES
+    | TEST: EXPORT: TOPIC WITH RELATIONSHIPS: EXCLUDES EXTERNAL ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> with several <see cref="Topic.Relationships"/> and ensures that the <see
-    ///   cref="TopicData.Relationships"/> collection does <i>not</i> include external references—i.e., relationships that refer
-    ///   to <see cref="Topic"/>s outside of the current export scope.
+    ///   cref="TopicData.Relationships"/> collection does <i>not</i> include external associations—i.e., relationships that
+    ///   refer to <see cref="Topic"/>s outside of the current export scope.
     /// </summary>
     [TestMethod]
-    public void Export_TopicWithRelationships_ExcludesExternalReferences() {
+    public void Export_TopicWithRelationships_ExcludesExternalAssociations() {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
@@ -100,7 +100,7 @@ namespace OnTopic.Data.Transfer.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> with several <see cref="Topic.References"/> and ensures that the <see ="TopicData.
-    ///   References"/> collection does <i>not</i> include external associationsï¿½i.e., references that refer to <see cref="Topic
+    ///   References"/> collection does <i>not</i> include external associations—i.e., references that refer to <see cref="Topic
     ///   "/>s outside of the current export scope.
     /// </summary>
     [TestMethod]

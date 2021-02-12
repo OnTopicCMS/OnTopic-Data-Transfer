@@ -306,10 +306,11 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: IMPORT: DERIVED TOPIC KEY: MAPS DERIVED TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.BaseTopicKey"/> and ensures that the <see
-    ///   cref="Topic.DerivedTopic"/> is set correctly.
+    ///   Creates a <see cref="TopicData"/> with the legacy <see cref="TopicData.DerivedTopicKey"/> and ensures that the <see
+    ///   cref="Topic.BaseTopic"/> is set correctly.
     /// </summary>
     [TestMethod]
+    #pragma warning disable CS0618 // Type or member is obsolete
     public void Import_DerivedTopicKey_MapsDerivedTopic() {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
@@ -320,7 +321,7 @@ namespace OnTopic.Data.Transfer.Tests {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType,
-        BaseTopicKey            = baseTopic.GetUniqueKey()
+        DerivedTopicKey         = baseTopic.GetUniqueKey()
       };
 
       topic.Import(topicData);
@@ -329,6 +330,7 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual(baseTopic, topic.BaseTopic);
 
     }
+    #pragma warning restore CS0618 // Type or member is obsolete
 
     /*==========================================================================================================================
     | TEST: IMPORT: BASE TOPIC: MAPS BASE TOPIC

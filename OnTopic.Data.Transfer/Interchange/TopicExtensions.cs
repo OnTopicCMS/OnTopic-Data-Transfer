@@ -351,13 +351,8 @@ namespace OnTopic.Data.Transfer.Interchange {
       \-----------------------------------------------------------------------------------------------------------------------*/
       if (topic.Attributes.IsDirty()) {
 
-        switch (options.LastModifiedStrategy) {
-          case LastModifiedImportStrategy.Current:
-            topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
-            break;
-          case LastModifiedImportStrategy.System:
-            topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
-            break;
+        if (options.LastModifiedStrategy is LastModifiedImportStrategy.Current or LastModifiedImportStrategy.System) {
+          topic.Attributes.SetValue("LastModified", DateTime.Now.ToString(CultureInfo.CurrentCulture));
         }
 
         switch (options.LastModifiedByStrategy) {

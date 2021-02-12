@@ -420,7 +420,6 @@ namespace OnTopic.Data.Transfer.Interchange {
 
       //Update records based on the source collection
       foreach (var reference in topicData.References) {
-        if (useCustomMergeRules(reference)) continue;
         var matchedReference = topic.References.FirstOrDefault(a => a.Key == reference.Key);
         if (matchedReference is not null && isStrategy(ImportStrategy.Add)) continue;
         if (matchedReference?.LastModified >= reference.LastModified && isStrategy(ImportStrategy.Merge)) continue;

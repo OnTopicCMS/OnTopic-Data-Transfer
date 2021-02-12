@@ -368,11 +368,12 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: IMPORT: DERIVED TOPIC KEY: MAPS NEWLY DERIVED TOPIC
+    | TEST: IMPORT: BASE TOPIC: MAPS NEW BASE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.BaseTopicKey"/> that points to a newly imported
-    ///   topic that is later in the tree traversal, and ensures that the <see cref="Topic.DerivedTopic"/> is set correctly.
+    ///   Creates a <see cref="TopicData"/> with a <see cref="AttributeData"/> with the <see cref="AttributeData.Key"/> of <c>
+    ///   BaseTopic</c> in the <see cref="TopicData.References"/> collection, which points to a newly imported topic that occurs
+    ///   later in the tree, ensuring that the <see cref="Topic.BaseTopic"/> is set correctly.
     /// </summary>
     [TestMethod]
     public void Import_DerivedTopicKey_MapsNewlyDerivedTopic() {
@@ -389,37 +390,42 @@ namespace OnTopic.Data.Transfer.Tests {
       var childTopicData        = new TopicData() {
         Key                     = "Child",
         UniqueKey               = $"{topicData.UniqueKey}:Child",
-        ContentType             = "Container",
-        BaseTopicKey            = $"{topicData.UniqueKey}:Related"
-      };
-
-      var relatedTopicData      = new TopicData() {
-        Key                     = "Related",
-        UniqueKey               = $"{topicData.UniqueKey}:Related",
         ContentType             = "Container"
       };
 
+      var baseTopicData         = new TopicData() {
+        Key                     = "BaseTopic",
+        UniqueKey               = $"{topicData.UniqueKey}:BaseTopic",
+        ContentType             = "Container"
+      };
+
+      var baseTopicReference    = new AttributeData() {
+        Key                     = "BaseTopic",
+        Value                   = $"{topicData.UniqueKey}:BaseTopic"
+      };
+
       topicData.Children.Add(childTopicData);
-      topicData.Children.Add(relatedTopicData);
+      topicData.Children.Add(baseTopicData);
+      childTopicData.References.Add(baseTopicReference);
 
       topic.Import(topicData);
 
       var childTopic            = topic.Children.FirstOrDefault();
 
       Assert.IsNotNull(childTopic.BaseTopic);
-      Assert.AreEqual<string>(relatedTopicData.Key, childTopic.BaseTopic?.Key);
+      Assert.AreEqual<string>(baseTopicData.Key, childTopic.BaseTopic?.Key);
 
     }
 
     /*==========================================================================================================================
-    | TEST: IMPORT: INVALID DERIVED TOPIC KEY: MAINTAINS EXISTING VALUE
+    | TEST: IMPORT: INVALID BASE TOPIC: MAINTAINS EXISTING VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.BaseTopicKey"/> that is invalid and ensures that the
     ///   <see cref="Topic.DerivedTopic"/> is not updated.
     /// </summary>
     [TestMethod]
-    public void Import_InvalidDerivedTopicKey_MaintainsExistingValue() {
+    public void Import_InvalidBaseTopic_MaintainsExistingValue() {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
@@ -430,9 +436,15 @@ namespace OnTopic.Data.Transfer.Tests {
       var topicData             = new TopicData() {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = topic.ContentType,
-        BaseTopicKey            = "Root:InvalidKey"
+        ContentType             = topic.ContentType
       };
+
+      var baseTopicReference    = new AttributeData() {
+        Key                     = "BaseTopic",
+        Value                   = $"{topicData.UniqueKey}:BaseTopic"
+      };
+
+      topicData.References.Add(baseTopicReference);
 
       topic.Import(topicData);
 

@@ -76,7 +76,7 @@ namespace OnTopic.Data.Transfer.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> with several <see cref="Topic.Relationships"/> and ensures that the <see
-    ///   cref="TopicData.Relationships"/> collection does <i>not</i> include external references—i.e., relationships that point
+    ///   cref="TopicData.Relationships"/> collection does <i>not</i> include external references—i.e., relationships that refer
     ///   to <see cref="Topic"/>s outside of the current export scope.
     /// </summary>
     [TestMethod]
@@ -96,14 +96,14 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT WITH TOPIC POINTERS: EXTERNAL TOPIC POINTER: EXPORTS UNIQUE KEY
+    | TEST: EXPORT WITH LEGACY TOPIC REFERENCES: EXTERNAL TOPIC REFERENCE: EXPORTS UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that points to another topic. Confirms
-    ///   that it is converted to a <c>UniqueKey</c> if valid, and otherwise left as is.
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that references another topic. Confirms
+    ///   that it is converted to a <see cref="Topic.GetUniqueKey"/> if valid, and is otherwise left as is.
     /// </summary>
     [TestMethod]
-    public void ExportWithTopicPointers_ExternalTopicPointer_ExportsUniqueKey() {
+    public void ExportWithLegacyTopicReferences_ExternalTopicReference_ExportsUniqueKey() {
 
       var parentTopic           = TopicFactory.Create("Root", "Container", 5);
       var topic                 = TopicFactory.Create("Topic", "Container", parentTopic);

@@ -116,10 +116,10 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: EXPORT WITH EXTERNAL REFERENCES: TOPIC WITH RELATIONSHIPS: INCLUDE EXTERNAL REFERENCES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with several <see cref="Topic.Relationships"/> and ensures that the <see
-    ///   cref="TopicData.Relationships"/> collection <i>does</i> include external references—i.e., relationships that point
-    ///   to <see cref="Topic"/>s outside of the current export scope—when permitted with the <see
-    ///   cref="ExportOptions.IncludeExternalReferences"/> option.
+    ///   Creates a <see cref="Topic"/> with several <see cref="Topic.Relationships"/> and ensures that the <see cref="TopicData
+    ///   .Relationships"/> collection <i>does</i> include external references—i.e., relationships that reference <see cref="
+    ///   Topic"/>s outside of the current export scope—when permitted with the <see cref="ExportOptions.
+    ///   IncludeExternalReferences"/> option.
     /// </summary>
     [TestMethod]
     public void ExportWithExternalReferences_TopicWithRelationships_ExcludesExternalReferences() {
@@ -189,14 +189,15 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT WITH TOPIC POINTERS: OUT OF SCOPE: SKIPS ATTRIBUTE
+    | TEST: EXPORT WITH LEGACY TOPIC REFERENCES: OUT OF SCOPE: SKIPS REFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that points to a topic outside of the
-    ///   <see cref="ExportOptions.ExportScope"/>. Confirms that it is ignored.
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that references a <see cref="Topic.Id"/>
+    ///   outside of the <see cref="ExportOptions.ExportScope"/>. Confirms that the reference is maintained as an attribute, but
+    ///   not added as a reference.
     /// </summary>
     [TestMethod]
-    public void ExportWithTopicPointers_OutOfScope_SkipsAttribute() {
+    public void ExportWithLegacyTopicReferences_OutOfScope_SkipsReference() {
 
       var parentTopic           = TopicFactory.Create("Root", "Container", 5);
       var topic                 = TopicFactory.Create("Topic", "Container", parentTopic);
@@ -212,14 +213,14 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT WITH TOPIC POINTERS: MISSING TOPIC POINTER: SKIPS ATTRIBUTE
+    | TEST: EXPORT WITH LEGACY TOPIC REFERENCES: MISSING TOPIC REFERENCE: SKIPS REFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that points to a missing <see
-    ///   cref="Topic.Id"/>. Confirms that the attribute is skipped.
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that references a missing <see cref="
+    ///   Topic.Id"/>. Confirms that the reference is maintained as an attribute, but not added as a reference.
     /// </summary>
     [TestMethod]
-    public void ExportWithTopicPointers_MissingTopicPointer_SkipsAttribute() {
+    public void ExportWithLegacyTopicReferences_MissingTopicReference_SkipsReference() {
 
       var topic                 = TopicFactory.Create("Topic", "Container");
 
@@ -234,14 +235,14 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT WITH TOPIC POINTERS: INVALID TOPIC POINTER: EXPORTS ORIGINAL VALUE
+    | TEST: EXPORT WITH LEGACY TOPIC REFERENCES: INVALID TOPIC REFERENCE: EXPORTS ORIGINAL VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that that contains a non-numeric (i.e.,
-    ///   invalid) topic pointers. Confirms that the original value is exported.
+    ///   invalid) topic reference. Confirms that the original value is exported.
     /// </summary>
     [TestMethod]
-    public void ExportWithTopicPointers_InvalidTopicPointer_ExportsOriginalValue() {
+    public void ExportWithLegacyTopicReferences_InvalidTopicReference_ExportsOriginalValue() {
 
       var topic                 = TopicFactory.Create("Topic", "Container");
 
@@ -337,7 +338,7 @@ namespace OnTopic.Data.Transfer.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="TopicData"/> with a <see cref="AttributeData"/> with the <see cref="AttributeData.Key"/> of <c>
-    ///   BaseTopic</c> in the <see cref="TopicData.References"/> collection, which points to a topic in the topic graph.
+    ///   BaseTopic</c> in the <see cref="TopicData.References"/> collection, which references a topic in the topic graph.
     ///   Ensures that it is correctly wired up.
     /// </summary>
     [TestMethod]
@@ -372,8 +373,8 @@ namespace OnTopic.Data.Transfer.Tests {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="TopicData"/> with a <see cref="AttributeData"/> with the <see cref="AttributeData.Key"/> of <c>
-    ///   BaseTopic</c> in the <see cref="TopicData.References"/> collection, which points to a newly imported topic that occurs
-    ///   later in the tree, ensuring that the <see cref="Topic.BaseTopic"/> is set correctly.
+    ///   BaseTopic</c> in the <see cref="TopicData.References"/> collection, which references a newly imported topic that
+    ///   occurs later in the tree, ensuring that the <see cref="Topic.BaseTopic"/> is set correctly.
     /// </summary>
     [TestMethod]
     public void Import_BaseTopic_MapsNewBaseTopic() {
@@ -717,14 +718,14 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: IMPORT: TOPIC DATA WITH TOPIC POINTER: MAPS TOPIC ID
+    | TEST: IMPORT: TOPIC DATA WITH LEGACY TOPIC REFERENCE: MAPS TOPIC ID
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that points to another topic. Confirms
-    ///   that it is converted to a <c>TopicID</c> if valid, and otherwise left as is.
+    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that references another topic.
+    ///   Confirms that it is converted to a <see cref="Topic.Id"/> if valid, and otherwise left as is.
     /// </summary>
     [TestMethod]
-    public void Import_TopicDataWithTopicPointer_MapsTopicID() {
+    public void Import_TopicDataWithLegacyTopicReference_MapsTopicID() {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Topic", "Container", rootTopic);
@@ -750,14 +751,14 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: IMPORT: TOPIC DATA WITH MISSING TOPIC POINTER: SKIPS ATTRIBUTE
+    | TEST: IMPORT: TOPIC DATA WITH MISSING LEGACY TOPIC REFERENCE: SKIPS ATTRIBUTE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that points to a missing topic.
+    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that references to a missing topic.
     ///   Confirms that the attribute is skipped.
     /// </summary>
     [TestMethod]
-    public void Import_TopicDataWithMissingTopicPointer_SkipsAttribute() {
+    public void Import_TopicDataWithMissingLegacyTopicReference_SkipsAttribute() {
 
       var topic                 = TopicFactory.Create("Topic", "Container");
 
@@ -770,7 +771,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topicData.Attributes.Add(
         new() {
           Key                   = "SomeId",
-          Value                 = "Root:Missing:Topic:Pointer"
+          Value                 = "Root:Missing:Legacy:Topic:Reference"
         }
       );
 
@@ -781,14 +782,14 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: IMPORT: TOPIC DATA WITH INVALID TOPIC POINTER: IMPORTS ORIGINAL VALUE
+    | TEST: IMPORT: TOPIC DATA WITH INVALID LEGACY TOPIC REFERENCE: IMPORTS ORIGINAL VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that does not reference a topic key
     ///   (i.e., it doesn't start with <c>Root</c>). Confirms that the original attribute value is imported.
     /// </summary>
     [TestMethod]
-    public void Import_TopicDataWithInvalidTopicPointer_ImportsOriginalValue() {
+    public void Import_TopicDataWithInvalidLegacyTopicReference_ImportsOriginalValue() {
 
       var topic                 = TopicFactory.Create("Topic", "Container");
 
@@ -810,7 +811,6 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual<string>("6", topic.Attributes.GetValue("InitialBid"));
 
     }
-
 
   } //Class
 } //Namespace

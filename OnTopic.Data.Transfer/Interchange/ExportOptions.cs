@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace OnTopic.Data.Transfer.Interchange {
@@ -96,10 +97,10 @@ namespace OnTopic.Data.Transfer.Interchange {
     public bool IncludeChildTopics { get; set; }
 
     /*==========================================================================================================================
-    | TRANSLATE TOPIC POINTERS
+    | TRANSLATE LEGACY TOPIC REFERENCES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Determines whether attributes that appear to be topic pointers should be mapped to their fully qualified unique key.
+    ///   Determines whether attributes that appear to be topic reference should be mapped to its fully qualified unique key.
     /// </summary>
     /// <remarks>
     ///   <para>
@@ -129,6 +130,9 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///     enabled when it's known to be necessary to maintain backward compatibility.
     ///   </para>
     /// </remarks>
+    public bool TranslateLegacyTopicReferences { get; set; }
+
+    [Obsolete("The TranslateTopicPointers option has been renamed to TranslateLegacyTopicReferences", true)]
     public bool TranslateTopicPointers { get; set; }
 
   } //Class

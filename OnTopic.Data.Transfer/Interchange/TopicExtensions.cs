@@ -281,14 +281,13 @@ namespace OnTopic.Data.Transfer.Interchange {
         topic.ContentType       = topicData.ContentType;
       }
 
-      if (topicData.BaseTopicKey?.Length > 0) {
-        var target = topic.GetByUniqueKey(topicData.BaseTopicKey);
-        if (target is not null) {
-          topic.BaseTopic = target;
-        }
-        else {
-          unresolvedAssociations.Add(new(topic, false, "BaseTopic", topicData.BaseTopicKey));
-        }
+      if (topicData.BaseTopicKey?.Length > 0 && !topicData.References.Contains("BaseTopic")) {
+        topicData.References.Add(
+          new() {
+            Key                 = "BaseTopic",
+            Value               = topicData.BaseTopicKey
+          }
+        );
       }
 
       /*------------------------------------------------------------------------------------------------------------------------

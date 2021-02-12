@@ -7,7 +7,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace OnTopic.Data.Transfer {
 
@@ -117,6 +116,15 @@ namespace OnTopic.Data.Transfer {
     ///   cref="Topic"/> object.
     /// </summary>
     public RelationshipDataCollection Relationships { get; set; } = new();
+
+    /*==========================================================================================================================
+    | TOPIC REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a collection of <see cref="AttributeData"/> representing the topic references from the associated <see
+    ///   cref="Topic"/> object.
+    /// </summary>
+    public AttributeDataCollection References { get; set; } = new();
 
     /*==========================================================================================================================
     | CHILDREN

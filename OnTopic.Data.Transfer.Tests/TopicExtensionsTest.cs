@@ -321,7 +321,7 @@ namespace OnTopic.Data.Transfer.Tests {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType,
-        BaseTopicKey         = baseTopic.GetUniqueKey()
+        BaseTopicKey            = baseTopic.GetUniqueKey()
       };
 
       topic.Import(topicData);
@@ -389,7 +389,7 @@ namespace OnTopic.Data.Transfer.Tests {
         Key                     = "Child",
         UniqueKey               = $"{topicData.UniqueKey}:Child",
         ContentType             = "Container",
-        BaseTopicKey         = "Root:Test:Related"
+        BaseTopicKey            = $"{topicData.UniqueKey}:Related"
       };
 
       var relatedTopicData      = new TopicData() {
@@ -430,7 +430,7 @@ namespace OnTopic.Data.Transfer.Tests {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType,
-        BaseTopicKey         = "Root:InvalidKey"
+        BaseTopicKey            = "Root:InvalidKey"
       };
 
       topic.Import(topicData);

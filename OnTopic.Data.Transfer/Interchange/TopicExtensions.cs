@@ -73,8 +73,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       var topicData             = new TopicData {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
-        ContentType             = topic.ContentType,
-        BaseTopicKey         = topic.BaseTopic?.GetUniqueKey()
+        ContentType             = topic.ContentType
       };
 
       /*------------------------------------------------------------------------------------------------------------------------

@@ -38,24 +38,23 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT: DERIVED TOPIC: MAPS DERIVED TOPIC KEY
+    | TEST: EXPORT: DERIVED TOPIC: MAPS REFERENCE DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with a <see cref="Topic.DerivedTopic"/> and ensures that the <see
-    ///   cref="TopicData.BaseTopicKey"/> is set correctly.
+    ///   Creates a <see cref="Topic"/> with a <see cref="Topic.BaseTopic"/> and ensures that a <see cref="AttributeData"/>
+    ///   item with a <see cref="AttributeData.Key"/> of <c>BasedTopic</c> is correctly set.
     /// </summary>
     [TestMethod]
-    public void Export_DerivedTopic_MapsDerivedTopicKey() {
+    public void Export_DerivedTopic_MapsReferenceData() {
 
-      var rootTopic             = TopicFactory.Create("Root", "Container");
-      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
-      var baseTopic             = TopicFactory.Create("Base", "Container", rootTopic);
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var baseTopic             = TopicFactory.Create("Base", "Container", topic);
       topic.BaseTopic           = baseTopic;
 
       var topicData             = topic.Export();
 
       Assert.IsNotNull(topicData);
-      Assert.AreEqual<string>(topic.BaseTopic.GetUniqueKey(), topicData.BaseTopicKey);
+      Assert.AreEqual<string>(topic.BaseTopic.GetUniqueKey(), topicData.References.FirstOrDefault()?.Value);
 
     }
 

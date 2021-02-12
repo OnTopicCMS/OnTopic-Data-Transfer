@@ -184,7 +184,8 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var topicData             = topic.Export();
 
-      Assert.AreEqual<int>(0, topicData.Attributes.Count);
+      Assert.AreEqual<int>(1, topicData.Attributes.Count);
+      Assert.AreEqual<string>("8", topicData.Attributes.FirstOrDefault().Value);
 
     }
 
@@ -207,8 +208,10 @@ namespace OnTopic.Data.Transfer.Tests {
       var topicData             = topic.Export();
 
       topicData.Attributes.TryGetValue("SomeId", out var someAttribute);
+      topicData.References.TryGetValue("Some", out var someReference);
 
-      Assert.IsNull(someAttribute);
+      Assert.IsNotNull(someAttribute);
+      Assert.IsNull(someReference);
 
     }
 
@@ -229,8 +232,12 @@ namespace OnTopic.Data.Transfer.Tests {
       var topicData             = topic.Export();
 
       topicData.Attributes.TryGetValue("InitialBid", out var initialBidAttribute);
+      topicData.References.TryGetValue("InitialB", out var initialBReference);
+      topicData.References.TryGetValue("InitialB", out var initialBidReference);
 
-      Assert.IsNull(initialBidAttribute);
+      Assert.IsNotNull(initialBidAttribute);
+      Assert.IsNull(initialBReference);
+      Assert.IsNull(initialBidReference);
 
     }
 
@@ -746,7 +753,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.AreEqual<string>("5", topic.Attributes.GetValue("SomeId"));
+      Assert.AreEqual<int>(5, topic.References.GetValue("Some")?.Id?? -1);
 
     }
 

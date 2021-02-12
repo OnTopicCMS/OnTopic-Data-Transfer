@@ -112,7 +112,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var topicData = topic.Export(
         new() {
-          IncludeExternalAssociations                             = true,
+          IncludeExternalAssociations                           = true,
           TranslateLegacyTopicReferences                        = true
         }
       );

@@ -104,7 +104,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var reference in topic.References) {
         if (
-          !options.IncludeExternalReferences &&
+          !options.IncludeExternalAssociations &&
           !(reference.Value?.GetUniqueKey().StartsWith(options.ExportScope, StringComparison.InvariantCultureIgnoreCase)?? true)
         ) {
           continue;
@@ -127,7 +127,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         };
         foreach (var relatedTopic in relationship.Values) {
           if (
-            options.IncludeExternalReferences ||
+            options.IncludeExternalAssociations ||
             relatedTopic.GetUniqueKey().StartsWith(options.ExportScope, StringComparison.InvariantCultureIgnoreCase)
           ) {
             relationshipData.Relationships.Add(relatedTopic.GetUniqueKey());
@@ -486,7 +486,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       | Establish scope
       \-----------------------------------------------------------------------------------------------------------------------*/
       var uniqueKey             = topic.GetRootTopic().FindFirst(t => t.Id == id)?.GetUniqueKey();
-      var exportScope           = options.IncludeExternalReferences? "Root" : options.ExportScope;
+      var exportScope           = options.IncludeExternalAssociations? "Root" : options.ExportScope;
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Return in-scope values

@@ -113,16 +113,16 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT WITH EXTERNAL REFERENCES: TOPIC WITH RELATIONSHIPS: INCLUDE EXTERNAL REFERENCES
+    | TEST: EXPORT WITH EXTERNAL ASSOCIATIONS: TOPIC WITH RELATIONSHIPS: INCLUDE EXTERNAL REFERENCES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> with several <see cref="Topic.Relationships"/> and ensures that the <see cref="TopicData
-    ///   .Relationships"/> collection <i>does</i> include external references—i.e., relationships that reference <see cref="
+    ///   .Relationships"/> collection <i>does</i> include external associations—i.e., relationships that reference <see cref="
     ///   Topic"/>s outside of the current export scope—when permitted with the <see cref="ExportOptions.
-    ///   IncludeExternalReferences"/> option.
+    ///   IncludeExternalAssociations"/> option.
     /// </summary>
     [TestMethod]
-    public void ExportWithExternalReferences_TopicWithRelationships_ExcludesExternalReferences() {
+    public void ExportWithExternalAssociations_TopicWithRelationships_ExcludesExternalReferences() {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
@@ -132,7 +132,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var topicData             = topic.Export(
         new() {
-          IncludeExternalReferences = true
+          IncludeExternalAssociations = true
         }
       );
 

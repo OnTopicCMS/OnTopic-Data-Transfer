@@ -27,20 +27,23 @@ namespace OnTopic.Data.Transfer.Interchange {
     private                     bool                            _includeNestedTopics;
 
     /*==========================================================================================================================
-    | INCLUDE EXTERNAL REFERENCES
+    | INCLUDE EXTERNAL ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Determines whether relationships pointing to <see cref="Topic"/>s outside the scope of the export should be included.
+    ///   Determines whether associations pointing to <see cref="Topic"/>s outside the scope of the export should be included.
     /// </summary>
     /// <remarks>
-    ///   By default, only relationships which point to <see cref="Topic"/>s within the currently scoped export will be
-    ///   included as relationships. This avoids any potential issues matching topics when importing the data into an existing
-    ///   topic graph. Optionally, however, callers may force all external references to be included, even if they aren't
+    ///   By default, only associations which point to <see cref="Topic"/>s within the currently scoped export will be included
+    ///   as associations. This avoids any potential issues matching topics when importing the data into an existing topic
+    ///   graph. Optionally, however, callers may force all external associations to be included, even if they aren't
     ///   represented in the currently scoped export. This is only recommended for cases where the caller is confident that the
     ///   external references will be available in the target database—as might be the case, for example, when combining the
-    ///   exporting with other exports. It may also make when the purpose of the export is to act as a backup for a portion of a
-    ///   topic graph, with the expected target being the same topic graph should a bulk-restore be required.
+    ///   export with additional exports. It may also make sense when the purpose of the export is to act as a backup for a
+    ///   portion of a topic graph, with the expected target being the same topic graph should a restore be required.
     /// </remarks>
+    public bool IncludeExternalAssociations { get; set; }
+
+    [Obsolete("The IncludeExternalReferences option has been renamed to IncludeExternalAssociations", true)]
     public bool IncludeExternalReferences { get; set; }
 
     /*==========================================================================================================================
@@ -53,7 +56,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   The <see cref="ExportScope"/> property is set internally by <see cref="TopicExtensions.Export(Topic, ExportOptions)"
     ///   /> on the initial call—but not on any recursive calls. The value is set to the <see cref="Topic.GetUniqueKey()"/> of
     ///   the initial <see cref="Topic"/> upon which <see cref="TopicExtensions.Export(Topic, ExportOptions)"/> is being called.
-    ///   This is used in conjunction with <see cref="IncludeExternalReferences"/>; when <see cref="IncludeExternalReferences"/>
+    ///   This is used in conjunction with <see cref="IncludeExternalAssociations"/>; when <see cref="IncludeExternalAssociations"/>
     ///   is set to <c>true</c>, the <see cref="ExportScope"/> is used to determine whether or not an external reference—such
     ///   as a relationship—is within scope or not by comparing the relationship's <see cref="Topic.GetUniqueKey()"/> to the
     ///   <see cref="ExportScope"/>.

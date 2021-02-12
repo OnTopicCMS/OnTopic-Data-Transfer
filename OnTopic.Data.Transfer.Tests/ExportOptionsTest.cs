@@ -110,9 +110,10 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Attributes.SetValue("SomeId", "5");
 
-      var topicData             = topic.Export(
+      var topicData = topic.Export(
         new() {
-          IncludeExternalReferences = true
+          IncludeExternalAssociations                             = true,
+          TranslateLegacyTopicReferences                        = true
         }
       );
 

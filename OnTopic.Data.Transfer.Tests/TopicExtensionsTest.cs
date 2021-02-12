@@ -143,6 +143,37 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: EXPORT: TOPIC WITH REFERENCES: MAPS REFERENCE DATA COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with several <see cref="Topic.References"/> and ensures that the <see cref="TopicData.
+    ///   References"/> collection is set correctly.
+    /// </summary>
+    [TestMethod]
+    public void Export_TopicWithReferences_MapsReferenceDataCollection() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var referencedTopic       = TopicFactory.Create("Referenced", "Container", rootTopic);
+
+      topic.References.SetValue("Referenced", referencedTopic);
+
+      var topicData             = rootTopic.Export(
+        new() {
+          IncludeChildTopics    = true
+        }
+      );
+
+      var childTopicData        = topicData.Children.FirstOrDefault()?? new TopicData();
+
+      Assert.IsNotNull(topicData);
+      Assert.IsNotNull(childTopicData);
+      Assert.AreEqual<int>(1, childTopicData.References.Count);
+      Assert.AreEqual<string>("Root:Referenced", childTopicData.References.FirstOrDefault().Value);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: EXPORT: TOPIC WITH NESTED TOPICS: EXCLUDES NESTED TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
@@ -620,6 +651,71 @@ namespace OnTopic.Data.Transfer.Tests {
 
       Assert.AreEqual(relatedTopic1, topic.Relationships.GetValues("Related")?.FirstOrDefault());
       Assert.AreEqual(relatedTopic2, topic.Relationships.GetValues("Related")?.LastOrDefault());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH REFERENCES: MAPS REFERENCE COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with <see cref="Topic.References"/> and ensures that the <see cref="Topic.References
+    ///   "/> collection is set correctly.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithReferences_MapsReferenceCollection() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var referencedTopic       = TopicFactory.Create("Referenced", "Container", rootTopic);
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+      var referenData           = new AttributeData() {
+        Key                     = "Referenced",
+        Value                   = referencedTopic.GetUniqueKey()
+      };
+
+      topicData.References.Add(referenData);
+
+      topic.Import(topicData);
+
+      Assert.AreEqual(referencedTopic, topic.References.GetValue("Referenced"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH REFERENCES: MAINTAINS EXISTING
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with <see cref="Topic.References"/> and ensures that the <see cref="Topic.References
+    ///   "/> collection is set correctly.
+    /// </summary>
+    [TestMethod]
+    public void Import_TopicDataWithReferences_MaintainsExisting() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var referencedTopic1      = TopicFactory.Create("Referenced1", "Container", rootTopic);
+      var referencedTopic2      = TopicFactory.Create("Referenced2", "Container", rootTopic);
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+      var referenceData         = new AttributeData() {
+        Key                     = "Referenced",
+        Value                   = referencedTopic2.GetUniqueKey()
+      };
+
+      topic.References.SetValue("Referenced", referencedTopic1);
+
+      topicData.References.Add(referenceData);
+
+      topic.Import(topicData);
+
+      Assert.AreEqual(referencedTopic1, topic.References.GetValue("Referenced"));
 
     }
 

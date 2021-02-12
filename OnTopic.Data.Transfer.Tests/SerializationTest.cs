@@ -4,8 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Linq;
-using System.Runtime.Serialization;
 using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -119,6 +117,10 @@ namespace OnTopic.Data.Transfer.Tests {
       var relationshipData      = new RelationshipData() {
         Key                     = "Test"
       };
+      var referenceData         = new AttributeData() {
+        Key                     = "Test",
+        LastModified            = DateTime.Now
+      };
       var attributeData         = new AttributeData() {
         Key                     = "Test",
         LastModified            = DateTime.Now
@@ -131,6 +133,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       relationshipData.Relationships.Add("Root:Web");
       topicData.Relationships.Add(relationshipData);
+      topicData.References.Add(referenceData);
       topicData.Attributes.Add(attributeData);
       topicData.Children.Add(childTopicData);
 
@@ -150,7 +153,12 @@ namespace OnTopic.Data.Transfer.Tests {
             $"\"Relationships\":[\"Root:Web\"]" +
           $"}}" +
         $"]," +
-        $"\"References\":[]," +
+        $"\"References\":[" +
+          $"{{" +
+            $"\"Key\":\"{referenceData.Key}\"," +
+            $"\"LastModified\":\"{referenceData.LastModified:o}\"" +
+          $"}}"+
+        $"]," +
         $"\"Children\":[" +
           $"{{" +
             $"\"Key\":\"{childTopicData.Key}\"," +

@@ -172,6 +172,11 @@ namespace OnTopic.Data.Transfer.Tests {
         Key                     = "Test",
         LastModified            = DateTime.Now
       };
+      var sourceReferenceData   = new AttributeData() {
+        Key                     = "Test",
+        Value                   = "Root:Reference",
+        LastModified            = DateTime.Now
+      };
       var sourceChildTopicData  = new TopicData() {
         Key                     = "Child",
         UniqueKey               = "Root:Test:Child",
@@ -200,6 +205,13 @@ namespace OnTopic.Data.Transfer.Tests {
             $"\"Relationships\":[\"Root:Web\"]" +
           $"}}" +
         $"]," +
+        $"\"References\":[" +
+          $"{{" +
+            $"\"Key\":\"{sourceReferenceData.Key}\"," +
+            $"\"Value\":\"{sourceReferenceData.Value}\"," +
+            $"\"LastModified\":\"{sourceReferenceData.LastModified:o}\"" +
+          $"}}"+
+        $"]," +
         $"\"Children\":[" +
           $"{{" +
             $"\"Key\":\"{sourceChildTopicData.Key}\"," +
@@ -213,10 +225,11 @@ namespace OnTopic.Data.Transfer.Tests {
         $"}}";
 
 
-      var topicData = JsonSerializer.Deserialize<TopicData>(json);
-      var relationshipData = topicData.Relationships.FirstOrDefault();
-      var attributeData = topicData.Attributes.FirstOrDefault();
-      var childTopicData = topicData.Children.FirstOrDefault();
+      var topicData             = JsonSerializer.Deserialize<TopicData>(json);
+      var relationshipData      = topicData.Relationships.FirstOrDefault();
+      var referenceData         = topicData.References.FirstOrDefault();
+      var attributeData         = topicData.Attributes.FirstOrDefault();
+      var childTopicData        = topicData.Children.FirstOrDefault();
 
       Assert.AreEqual<string>(sourceTopicData.Key, topicData.Key);
       Assert.AreEqual<string>(sourceTopicData.UniqueKey, topicData.UniqueKey);
@@ -228,6 +241,10 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual<string>(sourceRelationshipData.Key, relationshipData.Key);
       Assert.AreEqual<int?>(sourceRelationshipData.Relationships.Count, relationshipData.Relationships.Count);
       Assert.AreEqual<string>(sourceRelationshipData.Relationships.FirstOrDefault(), relationshipData.Relationships.FirstOrDefault());
+
+      Assert.AreEqual<string>(sourceReferenceData.Key, referenceData.Key);
+      Assert.AreEqual<string>(sourceReferenceData.Value, referenceData.Value);
+      Assert.AreEqual<DateTime>(sourceReferenceData.LastModified, referenceData.LastModified);
 
       Assert.AreEqual<string>(sourceAttributeData.Key, attributeData.Key);
       Assert.AreEqual<string>(sourceAttributeData.Value, attributeData.Value);

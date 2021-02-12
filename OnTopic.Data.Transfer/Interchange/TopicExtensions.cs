@@ -101,6 +101,25 @@ namespace OnTopic.Data.Transfer.Interchange {
       }
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Set topic references
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var reference in topic.References) {
+        if (
+          !options.IncludeExternalReferences &&
+          !(reference.Value?.GetUniqueKey().StartsWith(options.ExportScope, StringComparison.InvariantCultureIgnoreCase)?? true)
+        ) {
+          continue;
+        }
+        topicData.References.Add(
+          new() {
+            Key               = reference.Key,
+            Value             = reference.Value?.GetUniqueKey(),
+            LastModified      = reference.LastModified
+          }
+        );
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var relationship in topic.Relationships) {

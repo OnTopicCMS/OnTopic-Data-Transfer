@@ -373,6 +373,36 @@ namespace OnTopic.Data.Transfer.Interchange {
         }
       }
 
+
+      /*------------------------------------------------------------------------------------------------------------------------
+      | Set topic references
+      \-----------------------------------------------------------------------------------------------------------------------*/
+
+      //First delete any unmatched records, if appropriate
+      if (options.DeleteUnmatchedReferences) {
+        var unmatchedReferences = topic.References.Where(a1 =>
+          !topicData.Attributes.Any(a2 => a1.Key == a2.Key)
+        );
+        foreach (var reference in unmatchedReferences.ToArray()) {
+          topic.References.Remove(reference);
+        };
+      }
+
+      //Update records based on the source collection
+      foreach (var reference in topicData.References) {
+        if (useCustomMergeRules(reference)) continue;
+        var matchedReference = topic.References.FirstOrDefault(a => a.Key == reference.Key);
+        if (matchedReference is not null && isStrategy(ImportStrategy.Add)) continue;
+        if (matchedReference?.LastModified >= reference.LastModified && isStrategy(ImportStrategy.Merge)) continue;
+        var referencedTopic = topic.GetByUniqueKey(reference.Key);
+        if (reference.Value is null || referencedTopic != null) {
+          topic.References.SetValue(
+            reference.Key,
+            referencedTopic
+          );
+        }
+      }
+
       /*------------------------------------------------------------------------------------------------------------------------
       | Recurse over children
       \-----------------------------------------------------------------------------------------------------------------------*/

@@ -143,6 +143,37 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: EXPORT: TOPIC WITH REFERENCES: MAPS REFERENCE DATA COLLECTION
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with several <see cref="Topic.References"/> and ensures that the <see cref="TopicData.
+    ///   References"/> collection is set correctly.
+    /// </summary>
+    [TestMethod]
+    public void Export_TopicWithReferences_MapsReferenceDataCollection() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var referencedTopic       = TopicFactory.Create("Referenced", "Container", rootTopic);
+
+      topic.References.SetValue("Referenced", referencedTopic);
+
+      var topicData             = rootTopic.Export(
+        new() {
+          IncludeChildTopics    = true
+        }
+      );
+
+      var childTopicData        = topicData.Children.FirstOrDefault()?? new TopicData();
+
+      Assert.IsNotNull(topicData);
+      Assert.IsNotNull(childTopicData);
+      Assert.AreEqual<int>(1, childTopicData.References.Count);
+      Assert.AreEqual<string>("Root:Referenced", childTopicData.References.FirstOrDefault().Value);
+
+    }
+
+    /*==========================================================================================================================
     | TEST: EXPORT: TOPIC WITH NESTED TOPICS: EXCLUDES NESTED TOPICS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

@@ -163,6 +163,56 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH REFERENCES: SKIPS NEWER VALUES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with <see cref="TopicData.References"/> and ensures that the <see cref="Topic.
+    ///   References"/> collection is set correctly.
+    /// </summary>
+    [TestMethod]
+    public void ImportAsMerge_TopicDataWithReferences_SkipsNewerValues() {
+
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var referencedTopic1      = TopicFactory.Create("Referenced1", "Container", topic);
+      var referencedTopic2      = TopicFactory.Create("Referenced2", "Container", topic);
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+
+      topic.References.SetValue("Reference", referencedTopic1);
+      topic.References.SetValue("OldReference", referencedTopic2, null, DateTime.UtcNow.AddDays(-1));
+
+      topicData.References.Add(
+        new() {
+          Key                   = "Reference",
+          Value                 = referencedTopic2.GetUniqueKey(),
+          LastModified          = DateTime.UtcNow.AddDays(-1)
+        }
+      );
+
+      topicData.References.Add(
+        new() {
+          Key                   = "OldReference",
+          Value                 = referencedTopic1.GetUniqueKey(),
+          LastModified          = DateTime.UtcNow
+        }
+      );
+
+      topic.Import(
+        topicData,
+        new() {
+          Strategy              = ImportStrategy.Merge
+        }
+      );
+
+      Assert.AreEqual<Topic>(referencedTopic1, topic.References.GetValue("Reference"));
+      Assert.AreEqual<Topic>(referencedTopic1, topic.References.GetValue("OldReference"));
+
+    }
+
+    /*==========================================================================================================================
     | TEST: IMPORT AS REPLACE: TOPIC DATA WITH RELATIONSHIPS: DELETES ORPHANED RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>

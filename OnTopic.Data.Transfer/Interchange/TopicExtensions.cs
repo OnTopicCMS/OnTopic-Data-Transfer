@@ -293,6 +293,33 @@ namespace OnTopic.Data.Transfer.Interchange {
       #pragma warning restore CS0618 // Type or member is obsolete
 
       /*------------------------------------------------------------------------------------------------------------------------
+      | Migrate legacy topic references
+      >-------------------------------------------------------------------------------------------------------------------------
+      | Previous versions of the OnTopic Data Transfer library identified attributes that ended with `Id` and had a value that
+      | mapped to a `topic.Id` and translated their values to `topic.GetUniqueKey()` so that they could be translated back to
+      | topic references. As of OnTopic 5 and OnTopic Data Transfer 3, this functionality is now formalized as `topic.
+      | References`. The following provides legacy support for this encoding by migrating these attributes to `topicData.
+      | References`, thus allowing them to be handled the same way as other topic references.
+      \-----------------------------------------------------------------------------------------------------------------------*/
+      foreach (var attribute in topicData.Attributes.ToList()) {
+        if (
+          attribute.Value is not null &&
+          attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase) &&
+          attribute.Value.StartsWith("Root", StringComparison.InvariantCultureIgnoreCase)
+        ) {
+          var referenceKey = attribute.Key.Substring(0, attribute.Key.Length-2);
+          if (referenceKey is "Topic") {
+            referenceKey = "BaseTopic";
+          }
+          if (!topicData.References.Contains(referenceKey)) {
+            attribute.Key = referenceKey;
+            topicData.Attributes.Remove(attribute);
+            topicData.References.Add(attribute);
+          }
+        }
+      }
+
+      /*------------------------------------------------------------------------------------------------------------------------
       | Set attributes
       \-----------------------------------------------------------------------------------------------------------------------*/
 
@@ -315,7 +342,7 @@ namespace OnTopic.Data.Transfer.Interchange {
         if (matchedAttribute?.LastModified >= attribute.LastModified && isStrategy(ImportStrategy.Merge)) continue;
         topic.Attributes.SetValue(
           attribute.Key,
-          getAttributeValue(attribute)
+          attribute.Value
         );
       }
 
@@ -446,14 +473,6 @@ namespace OnTopic.Data.Transfer.Interchange {
         (attribute.Key is "LastModified" && options!.LastModifiedStrategy is not LastModifiedImportStrategy.Inherit) ||
         (attribute.Key is "LastModifiedBy" && options!.LastModifiedByStrategy is not LastModifiedImportStrategy.Inherit);
 
-      /*------------------------------------------------------------------------------------------------------------------------
-      | Get attribute value
-      \-----------------------------------------------------------------------------------------------------------------------*/
-      string? getAttributeValue(AttributeData attribute) =>
-        attribute.Key.EndsWith("ID", StringComparison.InvariantCultureIgnoreCase)?
-          GetTopicId(topic, attribute.Value) :
-          attribute.Value;
-
     }
 
     /*==========================================================================================================================
@@ -500,35 +519,6 @@ namespace OnTopic.Data.Transfer.Interchange {
       \-----------------------------------------------------------------------------------------------------------------------*/
       return null;
 
-    }
-
-    /*==========================================================================================================================
-    | GET TOPIC ID
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Given a <c>UniqueKey</c>, lookup the topic in the topic graph and return the <c>TopicID</c>. If no value can be
-    ///   found, the original <c>UniqueKey</c> is returned.
-    /// </summary>
-    /// <remarks>
-    ///   Note that this function is <i>exclusively</i> required for maintaining backward compatibility with <see cref="
-    ///   TopicData"/> exported using the <see cref="ExportOptions.TranslateTopicPointers"/> option, which was the default in
-    ///   OnTopic Data Transfer 2.x. With the release of OnTopic 5.0.0, and OnTopic Data Transfer 3.0.0, implementers should
-    ///   prefer the use of <see cref="Topic.References"/>. The <see cref="GetTopicId(Topic, String?)"/> method continues to be
-    ///   included primarily for backward compatibility with legacy JSON data.
-    /// </remarks>
-    /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
-    /// <param name="uniqueKey">The <see cref="Topic.GetUniqueKey"/> to retrieve the <see cref="Topic.Id"/> for.</param>
-    private static string? GetTopicId(Topic topic, string? uniqueKey) {
-      if (uniqueKey!.StartsWith("Root", StringComparison.InvariantCultureIgnoreCase)) {
-        var target = topic.GetByUniqueKey(uniqueKey);
-        if (target is not null and { IsNew: false }) {
-          return target.Id.ToString(CultureInfo.CurrentCulture);
-        }
-        else {
-          return null;
-        }
-      }
-      return uniqueKey;
     }
 
   } //Class

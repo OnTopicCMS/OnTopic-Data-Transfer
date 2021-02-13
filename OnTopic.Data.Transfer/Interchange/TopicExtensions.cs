@@ -463,7 +463,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Is custom merge rules?
       \-----------------------------------------------------------------------------------------------------------------------*/
-      bool useCustomMergeRules(AttributeData attribute) =>
+      bool useCustomMergeRules(RecordData attribute) =>
         (attribute.Key is "LastModified" && options!.LastModifiedStrategy is not LastModifiedImportStrategy.Inherit) ||
         (attribute.Key is "LastModifiedBy" && options!.LastModifiedByStrategy is not LastModifiedImportStrategy.Inherit);
 

@@ -44,8 +44,8 @@ namespace OnTopic.Data.Transfer.Interchange {
     | MERGE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Imports all records <i>unless</i> the <see cref="AttributeData.LastModified"/> is <i>older</i> than the target <see
-    ///   cref="AttributeValue.LastModified"/>.
+    ///   Imports all records <i>unless</i> the <see cref="RecordData.LastModified"/> is <i>older</i> than the target <see cref=
+    ///   "AttributeValue.LastModified"/>.
     /// </summary>
     /// <remarks>
     ///   This is generally the <i>preferred</i> import strategy. It imports all new topics, relationships, and attributes,
@@ -63,12 +63,12 @@ namespace OnTopic.Data.Transfer.Interchange {
     | OVERWRITE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Imports all records, <i>even if</i> the <see cref="AttributeData.LastModified"/> is <i>older</i> than the target <see
+    ///   Imports all records, <i>even if</i> the <see cref="RecordData.LastModified"/> is <i>older</i> than the target <see
     ///   cref="AttributeValue.LastModified"/>.
     /// </summary>
     /// <remarks>
     ///   This will effectively <i>overwrite</i> any attributes that already exist in the database, even if they were
-    ///   modified <i>after</i> the source <see cref="AttributeData"/>. For example, if the <see cref="TopicData"/> starts at
+    ///   modified <i>after</i> the source <see cref="RecordData"/>. For example, if the <see cref="TopicData"/> starts at
     ///   <code>Root:Configuration</code>, any modifications to out-of-the-box titles, descriptions, visibility, sort order, &c.
     ///   will be overwritten with the new values. Any attribute values that it overwrites will still be recoverable as part of
     ///   the attribute versioning schema, with the exception of <see cref="Topic.ContentType"/>, which is excluded from

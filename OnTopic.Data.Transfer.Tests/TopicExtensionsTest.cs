@@ -41,8 +41,8 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: EXPORT: BASE TOPIC: MAPS REFERENCE DATA
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with a <see cref="Topic.BaseTopic"/> and ensures that a <see cref="AttributeData"/>
-    ///   item with a <see cref="AttributeData.Key"/> of <c>BasedTopic</c> is correctly set.
+    ///   Creates a <see cref="Topic"/> with a <see cref="Topic.BaseTopic"/> and ensures that a <see cref="RecordData"/> item
+    ///   with a <see cref="RecordData.Key"/> of <c>BasedTopic</c> is correctly set.
     /// </summary>
     [TestMethod]
     public void Export_BaseTopic_MapsReferenceData() {
@@ -375,7 +375,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: IMPORT: BASE TOPIC: MAPS BASE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with a <see cref="AttributeData"/> with the <see cref="AttributeData.Key"/> of <c>
+    ///   Creates a <see cref="TopicData"/> with a <see cref="RecordData"/> with the <see cref="RecordData.Key"/> of <c>
     ///   BaseTopic</c> in the <see cref="TopicData.References"/> collection, which references a topic in the topic graph.
     ///   Ensures that it is correctly wired up.
     /// </summary>
@@ -392,7 +392,7 @@ namespace OnTopic.Data.Transfer.Tests {
         ContentType             = topic.ContentType
       };
 
-      var referencedTopicData   = new AttributeData() {
+      var referencedTopicData   = new RecordData() {
         Key                     = "BaseTopic",
         Value                   = $"{baseTopic.GetUniqueKey()}"
       };
@@ -410,7 +410,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: IMPORT: BASE TOPIC: MAPS NEW BASE TOPIC
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with a <see cref="AttributeData"/> with the <see cref="AttributeData.Key"/> of <c>
+    ///   Creates a <see cref="TopicData"/> with a <see cref="RecordData"/> with the <see cref="RecordData.Key"/> of <c>
     ///   BaseTopic</c> in the <see cref="TopicData.References"/> collection, which references a newly imported topic that
     ///   occurs later in the tree, ensuring that the <see cref="Topic.BaseTopic"/> is set correctly.
     /// </summary>
@@ -438,7 +438,7 @@ namespace OnTopic.Data.Transfer.Tests {
         ContentType             = "Container"
       };
 
-      var baseTopicReference    = new AttributeData() {
+      var baseTopicReference    = new RecordData() {
         Key                     = "BaseTopic",
         Value                   = $"{topicData.UniqueKey}:BaseTopic"
       };
@@ -478,7 +478,7 @@ namespace OnTopic.Data.Transfer.Tests {
         ContentType             = topic.ContentType
       };
 
-      var baseTopicReference    = new AttributeData() {
+      var baseTopicReference    = new RecordData() {
         Key                     = "BaseTopic",
         Value                   = $"{topicData.UniqueKey}:BaseTopic"
       };
@@ -672,12 +672,12 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType
       };
-      var referenData           = new AttributeData() {
+      var referenceData         = new RecordData() {
         Key                     = "Referenced",
         Value                   = referencedTopic.GetUniqueKey()
       };
 
-      topicData.References.Add(referenData);
+      topicData.References.Add(referenceData);
 
       topic.Import(topicData);
 
@@ -704,7 +704,7 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType
       };
-      var referenceData         = new AttributeData() {
+      var referenceData         = new RecordData() {
         Key                     = "Referenced",
         Value                   = referencedTopic2.GetUniqueKey()
       };
@@ -824,8 +824,8 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: IMPORT: TOPIC DATA WITH LEGACY TOPIC REFERENCE: MAPS TOPIC ID
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that references another topic.
-    ///   Confirms that it is converted to a <see cref="Topic.Id"/> if valid, and otherwise left as is.
+    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="RecordData"/> that references another topic. Confirms
+    ///   that it is converted to a <see cref="Topic.Id"/> if valid, and otherwise left as is.
     /// </summary>
     [TestMethod]
     public void Import_TopicDataWithLegacyTopicReference_MapsTopicID() {
@@ -857,7 +857,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: IMPORT: TOPIC DATA WITH MISSING LEGACY TOPIC REFERENCE: SKIPS ATTRIBUTE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that references to a missing topic.
+    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="RecordData"/> that references to a missing topic.
     ///   Confirms that the attribute is skipped.
     /// </summary>
     [TestMethod]
@@ -888,7 +888,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: IMPORT: TOPIC DATA WITH INVALID LEGACY TOPIC REFERENCE: IMPORTS ORIGINAL VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="AttributeData"/> that does not reference a topic key
+    ///   Creates a <see cref="TopicData"/> with an arbitrary <see cref="RecordData"/> that does not reference a topic key
     ///   (i.e., it doesn't start with <c>Root</c>). Confirms that the original attribute value is imported.
     /// </summary>
     [TestMethod]

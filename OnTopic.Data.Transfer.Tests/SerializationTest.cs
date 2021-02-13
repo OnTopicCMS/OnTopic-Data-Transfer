@@ -75,26 +75,26 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SERIALIZE: ATTRIBUTE DATA: RETURNS EXPECTED RESULTS
+    | TEST: SERIALIZE: RECORD DATA: RETURNS EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="AttributeData"/>, serializes it, and confirms the resulting JSON.
+    ///   Creates a <see cref="RecordData"/>, serializes it, and confirms the resulting JSON.
     /// </summary>
     [TestMethod]
-    public void Serialize_AttributeData_ReturnsExpectedResults() {
+    public void Serialize_RecordData_ReturnsExpectedResults() {
 
-      var attributeData         = new AttributeData() {
+      var recordData         = new RecordData() {
         Key                     = "Test",
         LastModified            = DateTime.Now
       };
 
       var expected = $"{{" +
-        $"\"Key\":\"{attributeData.Key}\"," +
+        $"\"Key\":\"{recordData.Key}\"," +
         $"\"Value\":null," +
-        $"\"LastModified\":\"{attributeData.LastModified:o}\"" +
+        $"\"LastModified\":\"{recordData.LastModified:o}\"" +
         $"}}";
 
-      var json = JsonSerializer.Serialize(attributeData);
+      var json = JsonSerializer.Serialize(recordData);
 
       Assert.AreEqual<string>(expected, json);
 
@@ -117,11 +117,11 @@ namespace OnTopic.Data.Transfer.Tests {
       var relationshipData      = new RelationshipData() {
         Key                     = "Test"
       };
-      var referenceData         = new AttributeData() {
+      var referenceData         = new RecordData() {
         Key                     = "Test",
         LastModified            = DateTime.Now
       };
-      var attributeData         = new AttributeData() {
+      var attributeData         = new RecordData() {
         Key                     = "Test",
         LastModified            = DateTime.Now
       };

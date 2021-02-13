@@ -85,8 +85,8 @@ namespace OnTopic.Data.Transfer {
     | ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a collection of <see cref="AttributeData"/> representing the attributes from the associated <see
-    ///   cref="Topic"/> object.
+    ///   Provides a collection of <see cref="RecordData"/> representing the attributes from the associated <see cref="Topic"/>
+    ///   object.
     /// </summary>
     public AttributeDataCollection Attributes { get; set; } = new();
 
@@ -103,8 +103,8 @@ namespace OnTopic.Data.Transfer {
     | TOPIC REFERENCES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a collection of <see cref="AttributeData"/> representing the topic references from the associated <see
-    ///   cref="Topic"/> object.
+    ///   Provides a collection of <see cref="RecordData"/> representing the topic references from the associated <see cref="
+    ///   Topic"/> object.
     /// </summary>
     public AttributeDataCollection References { get; set; } = new();
 

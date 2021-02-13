@@ -479,7 +479,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// <remarks>
     ///   Note that this function is <i>exclusively</i> required for maintaining backward compatibility the <see cref="
     ///   ExportOptions.TranslateLegacyTopicReferences"/> option/ With the release of OnTopic 5.0.0, and OnTopic Data Transfer
-    ///   3.0.0, implementers should prefer the use of <see cref="Topic.References"/>. The <see cref="GetUniqueKey(Topic,
+    ///   2.0.0, implementers should prefer the use of <see cref="Topic.References"/>. The <see cref="GetUniqueKey(Topic,
     ///   String?, ExportOptions)"/> method continues to be included primarily for backward compatibility with legacy database
     ///   configurations.
     /// </remarks>

@@ -22,11 +22,13 @@ Technically, the `Topic` class—as well as its dependents—could be directly seria
 The `OnTopic.Data.Transfer` assembly includes three basic data transfer classes along side a custom collection class:
 
 - `TopicData`: Maps to the `Topic` class, and includes the following collections:
-  - `Children` (`List[TopicData]`)
-  - `Attributes` (`List[AttributeData]`)
-    - `AttributeData`: Maps to the `AttributeValue` class, and represents an individual attribute.
+  - `Children` (`Collection<TopicData>`)
+  - `Attributes` (`KeyedCollection<String, RecordData>`)
+    - `RecordData`: Maps to the `TrackedRecord<T>` class, and represents an individual attribute.
   - `Relationships` ([`RelationshipDataCollection`](OnTopic.Data.Transfer/RelationshipDataCollection.cs))
     - `RelationshipData`: Maps to the `NamedTopicCollection`, and represents a relationship key, as well as a list of references to related topics via their `Topic.GetUniqueKey()` value.
+  - `References` (`KeyedCollection<String, RecordData>`)
+    - `RecordData`: Maps to the `TrackedRecord<T>` class, and represents an individual topic reference.
 
 ## Data Interchange
 The `OnTopic.Data.Transfer.Interchange` namespace includes extension methods for the `OnTopic.Topic` entity which allow a `TopicData` graph to be exported from a `Topic` graph—or imported back into one:
@@ -37,7 +39,7 @@ The `OnTopic.Data.Transfer.Interchange` namespace includes extension methods for
 ### Export Options
 Optionally, the `Topic.Export()` extension method will accept an [`ExportOptions`](OnTopic.Data.Transfer/Interchange/ExportOptions.cs) object as argument in order to fine-tune the business logic for the export. This includes the following options:
 
-- `IncludeExternalReferences`: Enables relationships to be exported, even if the topics they point to fall outside the scope of the current export.
+- `IncludeExternalAssociations`: Enables associations—such as relationships and topic references—to be exported, even if the topics they point to fall outside the scope of the current export.
 - `IncludeNestedTopics`: Includes nested topic as part of the export.
 - `IncludeChildTopics`: Recursively includes _all_ child topics—including nested topics—as part of the export. Implies `IncludeNestedTopics`.
 
@@ -53,6 +55,7 @@ In addition to the `Strategy` property, the `ImportOptions` also allows the beha
 
 - `DeleteUnmatchedAttributes`: Determines if unmatched attributes should be deleted. Defaults to `false` unless `ImportStrategy.Replace` is set.
 - `DeleteUnmatchedRelationships`: Determines if unmatched relationships should be deleted. Defaults to `false` unless `ImportStrategy.Replace` is set.
+- `DeleteUnmatchedReferences`: Determines if unmatched topic references should be deleted. Defaults to `false` unless `ImportStrategy.Replace` is set.
 - `DeleteUnmatchedChildren`: Determines if unmatched children should be deleted. Defaults to `false` unless `ImportStrategy.Replace` is set.
 - `DeleteUnmatchedNestedTopics`: Determines if unmatched nested topics should be deleted. Defaults to `false` unless `ImportStrategy.Replace` is set.
 - `OverwriteContentType`: Determines if the `ContentType` on an existing `Topic` should be updated if the `TopicData` value is different. Defaults to `false` unless `ImportStrategy` is set to `Ovewrite` or `Replace`.
@@ -88,7 +91,7 @@ Installation can be performed by providing a `<PackageReference /`> to the `OnTo
 <Project Sdk="Microsoft.NET.Sdk.Web">
   …
   <ItemGroup>
-    <PackageReference Include="OnTopic.Data.Transfer" Version="1.0.0" />
+    <PackageReference Include="OnTopic.Data.Transfer" Version="3.0.0" />
   </ItemGroup>
 </Project>
 ```

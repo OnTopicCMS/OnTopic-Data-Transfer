@@ -123,15 +123,15 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: DESERIALIZE: ATTRIBUTE DATA: RETURNS EXPECTED RESULTS
+    | TEST: DESERIALIZE: RECORD DATA: RETURNS EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a json string and attempts to deserialize it as a <see cref="AttributeData"/> class.
+    ///   Creates a json string and attempts to deserialize it as a <see cref="RecordData"/> class.
     /// </summary>
     [TestMethod]
-    public void Deserialize_AttributeData_ReturnsExpectedResults() {
+    public void Deserialize_RecordData_ReturnsExpectedResults() {
 
-      var sourceData            = new AttributeData() {
+      var sourceData            = new RecordData() {
         Key                     = "Test",
         LastModified            = DateTime.Now
       };
@@ -143,11 +143,11 @@ namespace OnTopic.Data.Transfer.Tests {
         $"}}";
 
 
-      var attributeData = JsonSerializer.Deserialize<AttributeData>(json);
+      var recordData = JsonSerializer.Deserialize<RecordData>(json);
 
-      Assert.AreEqual<string>(sourceData.Key, attributeData.Key);
-      Assert.AreEqual<string>(sourceData.Value, attributeData.Value);
-      Assert.AreEqual<DateTime>(sourceData.LastModified, attributeData.LastModified);
+      Assert.AreEqual<string>(sourceData.Key, recordData.Key);
+      Assert.AreEqual<string>(sourceData.Value, recordData.Value);
+      Assert.AreEqual<DateTime>(sourceData.LastModified, recordData.LastModified);
 
     }
 
@@ -168,11 +168,11 @@ namespace OnTopic.Data.Transfer.Tests {
       var sourceRelationshipData= new RelationshipData() {
         Key                     = "Test"
       };
-      var sourceAttributeData   = new AttributeData() {
+      var sourceAttributeData   = new RecordData() {
         Key                     = "Test",
         LastModified            = DateTime.Now
       };
-      var sourceReferenceData   = new AttributeData() {
+      var sourceReferenceData   = new RecordData() {
         Key                     = "Test",
         Value                   = "Root:Reference",
         LastModified            = DateTime.Now

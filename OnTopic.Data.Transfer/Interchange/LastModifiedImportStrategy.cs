@@ -39,8 +39,8 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// <remarks>
     ///   When <see cref="Inherit"/> is chosen, existing values will be retained if <see cref="ImportStrategy.Add"/> is
     ///   selected, overwritten if <see cref="ImportStrategy.Overwrite"/> or <see cref="ImportStrategy.Replace"/> are selected,
-    ///   and conditionally overwritten based on the <see cref="AttributeData.LastModified"/> date if <see
-    ///   cref="ImportStrategy.Merge"/> is selected.
+    ///   and conditionally overwritten based on the <see cref="RecordData.LastModified"/> date if <see cref="ImportStrategy.
+    ///   Merge"/> is selected.
     /// </remarks>
     Inherit                     = 1,
 

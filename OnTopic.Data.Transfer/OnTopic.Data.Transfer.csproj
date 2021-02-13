@@ -14,7 +14,7 @@
     <Company>Ignia</Company>
     <Product>OnTopic</Product>
     <Description>Libraries for supporting the import and export of OnTopic entities.</Description>
-    <Copyright>©2020 Ignia, LLC</Copyright>
+    <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
   </PropertyGroup>

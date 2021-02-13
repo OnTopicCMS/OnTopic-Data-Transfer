@@ -91,7 +91,7 @@ Installation can be performed by providing a `<PackageReference /`> to the `OnTo
 <Project Sdk="Microsoft.NET.Sdk.Web">
   …
   <ItemGroup>
-    <PackageReference Include="OnTopic.Data.Transfer" Version="3.0.0" />
+    <PackageReference Include="OnTopic.Data.Transfer" Version="2.0.0" />
   </ItemGroup>
 </Project>
 ```

@@ -130,10 +130,10 @@ namespace OnTopic.Data.Transfer.Interchange {
             options.IncludeExternalAssociations ||
             relatedTopic.GetUniqueKey().StartsWith(options.ExportScope, StringComparison.InvariantCultureIgnoreCase)
           ) {
-            relationshipData.Relationships.Add(relatedTopic.GetUniqueKey());
+            relationshipData.Values.Add(relatedTopic.GetUniqueKey());
           }
         }
-        if (relationshipData.Relationships.Count > 0) {
+        if (relationshipData.Values.Count > 0) {
           topicData.Relationships.Add(relationshipData);
         }
       }
@@ -384,7 +384,7 @@ namespace OnTopic.Data.Transfer.Interchange {
 
       //Update records based on the source collection
       foreach (var relationship in topicData.Relationships) {
-        foreach (var relatedTopicKey in relationship.Relationships) {
+        foreach (var relatedTopicKey in relationship.Values) {
           var relatedTopic = topic.GetByUniqueKey(relatedTopicKey);
           if (relationship.Key is not null && relatedTopic is not null) {
             topic.Relationships.SetValue(relationship.Key, relatedTopic);

@@ -35,12 +35,12 @@ namespace OnTopic.Data.Transfer {
     public string? Key { get; set; }
 
     /*==========================================================================================================================
-    | PROPERTY: RELATIONSHIPS
+    | PROPERTY: VALUES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Gets a collection of unique keys associated with related <see cref="Topic"/> entities.
     /// </summary>
-    public Collection<string> Relationships { get; init; } = new();
+    public Collection<string> Values { get; init; } = new();
 
   } //Class
 } //Namespace

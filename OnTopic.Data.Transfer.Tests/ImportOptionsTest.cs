@@ -241,7 +241,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Relationships.SetValue("Cousin",  relatedTopic3);
 
       topicData.Relationships.Add(relationshipData);
-      relationshipData.Relationships.Add(relatedTopic1.GetUniqueKey());
+      relationshipData.Values.Add(relatedTopic1.GetUniqueKey());
 
       topic.Import(
         topicData,

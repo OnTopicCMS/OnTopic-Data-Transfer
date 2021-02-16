@@ -75,7 +75,7 @@ namespace OnTopic.Data.Transfer.Converters {
       \-----------------------------------------------------------------------------------------------------------------------*/
       var relationship = new RelationshipData() {
         Key                     = key,
-        Relationships           = new(values?? Array.Empty<string>())
+        Values                  = new(values?? Array.Empty<string>())
       };
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -95,8 +95,8 @@ namespace OnTopic.Data.Transfer.Converters {
       writer.WriteStartObject();
       writer.WritePropertyName("Key");
       writer.WriteStringValue(relationshipData.Key.ToString());
-      writer.WriteStartArray("Relationships");
-      foreach (var uniqueKey in relationshipData.Relationships) {
+      writer.WriteStartArray("Values");
+      foreach (var uniqueKey in relationshipData.Values) {
         writer.WriteStringValue(uniqueKey);
       }
       writer.WriteEndArray();

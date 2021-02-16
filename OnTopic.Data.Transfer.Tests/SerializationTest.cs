@@ -65,11 +65,11 @@ namespace OnTopic.Data.Transfer.Tests {
       var relationshipData      = new RelationshipData() {
         Key                     = "Test"
       };
-      relationshipData.Relationships.Add("Root:Web");
+      relationshipData.Values.Add("Root:Web");
 
       var expected = $"{{" +
         $"\"Key\":\"{relationshipData.Key}\"," +
-        $"\"Relationships\":[\"Root:Web\"]" +
+        $"\"Values\":[\"Root:Web\"]" +
         $"}}";
 
       var json = JsonSerializer.Serialize(relationshipData);
@@ -135,7 +135,7 @@ namespace OnTopic.Data.Transfer.Tests {
         ContentType             = "Container"
       };
 
-      relationshipData.Relationships.Add("Root:Web");
+      relationshipData.Values.Add("Root:Web");
       topicData.Relationships.Add(relationshipData);
       topicData.References.Add(referenceData);
       topicData.Attributes.Add(attributeData);
@@ -154,7 +154,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Relationships\":[" +
           $"{{" +
             $"\"Key\":\"{relationshipData.Key}\"," +
-            $"\"Relationships\":[\"Root:Web\"]" +
+            $"\"Values\":[\"Root:Web\"]" +
           $"}}" +
         $"]," +
         $"\"References\":[" +

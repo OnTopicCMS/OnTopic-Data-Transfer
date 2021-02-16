@@ -108,7 +108,7 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.IsNotNull(topicData);
       Assert.IsNotNull(childTopicData);
       Assert.AreEqual<int>(1, childTopicData.Relationships.Count);
-      Assert.AreEqual<string>("Root:Related", childTopicData.Relationships.FirstOrDefault().Relationships.FirstOrDefault());
+      Assert.AreEqual<string>("Root:Related", childTopicData.Relationships.FirstOrDefault().Values.FirstOrDefault());
 
     }
 
@@ -138,7 +138,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       Assert.IsNotNull(topicData);
       Assert.AreEqual<int>(1, topicData.Relationships.Count);
-      Assert.AreEqual<string>("Root:Related", topicData.Relationships.FirstOrDefault().Relationships.FirstOrDefault());
+      Assert.AreEqual<string>("Root:Related", topicData.Relationships.FirstOrDefault().Values.FirstOrDefault());
 
     }
 
@@ -611,7 +611,7 @@ namespace OnTopic.Data.Transfer.Tests {
       };
 
       topicData.Relationships.Add(relationshipData);
-      relationshipData.Relationships.Add(relatedTopic.GetUniqueKey());
+      relationshipData.Values.Add(relatedTopic.GetUniqueKey());
 
       topic.Import(topicData);
 
@@ -645,7 +645,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Relationships.SetValue("Related", relatedTopic1);
 
       topicData.Relationships.Add(relationshipData);
-      relationshipData.Relationships.Add(relatedTopic2.GetUniqueKey());
+      relationshipData.Values.Add(relatedTopic2.GetUniqueKey());
 
       topic.Import(topicData);
 

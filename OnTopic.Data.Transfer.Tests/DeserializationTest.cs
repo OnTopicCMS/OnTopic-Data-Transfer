@@ -107,18 +107,18 @@ namespace OnTopic.Data.Transfer.Tests {
       var sourceData            = new RelationshipData() {
         Key                     = "Test"
       };
-      sourceData.Relationships.Add("Root:Web");
+      sourceData.Values.Add("Root:Web");
 
       var json = $"{{" +
         $"\"Key\":\"{sourceData.Key}\"," +
-        $"\"Relationships\":[\"Root:Web\"]" +
+        $"\"Values\":[\"Root:Web\"]" +
         $"}}";
 
       var relationshipData = JsonSerializer.Deserialize<RelationshipData>(json);
 
       Assert.AreEqual<string>(sourceData.Key, relationshipData.Key);
-      Assert.AreEqual<int>(sourceData.Relationships.Count, relationshipData.Relationships.Count);
-      Assert.AreEqual<string>(sourceData.Relationships.FirstOrDefault(), relationshipData.Relationships.FirstOrDefault());
+      Assert.AreEqual<int>(sourceData.Values.Count, relationshipData.Values.Count);
+      Assert.AreEqual<string>(sourceData.Values.FirstOrDefault(), relationshipData.Values.FirstOrDefault());
 
     }
 
@@ -183,7 +183,7 @@ namespace OnTopic.Data.Transfer.Tests {
         ContentType             = "Container"
       };
 
-      sourceRelationshipData.Relationships.Add("Root:Web");
+      sourceRelationshipData.Values.Add("Root:Web");
       sourceTopicData.Relationships.Add(sourceRelationshipData);
       sourceTopicData.Attributes.Add(sourceAttributeData);
       sourceTopicData.Children.Add(sourceChildTopicData);
@@ -202,7 +202,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Relationships\":[" +
           $"{{" +
             $"\"Key\":\"{sourceRelationshipData.Key}\"," +
-            $"\"Relationships\":[\"Root:Web\"]" +
+            $"\"Values\":[\"Root:Web\"]" +
           $"}}" +
         $"]," +
         $"\"References\":[" +
@@ -239,8 +239,8 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual<int>(1, sourceTopicData.Children.Count);
 
       Assert.AreEqual<string>(sourceRelationshipData.Key, relationshipData.Key);
-      Assert.AreEqual<int?>(sourceRelationshipData.Relationships.Count, relationshipData.Relationships.Count);
-      Assert.AreEqual<string>(sourceRelationshipData.Relationships.FirstOrDefault(), relationshipData.Relationships.FirstOrDefault());
+      Assert.AreEqual<int?>(sourceRelationshipData.Values.Count, relationshipData.Values.Count);
+      Assert.AreEqual<string>(sourceRelationshipData.Values.FirstOrDefault(), relationshipData.Values.FirstOrDefault());
 
       Assert.AreEqual<string>(sourceReferenceData.Key, referenceData.Key);
       Assert.AreEqual<string>(sourceReferenceData.Value, referenceData.Value);

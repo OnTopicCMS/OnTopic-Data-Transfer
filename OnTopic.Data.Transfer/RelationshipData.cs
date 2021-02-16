@@ -3,7 +3,6 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace OnTopic.Data.Transfer {
@@ -36,7 +35,7 @@ namespace OnTopic.Data.Transfer {
     /// <summary>
     ///   Gets a collection of unique keys associated with related <see cref="Topic"/> entities.
     /// </summary>
-    public Collection<string> Relationships { get; set; } = new();
+    public Collection<string> Relationships { get; init; } = new();
 
   } //Class
 } //Namespace

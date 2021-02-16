@@ -7,6 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace OnTopic.Data.Transfer {
 
@@ -79,7 +80,15 @@ namespace OnTopic.Data.Transfer {
     ///   </para>
     /// </remarks>
     [Obsolete("The DerivedTopicKey has been renamed to BaseTopicKey.", false)]
-    public string? DerivedTopicKey { get; set; }
+    #if NET5_0
+      #pragma warning disable IDE1006 // Naming Styles
+      [JsonInclude]
+      [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+      public string? DerivedTopicKey { get; internal set; }
+      #pragma warning restore IDE1006 // Naming Styles
+    #else
+      public string? DerivedTopicKey { get; set; }
+    #endif
 
     /*==========================================================================================================================
     | ATTRIBUTES
@@ -88,7 +97,7 @@ namespace OnTopic.Data.Transfer {
     ///   Provides a collection of <see cref="RecordData"/> representing the attributes from the associated <see cref="Topic"/>
     ///   object.
     /// </summary>
-    public RecordDataCollection Attributes { get; set; } = new();
+    public RecordDataCollection Attributes { get; init; } = new();
 
     /*==========================================================================================================================
     | RELATIONSHIPS
@@ -97,7 +106,7 @@ namespace OnTopic.Data.Transfer {
     ///   Provides a collection of <see cref="RelationshipData"/> representing the relationships from the associated <see
     ///   cref="Topic"/> object.
     /// </summary>
-    public RelationshipDataCollection Relationships { get; set; } = new();
+    public RelationshipDataCollection Relationships { get; init; } = new();
 
     /*==========================================================================================================================
     | TOPIC REFERENCES
@@ -106,7 +115,7 @@ namespace OnTopic.Data.Transfer {
     ///   Provides a collection of <see cref="RecordData"/> representing the topic references from the associated <see cref="
     ///   Topic"/> object.
     /// </summary>
-    public RecordDataCollection References { get; set; } = new();
+    public RecordDataCollection References { get; init; } = new();
 
     /*==========================================================================================================================
     | CHILDREN
@@ -115,7 +124,7 @@ namespace OnTopic.Data.Transfer {
     ///   Provides a collection of <see cref="TopicData"/> objects representing the children of the associated <see
     ///   cref="Topic"/>.
     /// </summary>
-    public Collection<TopicData> Children { get; set; } = new();
+    public Collection<TopicData> Children { get; init; } = new();
 
   } //Class
 } //Namespace

@@ -232,7 +232,7 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType
       };
-      var relationshipData      = new RelationshipData() {
+      var relationshipData      = new KeyValuesPair() {
         Key                   = "Related"
       };
 
@@ -241,7 +241,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Relationships.SetValue("Cousin",  relatedTopic3);
 
       topicData.Relationships.Add(relationshipData);
-      relationshipData.Relationships.Add(relatedTopic1.GetUniqueKey());
+      relationshipData.Values.Add(relatedTopic1.GetUniqueKey());
 
       topic.Import(
         topicData,

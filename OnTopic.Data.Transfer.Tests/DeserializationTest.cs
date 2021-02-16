@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Data.Transfer.Converters;
 
 namespace OnTopic.Data.Transfer.Tests {
 
@@ -96,29 +97,59 @@ namespace OnTopic.Data.Transfer.Tests {
     #pragma warning restore CS0618 // Type or member is obsolete
 
     /*==========================================================================================================================
+    | TEST: DESERIALIZE: KEY/VALUES PAIR: RETURNS EXPECTED RESULTS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a JSON string and attempts to deserialize it as a <see cref="KeyValuesPair"/> class.
+    /// </summary>
+    [TestMethod]
+    public void Deserialize_KeyValuesPair_ReturnsExpectedResults() {
+
+      var sourceData            = new KeyValuesPair() {
+        Key                     = "Test"
+      };
+      sourceData.Values.Add("Root:Web");
+
+      var json = $"{{" +
+        $"\"Key\":\"{sourceData.Key}\"," +
+        $"\"Values\":[\"Root:Web\"]" +
+        $"}}";
+
+      var keyValuesPair         = JsonSerializer.Deserialize<KeyValuesPair>(json);
+
+      Assert.AreEqual<string>(sourceData.Key, keyValuesPair.Key);
+      Assert.AreEqual<int>(sourceData.Values.Count, keyValuesPair.Values.Count);
+      Assert.AreEqual<string>(sourceData.Values.FirstOrDefault(), keyValuesPair.Values.FirstOrDefault());
+
+    }
+
+    /*==========================================================================================================================
     | TEST: DESERIALIZE: RELATIONSHIP DATA: RETURNS EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a json string and attempts to deserialize it as a <see cref="RelationshipData"/> class.
+    ///   Creates a JSON string representing the legacy <c>RelationshipData</c> class (which used a <c>Relationships</c> array),
+    ///   and attempts to deserialize it as a <see cref="KeyValuesPair"/> class, ensuring that the <see cref="
+    ///   KeyValuesPairConverter"/> properly translates the <c>Relationships</c> array to the <see cref="KeyValuesPair.Values"/>
+    ///   collection.
     /// </summary>
     [TestMethod]
     public void Deserialize_RelationshipData_ReturnsExpectedResults() {
 
-      var sourceData            = new RelationshipData() {
+      var sourceData            = new KeyValuesPair() {
         Key                     = "Test"
       };
-      sourceData.Relationships.Add("Root:Web");
+      sourceData.Values.Add("Root:Web");
 
       var json = $"{{" +
         $"\"Key\":\"{sourceData.Key}\"," +
         $"\"Relationships\":[\"Root:Web\"]" +
         $"}}";
 
-      var relationshipData = JsonSerializer.Deserialize<RelationshipData>(json);
+      var keyValuesPair         = JsonSerializer.Deserialize<KeyValuesPair>(json);
 
-      Assert.AreEqual<string>(sourceData.Key, relationshipData.Key);
-      Assert.AreEqual<int>(sourceData.Relationships.Count, relationshipData.Relationships.Count);
-      Assert.AreEqual<string>(sourceData.Relationships.FirstOrDefault(), relationshipData.Relationships.FirstOrDefault());
+      Assert.AreEqual<string>(sourceData.Key, keyValuesPair.Key);
+      Assert.AreEqual<int>(sourceData.Values.Count, keyValuesPair.Values.Count);
+      Assert.AreEqual<string>(sourceData.Values.FirstOrDefault(), keyValuesPair.Values.FirstOrDefault());
 
     }
 
@@ -165,7 +196,7 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = "Root:Test",
         ContentType             = "Container"
       };
-      var sourceRelationshipData= new RelationshipData() {
+      var sourceRelationshipData= new KeyValuesPair() {
         Key                     = "Test"
       };
       var sourceAttributeData   = new RecordData() {
@@ -183,7 +214,7 @@ namespace OnTopic.Data.Transfer.Tests {
         ContentType             = "Container"
       };
 
-      sourceRelationshipData.Relationships.Add("Root:Web");
+      sourceRelationshipData.Values.Add("Root:Web");
       sourceTopicData.Relationships.Add(sourceRelationshipData);
       sourceTopicData.Attributes.Add(sourceAttributeData);
       sourceTopicData.Children.Add(sourceChildTopicData);
@@ -202,7 +233,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Relationships\":[" +
           $"{{" +
             $"\"Key\":\"{sourceRelationshipData.Key}\"," +
-            $"\"Relationships\":[\"Root:Web\"]" +
+            $"\"Values\":[\"Root:Web\"]" +
           $"}}" +
         $"]," +
         $"\"References\":[" +
@@ -239,8 +270,8 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.AreEqual<int>(1, sourceTopicData.Children.Count);
 
       Assert.AreEqual<string>(sourceRelationshipData.Key, relationshipData.Key);
-      Assert.AreEqual<int?>(sourceRelationshipData.Relationships.Count, relationshipData.Relationships.Count);
-      Assert.AreEqual<string>(sourceRelationshipData.Relationships.FirstOrDefault(), relationshipData.Relationships.FirstOrDefault());
+      Assert.AreEqual<int?>(sourceRelationshipData.Values.Count, relationshipData.Values.Count);
+      Assert.AreEqual<string>(sourceRelationshipData.Values.FirstOrDefault(), relationshipData.Values.FirstOrDefault());
 
       Assert.AreEqual<string>(sourceReferenceData.Key, referenceData.Key);
       Assert.AreEqual<string>(sourceReferenceData.Value, referenceData.Value);

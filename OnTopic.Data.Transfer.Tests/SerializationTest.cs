@@ -54,25 +54,25 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SERIALIZE: RELATIONSHIP DATA: RETURNS EXPECTED RESULTS
+    | TEST: SERIALIZE: KEY/VALUES PAIR: RETURNS EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="RelationshipData"/>, serializes it, and confirms the resulting JSON.
+    ///   Creates a <see cref="KeyValuesPair"/>, serializes it, and confirms the resulting JSON.
     /// </summary>
     [TestMethod]
-    public void Serialize_RelationshipData_ReturnsExpectedResults() {
+    public void Serialize_KeyValuesPair_ReturnsExpectedResults() {
 
-      var relationshipData      = new RelationshipData() {
+      var keyValuesPair         = new KeyValuesPair() {
         Key                     = "Test"
       };
-      relationshipData.Relationships.Add("Root:Web");
+      keyValuesPair.Values.Add("Root:Web");
 
       var expected = $"{{" +
-        $"\"Key\":\"{relationshipData.Key}\"," +
-        $"\"Relationships\":[\"Root:Web\"]" +
+        $"\"Key\":\"{keyValuesPair.Key}\"," +
+        $"\"Values\":[\"Root:Web\"]" +
         $"}}";
 
-      var json = JsonSerializer.Serialize(relationshipData);
+      var json = JsonSerializer.Serialize(keyValuesPair);
 
       Assert.AreEqual<string>(expected, json);
 
@@ -118,7 +118,7 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = "Root:Test",
         ContentType             = "Container"
       };
-      var relationshipData      = new RelationshipData() {
+      var relationshipData      = new KeyValuesPair() {
         Key                     = "Test"
       };
       var referenceData         = new RecordData() {
@@ -135,7 +135,7 @@ namespace OnTopic.Data.Transfer.Tests {
         ContentType             = "Container"
       };
 
-      relationshipData.Relationships.Add("Root:Web");
+      relationshipData.Values.Add("Root:Web");
       topicData.Relationships.Add(relationshipData);
       topicData.References.Add(referenceData);
       topicData.Attributes.Add(attributeData);
@@ -154,7 +154,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Relationships\":[" +
           $"{{" +
             $"\"Key\":\"{relationshipData.Key}\"," +
-            $"\"Relationships\":[\"Root:Web\"]" +
+            $"\"Values\":[\"Root:Web\"]" +
           $"}}" +
         $"]," +
         $"\"References\":[" +

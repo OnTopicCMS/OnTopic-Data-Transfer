@@ -103,10 +103,10 @@ namespace OnTopic.Data.Transfer {
     | RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a collection of <see cref="RelationshipData"/> representing the relationships from the associated <see
+    ///   Provides a collection of <see cref="KeyValuesPair"/> representing the relationships from the associated <see
     ///   cref="Topic"/> object.
     /// </summary>
-    public RelationshipDataCollection Relationships { get; init; } = new();
+    public MultiMap Relationships { get; init; } = new();
 
     /*==========================================================================================================================
     | TOPIC REFERENCES

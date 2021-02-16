@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Data.Transfer.Converters;
 
 namespace OnTopic.Data.Transfer.Tests {
 
@@ -112,6 +113,36 @@ namespace OnTopic.Data.Transfer.Tests {
       var json = $"{{" +
         $"\"Key\":\"{sourceData.Key}\"," +
         $"\"Values\":[\"Root:Web\"]" +
+        $"}}";
+
+      var keyValuesPair         = JsonSerializer.Deserialize<KeyValuesPair>(json);
+
+      Assert.AreEqual<string>(sourceData.Key, keyValuesPair.Key);
+      Assert.AreEqual<int>(sourceData.Values.Count, keyValuesPair.Values.Count);
+      Assert.AreEqual<string>(sourceData.Values.FirstOrDefault(), keyValuesPair.Values.FirstOrDefault());
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: DESERIALIZE: RELATIONSHIP DATA: RETURNS EXPECTED RESULTS
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a JSON string representing the legacy <c>RelationshipData</c> class (which used a <c>Relationships</c> array),
+    ///   and attempts to deserialize it as a <see cref="KeyValuesPair"/> class, ensuring that the <see cref="
+    ///   KeyValuesPairConverter"/> properly translates the <c>Relationships</c> array to the <see cref="KeyValuesPair.Values"/>
+    ///   collection.
+    /// </summary>
+    [TestMethod]
+    public void Deserialize_RelationshipData_ReturnsExpectedResults() {
+
+      var sourceData            = new KeyValuesPair() {
+        Key                     = "Test"
+      };
+      sourceData.Values.Add("Root:Web");
+
+      var json = $"{{" +
+        $"\"Key\":\"{sourceData.Key}\"," +
+        $"\"Relationships\":[\"Root:Web\"]" +
         $"}}";
 
       var keyValuesPair         = JsonSerializer.Deserialize<KeyValuesPair>(json);

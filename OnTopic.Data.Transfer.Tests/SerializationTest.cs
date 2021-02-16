@@ -54,25 +54,25 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SERIALIZE: RELATIONSHIP DATA: RETURNS EXPECTED RESULTS
+    | TEST: SERIALIZE: KEY/VALUES PAIR: RETURNS EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="KeyValuesPair"/>, serializes it, and confirms the resulting JSON.
     /// </summary>
     [TestMethod]
-    public void Serialize_RelationshipData_ReturnsExpectedResults() {
+    public void Serialize_KeyValuesPair_ReturnsExpectedResults() {
 
-      var relationshipData      = new KeyValuesPair() {
+      var keyValuesPair         = new KeyValuesPair() {
         Key                     = "Test"
       };
-      relationshipData.Values.Add("Root:Web");
+      keyValuesPair.Values.Add("Root:Web");
 
       var expected = $"{{" +
-        $"\"Key\":\"{relationshipData.Key}\"," +
+        $"\"Key\":\"{keyValuesPair.Key}\"," +
         $"\"Values\":[\"Root:Web\"]" +
         $"}}";
 
-      var json = JsonSerializer.Serialize(relationshipData);
+      var json = JsonSerializer.Serialize(keyValuesPair);
 
       Assert.AreEqual<string>(expected, json);
 

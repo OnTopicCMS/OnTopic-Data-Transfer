@@ -96,13 +96,13 @@ namespace OnTopic.Data.Transfer.Tests {
     #pragma warning restore CS0618 // Type or member is obsolete
 
     /*==========================================================================================================================
-    | TEST: DESERIALIZE: RELATIONSHIP DATA: RETURNS EXPECTED RESULTS
+    | TEST: DESERIALIZE: KEY/VALUES PAIR: RETURNS EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a json string and attempts to deserialize it as a <see cref="KeyValuesPair"/> class.
+    ///   Creates a JSON string and attempts to deserialize it as a <see cref="KeyValuesPair"/> class.
     /// </summary>
     [TestMethod]
-    public void Deserialize_RelationshipData_ReturnsExpectedResults() {
+    public void Deserialize_KeyValuesPair_ReturnsExpectedResults() {
 
       var sourceData            = new KeyValuesPair() {
         Key                     = "Test"
@@ -114,11 +114,11 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Values\":[\"Root:Web\"]" +
         $"}}";
 
-      var relationshipData = JsonSerializer.Deserialize<KeyValuesPair>(json);
+      var keyValuesPair         = JsonSerializer.Deserialize<KeyValuesPair>(json);
 
-      Assert.AreEqual<string>(sourceData.Key, relationshipData.Key);
-      Assert.AreEqual<int>(sourceData.Values.Count, relationshipData.Values.Count);
-      Assert.AreEqual<string>(sourceData.Values.FirstOrDefault(), relationshipData.Values.FirstOrDefault());
+      Assert.AreEqual<string>(sourceData.Key, keyValuesPair.Key);
+      Assert.AreEqual<int>(sourceData.Values.Count, keyValuesPair.Values.Count);
+      Assert.AreEqual<string>(sourceData.Values.FirstOrDefault(), keyValuesPair.Values.FirstOrDefault());
 
     }
 

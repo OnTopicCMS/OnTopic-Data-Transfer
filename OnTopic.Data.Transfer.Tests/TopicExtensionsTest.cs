@@ -607,7 +607,7 @@ namespace OnTopic.Data.Transfer.Tests {
         ContentType             = topic.ContentType
       };
       var relationshipData      = new KeyValuesPair() {
-        Key                   = "Related"
+        Key                     = "Related"
       };
 
       topicData.Relationships.Add(relationshipData);
@@ -639,7 +639,7 @@ namespace OnTopic.Data.Transfer.Tests {
         ContentType             = topic.ContentType
       };
       var relationshipData      = new KeyValuesPair() {
-        Key                   = "Related"
+        Key                     = "Related"
       };
 
       topic.Relationships.SetValue("Related", relatedTopic1);

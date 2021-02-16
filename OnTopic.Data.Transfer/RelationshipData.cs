@@ -4,6 +4,9 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
+using OnTopic.Data.Transfer.Converters;
 
 namespace OnTopic.Data.Transfer {
 
@@ -19,6 +22,7 @@ namespace OnTopic.Data.Transfer {
   ///   from <see cref="TopicData"/> objects, but in turn greatly simplifies how the serialization process works, and provides
   ///   necessary flexibility in the import process to better account for merging data and handling potential conflicts.
   /// </remarks>
+  [JsonConverter(typeof(RelationshipDataConverter))]
   public class RelationshipData {
 
     /*==========================================================================================================================
@@ -27,6 +31,7 @@ namespace OnTopic.Data.Transfer {
     /// <summary>
     ///   Gets or sets the key of the relationship.
     /// </summary>
+    [NotNull, DisallowNull]
     public string? Key { get; set; }
 
     /*==========================================================================================================================

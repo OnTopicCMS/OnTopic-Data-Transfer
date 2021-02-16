@@ -74,7 +74,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </summary>
     /// <remarks>
     ///   This maps to either the <see cref="RecordData.Key"/>, if the association is from <see cref="TopicData.References"/>,
-    ///   or <see cref="RelationshipData.Key"/>, if the association is from <see cref="TopicData.Relationships"/>.
+    ///   or <see cref="KeyValuesPair.Key"/>, if the association is from <see cref="TopicData.Relationships"/>.
     /// </remarks>
     internal string Key { get; init; }
 

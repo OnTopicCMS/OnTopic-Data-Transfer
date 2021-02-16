@@ -122,7 +122,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       | Set relationships
       \-----------------------------------------------------------------------------------------------------------------------*/
       foreach (var relationship in topic.Relationships) {
-        var relationshipData    = new RelationshipData() {
+        var relationshipData    = new KeyValuesPair() {
           Key                   = relationship.Key,
         };
         foreach (var relatedTopic in relationship.Values) {

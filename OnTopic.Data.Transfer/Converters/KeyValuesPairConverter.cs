@@ -11,16 +11,16 @@ using OnTopic.Internal.Diagnostics;
 namespace OnTopic.Data.Transfer.Converters {
 
   /*============================================================================================================================
-  | CLASS: RELATIONSHIP DATA CONVERTER
+  | CLASS: KEY/VALUES PAIR CONVERTER
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides instructions for serializing or deserializing a <see cref="RelationshipData"/> instance.
+  ///   Provides instructions for serializing or deserializing a <see cref="KeyValuesPair"/> instance.
   /// </summary>
   /// <remarks>
   ///   The converter allows backward compatibility with legacy conventions which used <c>Relationships</c> instead of <c>
   ///   Values</c>.
   /// </remarks>
-  class RelationshipDataConverter: JsonConverter<RelationshipData> {
+  class KeyValuesPairConverter: JsonConverter<KeyValuesPair> {
 
     /*==========================================================================================================================
     | METHOD: READ
@@ -28,7 +28,7 @@ namespace OnTopic.Data.Transfer.Converters {
     /// <summary>
     ///   Deserializes the data from JSON.
     /// </summary>
-    public override RelationshipData Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+    public override KeyValuesPair Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Validate parameters
@@ -73,7 +73,7 @@ namespace OnTopic.Data.Transfer.Converters {
       /*------------------------------------------------------------------------------------------------------------------------
       | Create data
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var relationship = new RelationshipData() {
+      var relationship = new KeyValuesPair() {
         Key                     = key,
         Values                  = new(values?? Array.Empty<string>())
       };
@@ -91,7 +91,7 @@ namespace OnTopic.Data.Transfer.Converters {
     /// <summary>
     ///   Serializes the data from JSON.
     /// </summary>
-    public override void Write(Utf8JsonWriter writer, RelationshipData relationshipData, JsonSerializerOptions options) {
+    public override void Write(Utf8JsonWriter writer, KeyValuesPair relationshipData, JsonSerializerOptions options) {
       writer.WriteStartObject();
       writer.WritePropertyName("Key");
       writer.WriteStringValue(relationshipData.Key.ToString());

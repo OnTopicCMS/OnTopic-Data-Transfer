@@ -232,7 +232,7 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType
       };
-      var relationshipData      = new RelationshipData() {
+      var relationshipData      = new KeyValuesPair() {
         Key                   = "Related"
       };
 

@@ -57,12 +57,12 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: SERIALIZE: RELATIONSHIP DATA: RETURNS EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="RelationshipData"/>, serializes it, and confirms the resulting JSON.
+    ///   Creates a <see cref="KeyValuesPair"/>, serializes it, and confirms the resulting JSON.
     /// </summary>
     [TestMethod]
     public void Serialize_RelationshipData_ReturnsExpectedResults() {
 
-      var relationshipData      = new RelationshipData() {
+      var relationshipData      = new KeyValuesPair() {
         Key                     = "Test"
       };
       relationshipData.Values.Add("Root:Web");
@@ -118,7 +118,7 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = "Root:Test",
         ContentType             = "Container"
       };
-      var relationshipData      = new RelationshipData() {
+      var relationshipData      = new KeyValuesPair() {
         Key                     = "Test"
       };
       var referenceData         = new RecordData() {

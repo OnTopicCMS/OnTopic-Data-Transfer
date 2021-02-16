@@ -99,12 +99,12 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: DESERIALIZE: RELATIONSHIP DATA: RETURNS EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a json string and attempts to deserialize it as a <see cref="RelationshipData"/> class.
+    ///   Creates a json string and attempts to deserialize it as a <see cref="KeyValuesPair"/> class.
     /// </summary>
     [TestMethod]
     public void Deserialize_RelationshipData_ReturnsExpectedResults() {
 
-      var sourceData            = new RelationshipData() {
+      var sourceData            = new KeyValuesPair() {
         Key                     = "Test"
       };
       sourceData.Values.Add("Root:Web");
@@ -114,7 +114,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Values\":[\"Root:Web\"]" +
         $"}}";
 
-      var relationshipData = JsonSerializer.Deserialize<RelationshipData>(json);
+      var relationshipData = JsonSerializer.Deserialize<KeyValuesPair>(json);
 
       Assert.AreEqual<string>(sourceData.Key, relationshipData.Key);
       Assert.AreEqual<int>(sourceData.Values.Count, relationshipData.Values.Count);
@@ -165,7 +165,7 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = "Root:Test",
         ContentType             = "Container"
       };
-      var sourceRelationshipData= new RelationshipData() {
+      var sourceRelationshipData= new KeyValuesPair() {
         Key                     = "Test"
       };
       var sourceAttributeData   = new RecordData() {

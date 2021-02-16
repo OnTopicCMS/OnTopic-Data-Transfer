@@ -183,7 +183,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Establish cache
       \-----------------------------------------------------------------------------------------------------------------------*/
-      var unresolvedAssociations = new List<Tuple<Topic, bool, string, string>>();
+      var unresolvedAssociations = new List<UnresolvedAssociation>();
 
       /*------------------------------------------------------------------------------------------------------------------------
       | Handle first pass
@@ -193,13 +193,10 @@ namespace OnTopic.Data.Transfer.Interchange {
       /*------------------------------------------------------------------------------------------------------------------------
       | Attempt to resolve outstanding assocations
       \-----------------------------------------------------------------------------------------------------------------------*/
-      foreach (var relationship in unresolvedAssociations) {
+      foreach (var association in unresolvedAssociations) {
 
         //Attempt to find the target association
-        var source              = relationship.Item1;
-        var isRelationship      = relationship.Item2;
-        var key                 = relationship.Item3;
-        var target              = topic.GetByUniqueKey(relationship.Item4);
+        var target              = topic.GetByUniqueKey(association.TargetTopicKey);
 
         //If the association STILL can't be resolved, skip it
         if (target is null) {
@@ -207,13 +204,13 @@ namespace OnTopic.Data.Transfer.Interchange {
         }
 
         //Wire up relationships
-        else if (isRelationship) {
-          source.Relationships.SetValue(key, target);
+        else if (association.AssociationType is AssociationType.Relationship) {
+          association.SourceTopic.Relationships.SetValue(association.Key, target);
         }
 
         //Wire up topic references
         else {
-          source.References.SetValue(key, target);
+          association.SourceTopic.References.SetValue(association.Key, target);
         }
 
       }
@@ -246,7 +243,7 @@ namespace OnTopic.Data.Transfer.Interchange {
       this Topic topic,
       TopicData topicData,
       [NotNull]ImportOptions? options,
-      List<Tuple<Topic, bool, string, string>> unresolvedAssociations
+      List<UnresolvedAssociation> unresolvedAssociations
     ) {
 
       /*------------------------------------------------------------------------------------------------------------------------
@@ -393,7 +390,7 @@ namespace OnTopic.Data.Transfer.Interchange {
             topic.Relationships.SetValue(relationship.Key, relatedTopic);
           }
           else {
-            unresolvedAssociations.Add(new(topic, true, relationship.Key!, relatedTopicKey));
+            unresolvedAssociations.Add(new(AssociationType.Relationship, relatedTopicKey, topic, relatedTopicKey));
           }
         }
       }
@@ -426,7 +423,7 @@ namespace OnTopic.Data.Transfer.Interchange {
           );
         }
         else {
-          unresolvedAssociations.Add(new(topic, false, reference.Key, reference.Value));
+          unresolvedAssociations.Add(new(AssociationType.Reference, reference.Key, topic, reference.Value));
         }
       }
 

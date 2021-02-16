@@ -7,6 +7,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace OnTopic.Data.Transfer {
 
@@ -79,7 +80,15 @@ namespace OnTopic.Data.Transfer {
     ///   </para>
     /// </remarks>
     [Obsolete("The DerivedTopicKey has been renamed to BaseTopicKey.", false)]
-    public string? DerivedTopicKey { get; set; }
+    #if NET5_0
+      #pragma warning disable IDE1006 // Naming Styles
+      [JsonInclude]
+      [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+      public string? DerivedTopicKey { get; internal set; }
+      #pragma warning restore IDE1006 // Naming Styles
+    #else
+      public string? DerivedTopicKey { get; set; }
+    #endif
 
     /*==========================================================================================================================
     | ATTRIBUTES

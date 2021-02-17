@@ -164,13 +164,13 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var sourceData            = new RecordData() {
         Key                     = "Test",
-        LastModified            = DateTime.Now
+        LastModified            = new DateTime(2021, 02, 16, 16, 06, 25)
       };
 
       var json = $"{{" +
         $"\"Key\":\"{sourceData.Key}\"," +
         $"\"Value\":null," +
-        $"\"LastModified\":\"{sourceData.LastModified:o}\"" +
+        $"\"LastModified\":\"{sourceData.LastModified:s}\"" +
         $"}}";
 
 
@@ -191,6 +191,8 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void Deserialize_TopicGraph_ReturnsExpectedResults() {
 
+      var lastModified          = new DateTime(2021, 02, 16, 16, 06, 25);
+
       var sourceTopicData       = new TopicData() {
         Key                     = "Test",
         UniqueKey               = "Root:Test",
@@ -201,12 +203,12 @@ namespace OnTopic.Data.Transfer.Tests {
       };
       var sourceAttributeData   = new RecordData() {
         Key                     = "Test",
-        LastModified            = DateTime.Now
+        LastModified            = lastModified
       };
       var sourceReferenceData   = new RecordData() {
         Key                     = "Test",
         Value                   = "Root:Reference",
-        LastModified            = DateTime.Now
+        LastModified            = lastModified
       };
       var sourceChildTopicData  = new TopicData() {
         Key                     = "Child",
@@ -227,7 +229,7 @@ namespace OnTopic.Data.Transfer.Tests {
           $"{{" +
             $"\"Key\":\"{sourceAttributeData.Key}\"," +
             $"\"Value\":null," +
-            $"\"LastModified\":\"{sourceAttributeData.LastModified:o}\"" +
+            $"\"LastModified\":\"{sourceAttributeData.LastModified:s}\"" +
           $"}}"+
         $"]," +
         $"\"Relationships\":[" +
@@ -240,7 +242,7 @@ namespace OnTopic.Data.Transfer.Tests {
           $"{{" +
             $"\"Key\":\"{sourceReferenceData.Key}\"," +
             $"\"Value\":\"{sourceReferenceData.Value}\"," +
-            $"\"LastModified\":\"{sourceReferenceData.LastModified:o}\"" +
+            $"\"LastModified\":\"{sourceReferenceData.LastModified:s}\"" +
           $"}}"+
         $"]," +
         $"\"Children\":[" +

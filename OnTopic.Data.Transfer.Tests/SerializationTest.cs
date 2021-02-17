@@ -87,15 +87,15 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void Serialize_RecordData_ReturnsExpectedResults() {
 
-      var recordData         = new RecordData() {
+      var recordData            = new RecordData() {
         Key                     = "Test",
-        LastModified            = DateTime.Now
+        LastModified            = new DateTime(2021, 02, 16, 16, 06, 25)
       };
 
       var expected = $"{{" +
         $"\"Key\":\"{recordData.Key}\"," +
         $"\"Value\":null," +
-        $"\"LastModified\":\"{recordData.LastModified:o}\"" +
+        $"\"LastModified\":\"{recordData.LastModified:s}\"" +
         $"}}";
 
       var json = JsonSerializer.Serialize(recordData);
@@ -113,6 +113,8 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void Serialize_TopicGraph_ReturnsExpectedResults() {
 
+      var lastModified          = new DateTime(2021, 02, 16, 16, 06, 25);
+
       var topicData             = new TopicData() {
         Key                     = "Test",
         UniqueKey               = "Root:Test",
@@ -123,11 +125,11 @@ namespace OnTopic.Data.Transfer.Tests {
       };
       var referenceData         = new RecordData() {
         Key                     = "Test",
-        LastModified            = DateTime.Now
+        LastModified            = lastModified
       };
       var attributeData         = new RecordData() {
         Key                     = "Test",
-        LastModified            = DateTime.Now
+        LastModified            = lastModified
       };
       var childTopicData        = new TopicData() {
         Key                     = "Child",
@@ -148,7 +150,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Attributes\":[" +
           $"{{" +
             $"\"Key\":\"{attributeData.Key}\"," +
-            $"\"LastModified\":\"{attributeData.LastModified:o}\"" +
+            $"\"LastModified\":\"{attributeData.LastModified:s}\"" +
           $"}}"+
         $"]," +
         $"\"Relationships\":[" +
@@ -160,7 +162,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"References\":[" +
           $"{{" +
             $"\"Key\":\"{referenceData.Key}\"," +
-            $"\"LastModified\":\"{referenceData.LastModified:o}\"" +
+            $"\"LastModified\":\"{referenceData.LastModified:s}\"" +
           $"}}"+
         $"]," +
         $"\"Children\":[" +

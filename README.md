@@ -25,8 +25,8 @@ The `OnTopic.Data.Transfer` assembly includes three basic data transfer classes 
   - `Children` (`Collection<TopicData>`)
   - `Attributes` (`KeyedCollection<String, RecordData>`)
     - `RecordData`: Maps to the `TrackedRecord<T>` class, and represents an individual attribute.
-  - `Relationships` ([`RelationshipDataCollection`](OnTopic.Data.Transfer/RelationshipDataCollection.cs))
-    - `RelationshipData`: Maps to the `NamedTopicCollection`, and represents a relationship key, as well as a list of references to related topics via their `Topic.GetUniqueKey()` value.
+  - `Relationships` ([`MultiMap`](OnTopic.Data.Transfer/MultiMap.cs))
+    - `KeyValuesPair`: Maps to the `KeyValuesPair<T>`, and represents a relationship key, as well as a list of associations to related topics via their `Topic.GetUniqueKey()` value.
   - `References` (`KeyedCollection<String, RecordData>`)
     - `RecordData`: Maps to the `TrackedRecord<T>` class, and represents an individual topic reference.
 

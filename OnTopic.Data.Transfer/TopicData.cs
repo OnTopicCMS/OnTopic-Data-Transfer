@@ -80,15 +80,9 @@ namespace OnTopic.Data.Transfer {
     ///   </para>
     /// </remarks>
     [Obsolete("The DerivedTopicKey has been renamed to BaseTopicKey.", false)]
-    #if NET5_0
-      #pragma warning disable IDE1006 // Naming Styles
-      [JsonInclude]
-      [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-      public string? DerivedTopicKey { get; internal set; }
-      #pragma warning restore IDE1006 // Naming Styles
-    #else
-      public string? DerivedTopicKey { get; set; }
-    #endif
+    [JsonInclude]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string? DerivedTopicKey { get; internal set; }
 
     /*==========================================================================================================================
     | ATTRIBUTES

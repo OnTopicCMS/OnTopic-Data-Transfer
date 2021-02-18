@@ -43,11 +43,7 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Children\":[]" +
         $"}}";
 
-      #if NET5_0
       var json = JsonSerializer.Serialize(topicData);
-      #else
-      var json = JsonSerializer.Serialize(topicData, new() { IgnoreNullValues = true });
-      #endif
 
       Assert.AreEqual<string>(expected, json);
 

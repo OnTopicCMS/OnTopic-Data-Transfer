@@ -17,6 +17,9 @@
     <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
+    <NeutralLanguage>en</NeutralLanguage>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,8 +32,16 @@
     <NoWarn>1701;1702;CA2227</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.5.1">
+    <PackageReference Include="GitVersion.MsBuild" Version="5.6.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

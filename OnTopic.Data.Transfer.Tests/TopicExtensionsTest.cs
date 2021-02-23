@@ -55,7 +55,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var topicData             = topic.Export();
 
       Assert.IsNotNull(topicData);
-      Assert.AreEqual<string>(topic.BaseTopic.GetUniqueKey(), topicData.References.FirstOrDefault()?.Value);
+      Assert.AreEqual<string?>(topic.BaseTopic.GetUniqueKey(), topicData.References.FirstOrDefault()?.Value);
 
     }
 
@@ -77,8 +77,8 @@ namespace OnTopic.Data.Transfer.Tests {
 
       Assert.IsNotNull(topicData);
       Assert.AreEqual<int>(1, topicData.Attributes.Count);
-      Assert.AreEqual<string>("Attribute", topicData.Attributes.FirstOrDefault().Key);
-      Assert.AreEqual<string>("Attribute Value", topicData.Attributes.FirstOrDefault().Value);
+      Assert.AreEqual<string?>("Attribute", topicData.Attributes.FirstOrDefault().Key);
+      Assert.AreEqual<string?>("Attribute Value", topicData.Attributes.FirstOrDefault().Value);
 
     }
 
@@ -170,7 +170,7 @@ namespace OnTopic.Data.Transfer.Tests {
       Assert.IsNotNull(topicData);
       Assert.IsNotNull(childTopicData);
       Assert.AreEqual<int>(1, childTopicData.References.Count);
-      Assert.AreEqual<string>("Root:Referenced", childTopicData.References.FirstOrDefault().Value);
+      Assert.AreEqual<string?>("Root:Referenced", childTopicData.References.FirstOrDefault().Value);
 
     }
 
@@ -217,7 +217,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var topicData             = topic.Export();
 
       Assert.AreEqual<int>(1, topicData.Attributes.Count);
-      Assert.AreEqual<string>("8", topicData.Attributes.FirstOrDefault().Value);
+      Assert.AreEqual<string?>("8", topicData.Attributes.FirstOrDefault().Value);
 
     }
 
@@ -291,7 +291,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topicData.Attributes.TryGetValue("Rigid", out var rigidAttribute);
 
-      Assert.AreEqual<string>("True", rigidAttribute.Value);
+      Assert.AreEqual<string?>("True", rigidAttribute.Value);
 
     }
 
@@ -403,7 +403,7 @@ namespace OnTopic.Data.Transfer.Tests {
       topic.Import(topicData);
 
       Assert.IsNotNull(topic.BaseTopic);
-      Assert.AreEqual<Topic>(baseTopic, topic.BaseTopic);
+      Assert.AreEqual<Topic?>(baseTopic, topic.BaseTopic);
 
     }
 
@@ -453,7 +453,7 @@ namespace OnTopic.Data.Transfer.Tests {
       var childTopic            = topic.Children.FirstOrDefault();
 
       Assert.IsNotNull(childTopic.BaseTopic);
-      Assert.AreEqual<string>(baseTopicData.Key, childTopic.BaseTopic?.Key);
+      Assert.AreEqual<string?>(baseTopicData.Key, childTopic.BaseTopic?.Key);
 
     }
 
@@ -519,7 +519,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.AreEqual<string>("Attribute Value", topic.Attributes.GetValue("Attribute"));
+      Assert.AreEqual<string?>("Attribute Value", topic.Attributes.GetValue("Attribute"));
 
     }
 
@@ -552,7 +552,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.AreEqual<string>("Original Value", topic.Attributes.GetValue("Attribute"));
+      Assert.AreEqual<string?>("Original Value", topic.Attributes.GetValue("Attribute"));
 
     }
 
@@ -585,7 +585,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.AreNotEqual<string>(topicData.Attributes.FirstOrDefault()?.Value, topic.Attributes.GetValue("Attribute"));
+      Assert.AreNotEqual<string?>(topicData.Attributes.FirstOrDefault()?.Value, topic.Attributes.GetValue("Attribute"));
 
     }
 
@@ -912,7 +912,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topic.Import(topicData);
 
-      Assert.AreEqual<string>("6", topic.Attributes.GetValue("InitialBid"));
+      Assert.AreEqual<string?>("6", topic.Attributes.GetValue("InitialBid"));
 
     }
 

@@ -46,12 +46,12 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var topicData = JsonSerializer.Deserialize<TopicData>(json);
 
-      Assert.AreEqual<string>(sourceData.Key, topicData.Key);
-      Assert.AreEqual<string>(sourceData.UniqueKey, topicData.UniqueKey);
-      Assert.AreEqual<string>(sourceData.ContentType, topicData.ContentType);
-      Assert.AreEqual<int>(0, topicData.Relationships.Count);
-      Assert.AreEqual<int>(0, topicData.Attributes.Count);
-      Assert.AreEqual<int>(0, topicData.Children.Count);
+      Assert.AreEqual<string?>(sourceData.Key, topicData?.Key);
+      Assert.AreEqual<string?>(sourceData.UniqueKey, topicData?.UniqueKey);
+      Assert.AreEqual<string?>(sourceData.ContentType, topicData?.ContentType);
+      Assert.AreEqual<int?>(0, topicData?.Relationships.Count);
+      Assert.AreEqual<int?>(0, topicData?.Attributes.Count);
+      Assert.AreEqual<int?>(0, topicData?.Children.Count);
 
     }
 
@@ -85,13 +85,13 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var topicData = JsonSerializer.Deserialize<TopicData>(json);
 
-      Assert.AreEqual<string>(sourceData.Key, topicData.Key);
-      Assert.AreEqual<string>(sourceData.UniqueKey, topicData.UniqueKey);
-      Assert.AreEqual<string>(sourceData.ContentType, topicData.ContentType);
-      Assert.AreEqual<string>(sourceData.DerivedTopicKey, topicData.DerivedTopicKey);
-      Assert.AreEqual<int>(0, topicData.Relationships.Count);
-      Assert.AreEqual<int>(0, topicData.Attributes.Count);
-      Assert.AreEqual<int>(0, topicData.Children.Count);
+      Assert.AreEqual<string?>(sourceData.Key, topicData?.Key);
+      Assert.AreEqual<string?>(sourceData.UniqueKey, topicData?.UniqueKey);
+      Assert.AreEqual<string?>(sourceData.ContentType, topicData?.ContentType);
+      Assert.AreEqual<string?>(sourceData.DerivedTopicKey, topicData?.DerivedTopicKey);
+      Assert.AreEqual<int?>(0, topicData?.Relationships.Count);
+      Assert.AreEqual<int?>(0, topicData?.Attributes.Count);
+      Assert.AreEqual<int?>(0, topicData?.Children.Count);
 
     }
     #pragma warning restore CS0618 // Type or member is obsolete
@@ -117,9 +117,9 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var keyValuesPair         = JsonSerializer.Deserialize<KeyValuesPair>(json);
 
-      Assert.AreEqual<string>(sourceData.Key, keyValuesPair.Key);
-      Assert.AreEqual<int>(sourceData.Values.Count, keyValuesPair.Values.Count);
-      Assert.AreEqual<string>(sourceData.Values.FirstOrDefault(), keyValuesPair.Values.FirstOrDefault());
+      Assert.AreEqual<string?>(sourceData.Key, keyValuesPair?.Key);
+      Assert.AreEqual<int?>(sourceData.Values.Count, keyValuesPair?.Values.Count);
+      Assert.AreEqual<string?>(sourceData.Values.FirstOrDefault(), keyValuesPair?.Values.FirstOrDefault());
 
     }
 
@@ -147,9 +147,9 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var keyValuesPair         = JsonSerializer.Deserialize<KeyValuesPair>(json);
 
-      Assert.AreEqual<string>(sourceData.Key, keyValuesPair.Key);
-      Assert.AreEqual<int>(sourceData.Values.Count, keyValuesPair.Values.Count);
-      Assert.AreEqual<string>(sourceData.Values.FirstOrDefault(), keyValuesPair.Values.FirstOrDefault());
+      Assert.AreEqual<string?>(sourceData.Key, keyValuesPair?.Key);
+      Assert.AreEqual<int?>(sourceData.Values.Count, keyValuesPair?.Values.Count);
+      Assert.AreEqual<string?>(sourceData.Values.FirstOrDefault(), keyValuesPair?.Values.FirstOrDefault());
 
     }
 
@@ -176,9 +176,9 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var recordData = JsonSerializer.Deserialize<RecordData>(json);
 
-      Assert.AreEqual<string>(sourceData.Key, recordData.Key);
-      Assert.AreEqual<string>(sourceData.Value, recordData.Value);
-      Assert.AreEqual<DateTime>(sourceData.LastModified, recordData.LastModified);
+      Assert.AreEqual<string?>(sourceData.Key, recordData?.Key);
+      Assert.AreEqual<string?>(sourceData.Value, recordData?.Value);
+      Assert.AreEqual<DateTime?>(sourceData.LastModified, recordData?.LastModified);
 
     }
 
@@ -259,33 +259,33 @@ namespace OnTopic.Data.Transfer.Tests {
 
 
       var topicData             = JsonSerializer.Deserialize<TopicData>(json);
-      var relationshipData      = topicData.Relationships.FirstOrDefault();
-      var referenceData         = topicData.References.FirstOrDefault();
-      var attributeData         = topicData.Attributes.FirstOrDefault();
-      var childTopicData        = topicData.Children.FirstOrDefault();
+      var relationshipData      = topicData?.Relationships.FirstOrDefault();
+      var referenceData         = topicData?.References.FirstOrDefault();
+      var attributeData         = topicData?.Attributes.FirstOrDefault();
+      var childTopicData        = topicData?.Children.FirstOrDefault();
 
-      Assert.AreEqual<string>(sourceTopicData.Key, topicData.Key);
-      Assert.AreEqual<string>(sourceTopicData.UniqueKey, topicData.UniqueKey);
-      Assert.AreEqual<string>(sourceTopicData.ContentType, topicData.ContentType);
+      Assert.AreEqual<string?>(sourceTopicData.Key, topicData?.Key);
+      Assert.AreEqual<string?>(sourceTopicData.UniqueKey, topicData?.UniqueKey);
+      Assert.AreEqual<string?>(sourceTopicData.ContentType, topicData?.ContentType);
       Assert.AreEqual<int>(1, sourceTopicData.Relationships.Count);
       Assert.AreEqual<int>(1, sourceTopicData.Attributes.Count);
       Assert.AreEqual<int>(1, sourceTopicData.Children.Count);
 
-      Assert.AreEqual<string>(sourceRelationshipData.Key, relationshipData.Key);
-      Assert.AreEqual<int?>(sourceRelationshipData.Values.Count, relationshipData.Values.Count);
-      Assert.AreEqual<string>(sourceRelationshipData.Values.FirstOrDefault(), relationshipData.Values.FirstOrDefault());
+      Assert.AreEqual<string?>(sourceRelationshipData.Key, relationshipData?.Key);
+      Assert.AreEqual<int?>(sourceRelationshipData.Values.Count, relationshipData?.Values.Count);
+      Assert.AreEqual<string?>(sourceRelationshipData.Values.FirstOrDefault(), relationshipData?.Values.FirstOrDefault());
 
-      Assert.AreEqual<string>(sourceReferenceData.Key, referenceData.Key);
-      Assert.AreEqual<string>(sourceReferenceData.Value, referenceData.Value);
-      Assert.AreEqual<DateTime>(sourceReferenceData.LastModified, referenceData.LastModified);
+      Assert.AreEqual<string?>(sourceReferenceData.Key, referenceData?.Key);
+      Assert.AreEqual<string?>(sourceReferenceData.Value, referenceData?.Value);
+      Assert.AreEqual<DateTime?>(sourceReferenceData.LastModified, referenceData?.LastModified);
 
-      Assert.AreEqual<string>(sourceAttributeData.Key, attributeData.Key);
-      Assert.AreEqual<string>(sourceAttributeData.Value, attributeData.Value);
-      Assert.AreEqual<DateTime>(sourceAttributeData.LastModified, attributeData.LastModified);
+      Assert.AreEqual<string?>(sourceAttributeData.Key, attributeData?.Key);
+      Assert.AreEqual<string?>(sourceAttributeData.Value, attributeData?.Value);
+      Assert.AreEqual<DateTime?>(sourceAttributeData.LastModified, attributeData?.LastModified);
 
-      Assert.AreEqual<string>(sourceChildTopicData.Key, childTopicData.Key);
-      Assert.AreEqual<string>(sourceChildTopicData.UniqueKey, childTopicData.UniqueKey);
-      Assert.AreEqual<string>(sourceChildTopicData.ContentType, childTopicData.ContentType);
+      Assert.AreEqual<string?>(sourceChildTopicData.Key, childTopicData?.Key);
+      Assert.AreEqual<string?>(sourceChildTopicData.UniqueKey, childTopicData?.UniqueKey);
+      Assert.AreEqual<string?>(sourceChildTopicData.ContentType, childTopicData?.ContentType);
       Assert.AreEqual<int>(0, sourceChildTopicData.Relationships.Count);
       Assert.AreEqual<int>(0, sourceChildTopicData.Children.Count);
     }

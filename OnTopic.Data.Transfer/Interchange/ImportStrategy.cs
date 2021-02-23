@@ -65,15 +65,14 @@ namespace OnTopic.Data.Transfer.Interchange {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Imports all records, <i>even if</i> the <see cref="RecordData.LastModified"/> is <i>older</i> than the target <see
-    ///   cref="AttributeValue.LastModified"/>.
+    ///   cref="TrackedRecord{T}.LastModified"/>.
     /// </summary>
     /// <remarks>
-    ///   This will effectively <i>overwrite</i> any attributes that already exist in the database, even if they were
-    ///   modified <i>after</i> the source <see cref="RecordData"/>. For example, if the <see cref="TopicData"/> starts at
-    ///   <code>Root:Configuration</code>, any modifications to out-of-the-box titles, descriptions, visibility, sort order, &c.
-    ///   will be overwritten with the new values. Any attribute values that it overwrites will still be recoverable as part of
-    ///   the attribute versioning schema, with the exception of <see cref="Topic.ContentType"/>, which is excluded from
-    ///   versioning.
+    ///   This will effectively <i>overwrite</i> any attributes that already exist in the database, even if they were modified
+    ///   <i>after</i> the source <see cref="RecordData"/>. For example, if the <see cref="TopicData"/> starts at <code>Root:
+    ///   Configuration</code>, any modifications to out-of-the-box titles, descriptions, visibility, sort order, etc. will be
+    ///   overwritten with the new values. Any attribute values that it overwrites will still be recoverable as part of the
+    ///   attribute versioning schema, with the exception of <see cref="Topic.ContentType"/>, which is excluded from versioning.
     /// </remarks>
     Overwrite                   = 3,
 
@@ -86,11 +85,10 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </summary>
     /// <remarks>
     ///   This will effectively <i>eliminate</i> any and all customizations done within the scope of the import. For example, if
-    ///   the <see cref="TopicData"/> starts at <code>Root:Configuration</code>, this will delete any custom <see
-    ///   cref="ContentTypeDescriptor"/>s, metadata registrations, &c. made to the database. This should be used with great
-    ///   care. Any attribute values that it overwrites will still be recoverable as part of
-    ///   the attribute versioning schema, with the exception of <see cref="Topic.ContentType"/>, which is excluded from
-    ///   versioning.
+    ///   the <see cref="TopicData"/> starts at <code>Root:Configuration</code>, this will delete any custom <see cref="
+    ///   ContentTypeDescriptor"/>s, metadata registrations, etc. made to the database. This should be used with great care. Any
+    ///   attribute values that it overwrites will still be recoverable as part of the attribute versioning schema, with the
+    ///   exception of <see cref="Topic.ContentType"/>, which is excluded from versioning.
     /// </remarks>
     Replace                     = 4
 

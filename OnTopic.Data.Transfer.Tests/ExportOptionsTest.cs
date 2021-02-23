@@ -100,7 +100,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: EXPORT: TOPIC WITH REFERENCES: EXCLUDES EXTERNAL ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with several <see cref="Topic.References"/> and ensures that the <see ="TopicData.
+    ///   Creates a <see cref="Topic"/> with several <see cref="Topic.References"/> and ensures that the <see cref="TopicData.
     ///   References"/> collection does <i>not</i> include external associations—i.e., references that refer to <see cref="Topic
     ///   "/>s outside of the current export scope.
     /// </summary>

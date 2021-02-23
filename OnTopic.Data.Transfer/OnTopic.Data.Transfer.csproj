@@ -1,39 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>OnTopic.Data.Transfer</RootNamespace>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <LangVersion>9.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <AnalysisLevel>latest</AnalysisLevel>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <RootNamespace>OnTopic.Data.Transfer</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyTitle>OnTopic Data Transfer Library</AssemblyTitle>
-    <Company>Ignia</Company>
-    <Product>OnTopic</Product>
     <Description>Libraries for supporting the import and export of OnTopic entities.</Description>
-    <Copyright>©2021 Ignia, LLC</Copyright>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Authors>Ignia</Authors>
-    <NeutralLanguage>en</NeutralLanguage>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PackageProjectUrl>https://github.com/Ignia/Topics-Data-Transfer</PackageProjectUrl>
     <PackageTags>C# .NET CMS DTO</PackageTags>
-    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;CA2227</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>

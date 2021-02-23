@@ -144,7 +144,7 @@ namespace OnTopic.Data.Transfer.Tests {
 
       topicData.Attributes.TryGetValue("SomeId", out var someAttribute);
 
-      Assert.AreEqual<string>("Root", someAttribute.Value);
+      Assert.AreEqual<string?>("Root", someAttribute?.Value);
 
     }
 

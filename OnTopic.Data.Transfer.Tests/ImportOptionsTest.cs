@@ -82,7 +82,7 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
-      Assert.AreEqual<string>("New Value", topic.Attributes.GetValue("Attribute"));
+      Assert.AreEqual<string?>("New Value", topic.Attributes.GetValue("Attribute"));
 
     }
 
@@ -120,7 +120,7 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
-      Assert.AreEqual<string>("Original Value", topic.Attributes.GetValue("Attribute"));
+      Assert.AreEqual<string?>("Original Value", topic.Attributes.GetValue("Attribute"));
 
     }
 
@@ -158,7 +158,7 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
-      Assert.AreEqual<string>("New Value", topic.Attributes.GetValue("Attribute"));
+      Assert.AreEqual<string?>("New Value", topic.Attributes.GetValue("Attribute"));
 
     }
 
@@ -207,8 +207,8 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
-      Assert.AreEqual<Topic>(referencedTopic1, topic.References.GetValue("Reference"));
-      Assert.AreEqual<Topic>(referencedTopic1, topic.References.GetValue("OldReference"));
+      Assert.AreEqual<Topic?>(referencedTopic1, topic.References.GetValue("Reference"));
+      Assert.AreEqual<Topic?>(referencedTopic1, topic.References.GetValue("OldReference"));
 
     }
 

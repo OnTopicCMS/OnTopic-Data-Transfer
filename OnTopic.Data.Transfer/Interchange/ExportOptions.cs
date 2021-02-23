@@ -12,7 +12,7 @@ namespace OnTopic.Data.Transfer.Interchange {
   | CLASS: EXPORT OPTIONS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides options for configuring the <see cref="TopicExtensions.Export(Topic)"/> method.
+  ///   Provides options for configuring the <see cref="TopicExtensions.Export(Topic, ExportOptions?)"/> method.
   /// </summary>
   /// <remarks>
   ///   When exporting a <see cref="Topic"/> graph into a new <see cref="TopicData"/> object, there are a few considerations
@@ -43,6 +43,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </remarks>
     public bool IncludeExternalAssociations { get; set; }
 
+    /// <inheritdoc cref="IncludeExternalAssociations"/>
     [Obsolete("The IncludeExternalReferences option has been renamed to IncludeExternalAssociations", true)]
     public bool IncludeExternalReferences { get; set; }
 
@@ -73,7 +74,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// <remarks>
     ///   <para>
     ///     By default, only the current <see cref="Topic"/> is exported. Optionally, a caller may choose to also include any
-    ///     nested topics under the current <see cref="Topic"/>. While these are technically separate <see cref="Topics"/>, it
+    ///     nested topics under the current <see cref="Topic"/>. While these are technically separate <see cref="Topic"/>s, it
     ///     may be desirable to include them since they are so closely related to the current <see cref="Topic"/>.
     ///   </para>
     ///   <para>
@@ -135,6 +136,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </remarks>
     public bool TranslateLegacyTopicReferences { get; set; }
 
+    /// <inheritdoc cref="TranslateLegacyTopicReferences"/>
     [Obsolete("The TranslateTopicPointers option has been renamed to TranslateLegacyTopicReferences", true)]
     public bool TranslateTopicPointers { get; set; }
 

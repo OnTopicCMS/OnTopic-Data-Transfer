@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Attributes;
 using OnTopic.Data.Transfer.Interchange;
 
 namespace OnTopic.Data.Transfer.Tests {
@@ -99,7 +100,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: EXPORT: TOPIC WITH REFERENCES: EXCLUDES EXTERNAL ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with several <see cref="Topic.References"/> and ensures that the <see ="TopicData.
+    ///   Creates a <see cref="Topic"/> with several <see cref="Topic.References"/> and ensures that the <see cref="TopicData.
     ///   References"/> collection does <i>not</i> include external associations—i.e., references that refer to <see cref="Topic
     ///   "/>s outside of the current export scope.
     /// </summary>
@@ -123,7 +124,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: EXPORT WITH LEGACY TOPIC REFERENCES: EXTERNAL TOPIC REFERENCE: EXPORTS UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that references another topic. Confirms
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeRecord"/> that references another topic. Confirms
     ///   that it is converted to a <see cref="Topic.GetUniqueKey"/> if valid, and is otherwise left as is.
     /// </summary>
     [TestMethod]

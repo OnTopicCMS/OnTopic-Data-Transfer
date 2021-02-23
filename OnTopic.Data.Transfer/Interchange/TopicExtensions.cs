@@ -177,6 +177,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   cref="Topic"/> entity.
     /// </summary>
     /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="topicData">The source <see cref="TopicData"/> graph to import into the <paramref name="topic"/>.</param>
     /// <param name="options">An optional <see cref="ImportOptions"/> object to specify import settings.</param>
     public static void Import(this Topic topic, TopicData topicData, [NotNull]ImportOptions? options = null) {
 
@@ -232,7 +233,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///     This does <i>not</i> address the scenario where implicit topic pointers (i.e., attributes ending in <c>Id</c>)
     ///     cannot be resolved because the target topics haven't yet been saved—and, therefore, the <see cref="Topic.
     ///     GetUniqueKey"/> cannot be translated to a <see cref="Topic.Id"/>. There isn't any obvious way to address this via
-    ///     <see cref="Import"/> directly.
+    ///     <see cref="Import(Topic, TopicData, ImportOptions?)"/> directly.
     ///   </para>
     /// </remarks>
     /// <param name="topic">The target <see cref="Topic"/> to write data to.</param>

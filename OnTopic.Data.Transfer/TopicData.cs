@@ -68,9 +68,9 @@ namespace OnTopic.Data.Transfer {
     /// </summary>
     /// <remarks>
     ///   <para>
-    ///     The <see cref="DerivedTopicKey"/> is deprecated in favor of the new <see cref="BaseTopicKey"/>, but legacy data will
-    ///     still reference it in the JSON. This property thus allows backward compatibility, while being marked as deprecated
-    ///     to discourage callers from utilizing it.
+    ///     The <see cref="DerivedTopicKey"/> is deprecated in favor of storing the <c>BaseTopic</c> in the <see cref="
+    ///     References"/> collection, but legacy data will still reference it in the JSON. This property thus allows backward
+    ///     compatibility, while being marked as deprecated to discourage callers from utilizing it.
     ///   </para>
     ///   <para>
     ///     Unfortunately, .NET 3.x doesn't permit a way to hide this from the public interface or from serialization. As such,

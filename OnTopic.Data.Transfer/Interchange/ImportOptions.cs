@@ -12,7 +12,7 @@ namespace OnTopic.Data.Transfer.Interchange {
   | CLASS: IMPORT OPTIONS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides options for configuring the <see cref="TopicExtensions.Import(Topic, TopicData)"/> method.
+  ///   Provides options for configuring the <see cref="TopicExtensions.Import(Topic, TopicData, ImportOptions?)"/> method.
   /// </summary>
   /// <remarks>
   ///   When importing <see cref="TopicData"/> into an existing <see cref="Topic"/> object, there are a lot of potential

@@ -16,13 +16,13 @@
     <Description>Libraries for supporting the import and export of OnTopic entities.</Description>
     <PackageTags>C# .NET CMS DTO</PackageTags>
     <Copyright>©2021 Ignia, LLC</Copyright>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
     <NeutralLanguage>en</NeutralLanguage>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageIcon>Icon.png</PackageIcon>
   </PropertyGroup>
 

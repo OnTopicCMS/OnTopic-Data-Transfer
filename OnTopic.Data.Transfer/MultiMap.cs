@@ -3,6 +3,7 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
+using System;
 using System.Collections.ObjectModel;
 using OnTopic.Collections.Specialized;
 using OnTopic.Internal.Diagnostics;
@@ -13,8 +14,8 @@ namespace OnTopic.Data.Transfer {
   | CLASS: MULTIMAP
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="MultiMap"/> class provides a <see cref="KeyedCollection"/> of <see cref="KeyValuesPair"/> objects, thus
-  ///   supporting a many-to-many mapping.
+  ///   The <see cref="MultiMap"/> class provides a <see cref="KeyedCollection{TKey, TValue}"/> of <see cref="KeyValuesPair"/>
+  ///   objects, thus supporting a many-to-many mapping.
   /// </summary>
   /// <remarks>
   ///   The <see cref="MultiMap"/> is intended to model the <see cref="TopicMultiMap"/>—though instead of a exposing a
@@ -28,8 +29,8 @@ namespace OnTopic.Data.Transfer {
     | OVERRIDE: GET KEY FOR ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Method must be overridden for the <see cref="MultiMap"/> to identify the appropriate <see cref="Key"/> from each <see
-    ///   cref="KeyValuesPair"/> object.
+    ///   Method must be overridden for the <see cref="MultiMap"/> to identify the appropriate <see cref="KeyValuesPair.Key"/>
+    ///   from each <see cref="KeyValuesPair"/> object.
     /// </summary>
     /// <param name="item">The <see cref="KeyValuesPair"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>

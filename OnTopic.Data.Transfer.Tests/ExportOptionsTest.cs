@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Attributes;
 using OnTopic.Data.Transfer.Interchange;
 
 namespace OnTopic.Data.Transfer.Tests {
@@ -123,7 +124,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: EXPORT WITH LEGACY TOPIC REFERENCES: EXTERNAL TOPIC REFERENCE: EXPORTS UNIQUE KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that references another topic. Confirms
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeRecord"/> that references another topic. Confirms
     ///   that it is converted to a <see cref="Topic.GetUniqueKey"/> if valid, and is otherwise left as is.
     /// </summary>
     [TestMethod]

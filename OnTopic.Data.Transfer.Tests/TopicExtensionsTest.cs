@@ -6,6 +6,7 @@
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Attributes;
 using OnTopic.Data.Transfer.Interchange;
 
 namespace OnTopic.Data.Transfer.Tests {
@@ -224,7 +225,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: EXPORT WITH LEGACY TOPIC REFERENCES: OUT OF SCOPE: SKIPS REFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that references a <see cref="Topic.Id"/>
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeRecord"/> that references a <see cref="Topic.Id"/>
     ///   outside of the <see cref="ExportOptions.ExportScope"/>. Confirms that the reference is maintained as an attribute, but
     ///   not added as a reference.
     /// </summary>
@@ -250,7 +251,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: EXPORT WITH LEGACY TOPIC REFERENCES: MISSING TOPIC REFERENCE: SKIPS REFERENCE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that references a missing <see cref="
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeRecord"/> that references a missing <see cref="
     ///   Topic.Id"/>. Confirms that the reference is maintained as an attribute, but not added as a reference.
     /// </summary>
     [TestMethod]
@@ -276,7 +277,7 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: EXPORT WITH LEGACY TOPIC REFERENCES: INVALID TOPIC REFERENCE: EXPORTS ORIGINAL VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that that contains a non-numeric (i.e.,
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeRecord"/> that that contains a non-numeric (i.e.,
     ///   invalid) topic reference. Confirms that the original value is exported.
     /// </summary>
     [TestMethod]
@@ -460,8 +461,8 @@ namespace OnTopic.Data.Transfer.Tests {
     | TEST: IMPORT: INVALID BASE TOPIC: MAINTAINS EXISTING VALUE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="TopicData"/> with a <see cref="TopicData.BaseTopicKey"/> that is invalid and ensures that the
-    ///   <see cref="Topic.BaseTopic"/> is not updated.
+    ///   Creates a <see cref="TopicData"/> with a <c>BaseTopic</c> in its <see cref="TopicData.References"/> that is invalid.
+    ///   Ensures that the <see cref="Topic.BaseTopic"/> is not updated.
     /// </summary>
     [TestMethod]
     public void Import_InvalidBaseTopic_MaintainsExistingValue() {

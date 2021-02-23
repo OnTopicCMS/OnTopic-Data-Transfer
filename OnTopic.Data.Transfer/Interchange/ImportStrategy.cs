@@ -4,6 +4,7 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using OnTopic.Attributes;
+using OnTopic.Collections.Specialized;
 using OnTopic.Metadata;
 
 namespace OnTopic.Data.Transfer.Interchange {
@@ -45,7 +46,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Imports all records <i>unless</i> the <see cref="RecordData.LastModified"/> is <i>older</i> than the target <see cref=
-    ///   "AttributeValue.LastModified"/>.
+    ///   "TrackedRecord{T}.LastModified"/>.
     /// </summary>
     /// <remarks>
     ///   This is generally the <i>preferred</i> import strategy. It imports all new topics, relationships, and attributes,

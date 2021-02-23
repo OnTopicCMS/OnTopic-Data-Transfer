@@ -20,7 +20,12 @@
     <NeutralLanguage>en</NeutralLanguage>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
+    <PackageIcon>Icon.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../Icon.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
 
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/Ignia/Topics-Data-Transfer</PackageProjectUrl>

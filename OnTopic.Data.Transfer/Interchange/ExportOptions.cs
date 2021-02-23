@@ -43,6 +43,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </remarks>
     public bool IncludeExternalAssociations { get; set; }
 
+    /// <inheritdoc cref="IncludeExternalAssociations"/>
     [Obsolete("The IncludeExternalReferences option has been renamed to IncludeExternalAssociations", true)]
     public bool IncludeExternalReferences { get; set; }
 
@@ -135,6 +136,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     /// </remarks>
     public bool TranslateLegacyTopicReferences { get; set; }
 
+    /// <inheritdoc cref="TranslateLegacyTopicReferences"/>
     [Obsolete("The TranslateTopicPointers option has been renamed to TranslateLegacyTopicReferences", true)]
     public bool TranslateTopicPointers { get; set; }
 

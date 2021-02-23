@@ -177,6 +177,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     ///   cref="Topic"/> entity.
     /// </summary>
     /// <param name="topic">The source <see cref="Topic"/> to operate off of.</param>
+    /// <param name="topicData">The source <see cref="TopicData"/> graph to import into the <paramref name="topic"/>.</param>
     /// <param name="options">An optional <see cref="ImportOptions"/> object to specify import settings.</param>
     public static void Import(this Topic topic, TopicData topicData, [NotNull]ImportOptions? options = null) {
 

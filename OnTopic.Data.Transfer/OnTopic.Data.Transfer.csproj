@@ -14,9 +14,12 @@
     <Company>Ignia</Company>
     <Product>OnTopic</Product>
     <Description>Libraries for supporting the import and export of OnTopic entities.</Description>
+    <PackageTags>C# .NET CMS DTO</PackageTags>
     <Copyright>©2021 Ignia, LLC</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <Authors>Ignia</Authors>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
     <NeutralLanguage>en</NeutralLanguage>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
@@ -26,12 +29,6 @@
   <ItemGroup>
     <None Include="../Icon.png" Pack="true" PackagePath=""/>
   </ItemGroup>
-
-  <PropertyGroup>
-    <PackageProjectUrl>https://github.com/Ignia/Topics-Data-Transfer</PackageProjectUrl>
-    <PackageTags>C# .NET CMS DTO</PackageTags>
-    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
-  </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;CA2227</NoWarn>

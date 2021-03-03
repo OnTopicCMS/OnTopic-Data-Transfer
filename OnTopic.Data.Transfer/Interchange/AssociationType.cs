@@ -3,39 +3,41 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
 
-namespace OnTopic.Data.Transfer {
+namespace OnTopic.Data.Transfer.Interchange {
 
   /*============================================================================================================================
-  | CLASS: RELATIONSHIP DATA
+  | ENUM: ASSOCIATION TYPE
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="RelationshipData"/> class provides an intermediary data transfer object for facilitating the interchange
-  ///   of <see cref="NamedTopicCollection"/> objects with JSON data.
+  ///   Enum that specifies the types of associations between topics that the OnTopic Data Transfer library neeeds to explicitly
+  ///   track.
   /// </summary>
-  /// <remarks>
-  ///   Having a separate class for this serializing topic data introduces some overhead in converting the topic graph to and
-  ///   from <see cref="TopicData"/> objects, but in turn greatly simplifies how the serialization process works, and provides
-  ///   necessary flexibility in the import process to better account for merging data and handling potential conflicts.
-  /// </remarks>
-  public class RelationshipData {
+  public enum AssociationType {
 
     /*==========================================================================================================================
-    | KEY
+    | NONE
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the key of the relationship.
+    ///   No association type is selected.
     /// </summary>
-    public string? Key { get; set; }
+    None                        = 0,
 
     /*==========================================================================================================================
-    | PROPERTY: RELATIONSHIPS
+    | RELATIONSHIP
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets a collection of unique keys associated with related <see cref="Topic"/> entities.
+    ///   The association pertains to either <see cref="TopicData.Relationships"/> or <see cref="Topic.References"/>.
     /// </summary>
-    public List<string> Relationships { get; set; } = new();
+    Relationship                = 1,
 
-  } //Class
+    /*==========================================================================================================================
+    | REFERENCE
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   The association pertains to either <see cref="TopicData.References"/> or <see cref="Topic.References"/>.
+    /// </summary>
+    Reference                   = 2
+
+  } //Enum
 } //Namespace

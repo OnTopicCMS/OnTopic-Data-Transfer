@@ -4,48 +4,49 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
+using OnTopic.Collections.Specialized;
+using OnTopic.Data.Transfer.Converters;
 
 namespace OnTopic.Data.Transfer {
 
   /*============================================================================================================================
-  | CLASS: ATTRIBUTE DATA
+  | CLASS: KEY/VALUES PAIR
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="AttributeData"/> class provides an intermediary data transfer object for facilitating the interchange of
-  ///   <see cref="AttributeValue"/> objects with JSON data.
+  ///   The <see cref="KeyValuesPair"/> class provides an intermediary data transfer object for facilitating the interchange
+  ///   of <see cref="KeyValuesPair{TKey, TValue}"/> objects with JSON data.
   /// </summary>
   /// <remarks>
-  ///   Having a separate class for this serializing topic data introduces some overhead in converting the topic graph to and
-  ///   from <see cref="TopicData"/> objects, but in turn greatly simplifies how the serialization process works, and provides
-  ///   necessary flexibility in the import process to better account for merging data and handling potential conflicts.
+  ///   Unlike the <see cref="KeyValuesPair{TKey, TValue}"/> class which is used by the <see cref="TopicMultiMap"/>, the <see
+  ///   cref="KeyValuesPair"/> data transfer object maps to a collection of strings representing <see cref="TopicData.UniqueKey"
+  ///   /> references, thus providing a serializable format for e.g. <see cref="TopicData.Relationships"/>.
   /// </remarks>
-  public class AttributeData {
+  [JsonConverter(typeof(KeyValuesPairConverter))]
+  public class KeyValuesPair {
 
     /*==========================================================================================================================
     | KEY
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets or sets the key of the attribute.
+    ///   Gets or sets the <see cref="Key"/> of the <see cref="KeyValuesPair"/>.
     /// </summary>
     [NotNull, DisallowNull]
     public string? Key { get; set; }
 
     /*==========================================================================================================================
-    | PROPERTY: VALUE
+    | PROPERTY: VALUES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the current value of the attribute.
+    ///   Gets or sets the <see cref="Values"/> of the <see cref="KeyValuesPair"/>.
     /// </summary>
-    public string? Value { get; set; }
-
-    /*==========================================================================================================================
-    | PROPERTY: LAST MODIFIED
-    \-------------------------------------------------------------------------------------------------------------------------*/
-    /// <summary>
-    ///   Gets or sets the the last time the <see cref="AttributeData"/> instance was updated.
-    /// </summary>
-    public DateTime LastModified { get; set; } = DateTime.MinValue;
+    /// <remarks>
+    ///   While the <see cref="Values"/> collection can contain any <see cref="String"/> value, it is intended to represent <see
+    ///   cref="TopicData.UniqueKey"/> references.
+    /// </remarks>
+    public Collection<string> Values { get; init; } = new();
 
   } //Class
 } //Namespace

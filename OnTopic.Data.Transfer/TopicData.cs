@@ -3,8 +3,11 @@
 | Client        Ignia, LLC
 | Project       Topics Library
 \=============================================================================================================================*/
-using System.Collections.Generic;
+using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace OnTopic.Data.Transfer {
 
@@ -57,30 +60,56 @@ namespace OnTopic.Data.Transfer {
     public string? ContentType { get; set; }
 
     /*==========================================================================================================================
-    | DERIVED TOPIC KEY
+    | DERIVED TOPIC KEY (DEPRECATED)
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Gets the <see cref="UniqueKey"/> of a <see cref="Topic"/> that the associated <see cref="Topic"/> should derive from.
+    ///   Gets the <see cref="DerivedTopicKey"/> of a <see cref="Topic"/> that the associated <see cref="Topic"/> should derive
+    ///   from.
     /// </summary>
-    public string? DerivedTopicKey { get; set; }
+    /// <remarks>
+    ///   <para>
+    ///     The <see cref="DerivedTopicKey"/> is deprecated in favor of storing the <c>BaseTopic</c> in the <see cref="
+    ///     References"/> collection, but legacy data will still reference it in the JSON. This property thus allows backward
+    ///     compatibility, while being marked as deprecated to discourage callers from utilizing it.
+    ///   </para>
+    ///   <para>
+    ///     Unfortunately, .NET 3.x doesn't permit a way to hide this from the public interface or from serialization. As such,
+    ///     it will continue to pollute the interface and, potentially, the JSON output. Given this, it is recommended that
+    ///     callers use <see cref="JsonSerializerOptions.IgnoreNullValues"/> to prevent this—and any other null properties—from
+    ///     being written in the future.
+    ///   </para>
+    /// </remarks>
+    [Obsolete("The DerivedTopicKey has been renamed to BaseTopicKey.", false)]
+    [JsonInclude]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string? DerivedTopicKey { get; internal set; }
 
     /*==========================================================================================================================
     | ATTRIBUTES
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a collection of <see cref="AttributeData"/> representing the attributes from the associated <see
-    ///   cref="Topic"/> object.
+    ///   Provides a collection of <see cref="RecordData"/> representing the attributes from the associated <see cref="Topic"/>
+    ///   object.
     /// </summary>
-    public AttributeDataCollection Attributes { get; set; } = new();
+    public RecordDataCollection Attributes { get; init; } = new();
 
     /*==========================================================================================================================
     | RELATIONSHIPS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Provides a collection of <see cref="RelationshipData"/> representing the relationships from the associated <see
+    ///   Provides a collection of <see cref="KeyValuesPair"/> representing the relationships from the associated <see
     ///   cref="Topic"/> object.
     /// </summary>
-    public RelationshipDataCollection Relationships { get; set; } = new();
+    public MultiMap Relationships { get; init; } = new();
+
+    /*==========================================================================================================================
+    | TOPIC REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Provides a collection of <see cref="RecordData"/> representing the topic references from the associated <see cref="
+    ///   Topic"/> object.
+    /// </summary>
+    public RecordDataCollection References { get; init; } = new();
 
     /*==========================================================================================================================
     | CHILDREN
@@ -89,7 +118,7 @@ namespace OnTopic.Data.Transfer {
     ///   Provides a collection of <see cref="TopicData"/> objects representing the children of the associated <see
     ///   cref="Topic"/>.
     /// </summary>
-    public List<TopicData> Children { get; set; } = new();
+    public Collection<TopicData> Children { get; init; } = new();
 
   } //Class
 } //Namespace

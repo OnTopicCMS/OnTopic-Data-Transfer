@@ -1,28 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>OnTopic.Data.Transfer</RootNamespace>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>9.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <AnalysisLevel>latest</AnalysisLevel>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
 
   <PropertyGroup>
     <AssemblyTitle>OnTopic Data Transfer Library</AssemblyTitle>
-    <Company>Ignia</Company>
-    <Product>OnTopic</Product>
     <Description>Libraries for supporting the import and export of OnTopic entities.</Description>
-    <Copyright>©2020 Ignia, LLC</Copyright>
-    <OutputPath>bin\$(Configuration)\</OutputPath>
-    <Authors>Ignia</Authors>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PackageProjectUrl>https://github.com/Ignia/Topics-Data-Transfer</PackageProjectUrl>
     <PackageTags>C# .NET CMS DTO</PackageTags>
-    <UseFullSemVerForNuGet>true</UseFullSemVerForNuGet>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -30,13 +16,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.5.1">
+    <PackageReference Include="GitVersion.MsBuild" Version="5.6.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="OnTopic" Version="4.6.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="OnTopic" Version="5.0.0" />
     <PackageReference Include="System.ObjectModel" Version="4.3.0" />
-    <PackageReference Include="System.Text.Json" Version="4.6.0" />
+    <PackageReference Include="System.Text.Json" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

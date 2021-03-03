@@ -5,6 +5,7 @@
 \=============================================================================================================================*/
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OnTopic.Attributes;
 using OnTopic.Data.Transfer.Interchange;
 
 namespace OnTopic.Data.Transfer.Tests {
@@ -72,21 +73,21 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT: TOPIC WITH RELATIONSHIPS: EXCLUDES EXTERNAL REFERENCES
+    | TEST: EXPORT: TOPIC WITH RELATIONSHIPS: EXCLUDES EXTERNAL ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
     ///   Creates a <see cref="Topic"/> with several <see cref="Topic.Relationships"/> and ensures that the <see
-    ///   cref="TopicData.Relationships"/> collection does <i>not</i> include external references—i.e., relationships that point
-    ///   to <see cref="Topic"/>s outside of the current export scope.
+    ///   cref="TopicData.Relationships"/> collection does <i>not</i> include external associations—i.e., relationships that
+    ///   refer to <see cref="Topic"/>s outside of the current export scope.
     /// </summary>
     [TestMethod]
-    public void Export_TopicWithRelationships_ExcludesExternalReferences() {
+    public void Export_TopicWithRelationships_ExcludesExternalAssociations() {
 
       var rootTopic             = TopicFactory.Create("Root", "Container");
       var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
       var relatedTopic          = TopicFactory.Create("Related", "Container", rootTopic);
 
-      topic.Relationships.SetTopic("Related", relatedTopic);
+      topic.Relationships.SetValue("Related", relatedTopic);
 
       var topicData             = topic.Export();
 
@@ -96,29 +97,54 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: EXPORT WITH TOPIC POINTERS: EXTERNAL TOPIC POINTER: EXPORTS UNIQUE KEY
+    | TEST: EXPORT: TOPIC WITH REFERENCES: EXCLUDES EXTERNAL ASSOCIATIONS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeValue"/> that points to another topic. Confirms
-    ///   that it is converted to a <c>UniqueKey</c> if valid, and otherwise left as is.
+    ///   Creates a <see cref="Topic"/> with several <see cref="Topic.References"/> and ensures that the <see cref="TopicData.
+    ///   References"/> collection does <i>not</i> include external associations—i.e., references that refer to <see cref="Topic
+    ///   "/>s outside of the current export scope.
     /// </summary>
     [TestMethod]
-    public void ExportWithTopicPointers_ExternalTopicPointer_ExportsUniqueKey() {
+    public void Export_TopicWithReferences_ExcludesExternalAssociations() {
+
+      var rootTopic             = TopicFactory.Create("Root", "Container");
+      var topic                 = TopicFactory.Create("Test", "Container", rootTopic);
+      var relatedTopic          = TopicFactory.Create("Related", "Container", rootTopic);
+
+      topic.References.SetValue("Related", relatedTopic);
+
+      var topicData             = topic.Export();
+
+      Assert.IsNotNull(topicData);
+      Assert.AreEqual<int>(0, topicData.References.Count);
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: EXPORT WITH LEGACY TOPIC REFERENCES: EXTERNAL TOPIC REFERENCE: EXPORTS UNIQUE KEY
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="Topic"/> with an arbitrary <see cref="AttributeRecord"/> that references another topic. Confirms
+    ///   that it is converted to a <see cref="Topic.GetUniqueKey"/> if valid, and is otherwise left as is.
+    /// </summary>
+    [TestMethod]
+    public void ExportWithLegacyTopicReferences_ExternalTopicReference_ExportsUniqueKey() {
 
       var parentTopic           = TopicFactory.Create("Root", "Container", 5);
       var topic                 = TopicFactory.Create("Topic", "Container", parentTopic);
 
       topic.Attributes.SetValue("SomeId", "5");
 
-      var topicData             = topic.Export(
+      var topicData = topic.Export(
         new() {
-          IncludeExternalReferences = true
+          IncludeExternalAssociations                           = true,
+          TranslateLegacyTopicReferences                        = true
         }
       );
 
       topicData.Attributes.TryGetValue("SomeId", out var someAttribute);
 
-      Assert.AreEqual<string>("Root", someAttribute.Value);
+      Assert.AreEqual<string?>("Root", someAttribute?.Value);
 
     }
 

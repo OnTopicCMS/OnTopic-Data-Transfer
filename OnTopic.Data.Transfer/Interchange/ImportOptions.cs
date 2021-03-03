@@ -12,7 +12,7 @@ namespace OnTopic.Data.Transfer.Interchange {
   | CLASS: IMPORT OPTIONS
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   Provides options for configuring the <see cref="TopicExtensions.Import(Topic, TopicData)"/> method.
+  ///   Provides options for configuring the <see cref="TopicExtensions.Import(Topic, TopicData, ImportOptions?)"/> method.
   /// </summary>
   /// <remarks>
   ///   When importing <see cref="TopicData"/> into an existing <see cref="Topic"/> object, there are a lot of potential
@@ -28,6 +28,7 @@ namespace OnTopic.Data.Transfer.Interchange {
     \-------------------------------------------------------------------------------------------------------------------------*/
     private                     bool?                           _deleteUnmatchedAttributes;
     private                     bool?                           _deleteUnmatchedRelationships;
+    private                     bool?                           _deleteUnmatchedReferences;
     private                     bool?                           _deleteUnmatchedChildren;
     private                     bool?                           _deleteUnmatchedNestedTopics;
     private                     bool?                           _overwriteContentType;
@@ -75,6 +76,21 @@ namespace OnTopic.Data.Transfer.Interchange {
     public bool DeleteUnmatchedRelationships {
       get => _deleteUnmatchedRelationships?? Strategy is ImportStrategy.Replace;
       set => _deleteUnmatchedRelationships = value;
+    }
+
+    /*==========================================================================================================================
+    | DELETE UNMATCHED REFERENCES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Delete references in the target database which don't exist in the source <see cref="TopicData"/> graph.
+    /// </summary>
+    /// <remarks>
+    ///   This will delete any existing references that aren't <i>also</i> represented in the source <see cref="TopicData"/>
+    ///   graph.
+    /// </remarks>
+    public bool DeleteUnmatchedReferences {
+      get => _deleteUnmatchedReferences?? Strategy is ImportStrategy.Replace;
+      set => _deleteUnmatchedReferences = value;
     }
 
     /*==========================================================================================================================

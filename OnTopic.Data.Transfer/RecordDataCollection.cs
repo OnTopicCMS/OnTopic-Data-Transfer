@@ -9,24 +9,24 @@ using OnTopic.Internal.Diagnostics;
 namespace OnTopic.Data.Transfer {
 
   /*============================================================================================================================
-  | CLASS: RELATIONSHIP DATA COLLECTION
+  | CLASS: RECORD DATA COLLECTION
   \---------------------------------------------------------------------------------------------------------------------------*/
   /// <summary>
-  ///   The <see cref="RelationshipDataCollection"/> class provides a <see cref="KeyedCollection"/> of <see
-  ///   cref="RelationshipData"/> objects.
+  ///   The <see cref="RecordDataCollection"/> class provides a <see cref="KeyedCollection{TKey, TValue}"/> of <see cref="
+  ///   RecordData"/> objects.
   /// </summary>
-  public class RelationshipDataCollection: KeyedCollection<string, RelationshipData> {
+  public class RecordDataCollection: KeyedCollection<string, RecordData> {
 
     /*==========================================================================================================================
     | OVERRIDE: GET KEY FOR ITEM
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Method must be overridden for the <see cref="RelationshipDataCollection"/> to identify the appropriate <see
-    ///   cref="Key"/> from each <see cref="RelationshipData"/> object.
+    ///   Method must be overridden for the <see cref="RecordDataCollection"/> to identify the appropriate <see cref="RecordData
+    ///   .Key"/> from each <see cref="RecordData"/> object.
     /// </summary>
-    /// <param name="item">The <see cref="RelationshipData"/> object from which to extract the key.</param>
+    /// <param name="item">The <see cref="RecordData"/> object from which to extract the key.</param>
     /// <returns>The key for the specified collection item.</returns>
-    protected override string GetKeyForItem(RelationshipData item) {
+    protected override string GetKeyForItem(RecordData item) {
       Contract.Requires(item, "The item must be available in order to derive its key.");
       return item.Key?? "";
     }

@@ -4,8 +4,6 @@
 | Project       Topics Library
 \=============================================================================================================================*/
 using System;
-using System.Linq;
-using System.Runtime.Serialization;
 using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -39,9 +37,9 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Key\":\"{topicData.Key}\"," +
         $"\"UniqueKey\":\"{topicData.UniqueKey}\"," +
         $"\"ContentType\":\"{topicData.ContentType}\"," +
-        $"\"DerivedTopicKey\":null," +
         $"\"Attributes\":[]," +
         $"\"Relationships\":[]," +
+        $"\"References\":[]," +
         $"\"Children\":[]" +
         $"}}";
 
@@ -52,51 +50,51 @@ namespace OnTopic.Data.Transfer.Tests {
     }
 
     /*==========================================================================================================================
-    | TEST: SERIALIZE: RELATIONSHIP DATA: RETURNS EXPECTED RESULTS
+    | TEST: SERIALIZE: KEY/VALUES PAIR: RETURNS EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="RelationshipData"/>, serializes it, and confirms the resulting JSON.
+    ///   Creates a <see cref="KeyValuesPair"/>, serializes it, and confirms the resulting JSON.
     /// </summary>
     [TestMethod]
-    public void Serialize_RelationshipData_ReturnsExpectedResults() {
+    public void Serialize_KeyValuesPair_ReturnsExpectedResults() {
 
-      var relationshipData      = new RelationshipData() {
+      var keyValuesPair         = new KeyValuesPair() {
         Key                     = "Test"
       };
-      relationshipData.Relationships.Add("Root:Web");
+      keyValuesPair.Values.Add("Root:Web");
 
       var expected = $"{{" +
-        $"\"Key\":\"{relationshipData.Key}\"," +
-        $"\"Relationships\":[\"Root:Web\"]" +
+        $"\"Key\":\"{keyValuesPair.Key}\"," +
+        $"\"Values\":[\"Root:Web\"]" +
         $"}}";
 
-      var json = JsonSerializer.Serialize(relationshipData);
+      var json = JsonSerializer.Serialize(keyValuesPair);
 
       Assert.AreEqual<string>(expected, json);
 
     }
 
     /*==========================================================================================================================
-    | TEST: SERIALIZE: ATTRIBUTE DATA: RETURNS EXPECTED RESULTS
+    | TEST: SERIALIZE: RECORD DATA: RETURNS EXPECTED RESULTS
     \-------------------------------------------------------------------------------------------------------------------------*/
     /// <summary>
-    ///   Creates a <see cref="AttributeData"/>, serializes it, and confirms the resulting JSON.
+    ///   Creates a <see cref="RecordData"/>, serializes it, and confirms the resulting JSON.
     /// </summary>
     [TestMethod]
-    public void Serialize_AttributeData_ReturnsExpectedResults() {
+    public void Serialize_RecordData_ReturnsExpectedResults() {
 
-      var attributeData         = new AttributeData() {
+      var recordData            = new RecordData() {
         Key                     = "Test",
-        LastModified            = DateTime.Now
+        LastModified            = new DateTime(2021, 02, 16, 16, 06, 25)
       };
 
       var expected = $"{{" +
-        $"\"Key\":\"{attributeData.Key}\"," +
+        $"\"Key\":\"{recordData.Key}\"," +
         $"\"Value\":null," +
-        $"\"LastModified\":\"{attributeData.LastModified:o}\"" +
+        $"\"LastModified\":\"{recordData.LastModified:s}\"" +
         $"}}";
 
-      var json = JsonSerializer.Serialize(attributeData);
+      var json = JsonSerializer.Serialize(recordData);
 
       Assert.AreEqual<string>(expected, json);
 
@@ -111,17 +109,23 @@ namespace OnTopic.Data.Transfer.Tests {
     [TestMethod]
     public void Serialize_TopicGraph_ReturnsExpectedResults() {
 
+      var lastModified          = new DateTime(2021, 02, 16, 16, 06, 25);
+
       var topicData             = new TopicData() {
         Key                     = "Test",
         UniqueKey               = "Root:Test",
         ContentType             = "Container"
       };
-      var relationshipData      = new RelationshipData() {
+      var relationshipData      = new KeyValuesPair() {
         Key                     = "Test"
       };
-      var attributeData         = new AttributeData() {
+      var referenceData         = new RecordData() {
         Key                     = "Test",
-        LastModified            = DateTime.Now
+        LastModified            = lastModified
+      };
+      var attributeData         = new RecordData() {
+        Key                     = "Test",
+        LastModified            = lastModified
       };
       var childTopicData        = new TopicData() {
         Key                     = "Child",
@@ -129,8 +133,9 @@ namespace OnTopic.Data.Transfer.Tests {
         ContentType             = "Container"
       };
 
-      relationshipData.Relationships.Add("Root:Web");
+      relationshipData.Values.Add("Root:Web");
       topicData.Relationships.Add(relationshipData);
+      topicData.References.Add(referenceData);
       topicData.Attributes.Add(attributeData);
       topicData.Children.Add(childTopicData);
 
@@ -138,34 +143,38 @@ namespace OnTopic.Data.Transfer.Tests {
         $"\"Key\":\"{topicData.Key}\"," +
         $"\"UniqueKey\":\"{topicData.UniqueKey}\"," +
         $"\"ContentType\":\"{topicData.ContentType}\"," +
-        $"\"DerivedTopicKey\":null," +
         $"\"Attributes\":[" +
           $"{{" +
             $"\"Key\":\"{attributeData.Key}\"," +
-            $"\"Value\":null," +
-            $"\"LastModified\":\"{attributeData.LastModified:o}\"" +
+            $"\"LastModified\":\"{attributeData.LastModified:s}\"" +
           $"}}"+
         $"]," +
         $"\"Relationships\":[" +
           $"{{" +
             $"\"Key\":\"{relationshipData.Key}\"," +
-            $"\"Relationships\":[\"Root:Web\"]" +
+            $"\"Values\":[\"Root:Web\"]" +
           $"}}" +
+        $"]," +
+        $"\"References\":[" +
+          $"{{" +
+            $"\"Key\":\"{referenceData.Key}\"," +
+            $"\"LastModified\":\"{referenceData.LastModified:s}\"" +
+          $"}}"+
         $"]," +
         $"\"Children\":[" +
           $"{{" +
             $"\"Key\":\"{childTopicData.Key}\"," +
             $"\"UniqueKey\":\"{childTopicData.UniqueKey}\"," +
             $"\"ContentType\":\"{childTopicData.ContentType}\"," +
-            $"\"DerivedTopicKey\":null," +
             $"\"Attributes\":[]," +
             $"\"Relationships\":[]," +
+            $"\"References\":[]," +
             $"\"Children\":[]" +
           $"}}" +
         $"]" +
         $"}}";
 
-      var json = JsonSerializer.Serialize(topicData);
+      var json = JsonSerializer.Serialize(topicData, new() { IgnoreNullValues = true });
 
       Assert.AreEqual<string>(expected, json);
 

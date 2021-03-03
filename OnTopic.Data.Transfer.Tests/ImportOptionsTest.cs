@@ -71,7 +71,7 @@ namespace OnTopic.Data.Transfer.Tests {
         new() {
           Key                   = "Attribute",
           Value                 = "New Value",
-          LastModified          = DateTime.Now.AddTicks(1)
+          LastModified          = DateTime.UtcNow.AddTicks(300)
         }
       );
 
@@ -82,7 +82,7 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
-      Assert.AreEqual<string>("New Value", topic.Attributes.GetValue("Attribute"));
+      Assert.AreEqual<string?>("New Value", topic.Attributes.GetValue("Attribute"));
 
     }
 
@@ -120,7 +120,7 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
-      Assert.AreEqual<string>("Original Value", topic.Attributes.GetValue("Attribute"));
+      Assert.AreEqual<string?>("Original Value", topic.Attributes.GetValue("Attribute"));
 
     }
 
@@ -158,7 +158,57 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
-      Assert.AreEqual<string>("New Value", topic.Attributes.GetValue("Attribute"));
+      Assert.AreEqual<string?>("New Value", topic.Attributes.GetValue("Attribute"));
+
+    }
+
+    /*==========================================================================================================================
+    | TEST: IMPORT: TOPIC DATA WITH REFERENCES: SKIPS NEWER VALUES
+    \-------------------------------------------------------------------------------------------------------------------------*/
+    /// <summary>
+    ///   Creates a <see cref="TopicData"/> with <see cref="TopicData.References"/> and ensures that the <see cref="Topic.
+    ///   References"/> collection is set correctly.
+    /// </summary>
+    [TestMethod]
+    public void ImportAsMerge_TopicDataWithReferences_SkipsNewerValues() {
+
+      var topic                 = TopicFactory.Create("Test", "Container");
+      var referencedTopic1      = TopicFactory.Create("Referenced1", "Container", topic);
+      var referencedTopic2      = TopicFactory.Create("Referenced2", "Container", topic);
+      var topicData             = new TopicData() {
+        Key                     = topic.Key,
+        UniqueKey               = topic.GetUniqueKey(),
+        ContentType             = topic.ContentType
+      };
+
+      topic.References.SetValue("Reference", referencedTopic1);
+      topic.References.SetValue("OldReference", referencedTopic2, null, DateTime.UtcNow.AddDays(-1));
+
+      topicData.References.Add(
+        new() {
+          Key                   = "Reference",
+          Value                 = referencedTopic2.GetUniqueKey(),
+          LastModified          = DateTime.UtcNow.AddDays(-1)
+        }
+      );
+
+      topicData.References.Add(
+        new() {
+          Key                   = "OldReference",
+          Value                 = referencedTopic1.GetUniqueKey(),
+          LastModified          = DateTime.UtcNow
+        }
+      );
+
+      topic.Import(
+        topicData,
+        new() {
+          Strategy              = ImportStrategy.Merge
+        }
+      );
+
+      Assert.AreEqual<Topic?>(referencedTopic1, topic.References.GetValue("Reference"));
+      Assert.AreEqual<Topic?>(referencedTopic1, topic.References.GetValue("OldReference"));
 
     }
 
@@ -182,16 +232,16 @@ namespace OnTopic.Data.Transfer.Tests {
         UniqueKey               = topic.GetUniqueKey(),
         ContentType             = topic.ContentType
       };
-      var relationshipData      = new RelationshipData() {
+      var relationshipData      = new KeyValuesPair() {
         Key                   = "Related"
       };
 
-      topic.Relationships.SetTopic("Related", relatedTopic1);
-      topic.Relationships.SetTopic("Related", relatedTopic2);
-      topic.Relationships.SetTopic("Cousin",  relatedTopic3);
+      topic.Relationships.SetValue("Related", relatedTopic1);
+      topic.Relationships.SetValue("Related", relatedTopic2);
+      topic.Relationships.SetValue("Cousin",  relatedTopic3);
 
       topicData.Relationships.Add(relationshipData);
-      relationshipData.Relationships.Add(relatedTopic1.GetUniqueKey());
+      relationshipData.Values.Add(relatedTopic1.GetUniqueKey());
 
       topic.Import(
         topicData,
@@ -200,9 +250,9 @@ namespace OnTopic.Data.Transfer.Tests {
         }
       );
 
-      Assert.AreEqual(relatedTopic1, topic.Relationships.GetTopics("Related")?.FirstOrDefault());
-      Assert.AreEqual<int>(1, topic.Relationships.GetTopics("Related").Count);
-      Assert.AreEqual<int>(0, topic.Relationships.GetTopics("Cousin").Count);
+      Assert.AreEqual(relatedTopic1, topic.Relationships.GetValues("Related")?.FirstOrDefault());
+      Assert.AreEqual<int>(1, topic.Relationships.GetValues("Related").Count);
+      Assert.AreEqual<int>(0, topic.Relationships.GetValues("Cousin").Count);
 
     }
 
@@ -309,8 +359,8 @@ namespace OnTopic.Data.Transfer.Tests {
 
       var topic                 = TopicFactory.Create("Test", "Container");
       var nestedTopics          = TopicFactory.Create("Nested", "List", topic);
-      _                         = TopicFactory.Create("Nested1", "Page", 1, nestedTopics);
-      var nestedTopic2          = TopicFactory.Create("Nested2", "Page", 2, nestedTopics);
+      _                         = TopicFactory.Create("Nested1", "Page", nestedTopics, 1);
+      var nestedTopic2          = TopicFactory.Create("Nested2", "Page", nestedTopics, 2);
       var topicData             = new TopicData() {
         Key                     = topic.Key,
         UniqueKey               = topic.GetUniqueKey(),
